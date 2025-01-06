@@ -1,0 +1,38 @@
+//
+// Created by Brandon on 1/5/25.
+//
+
+#include "LEDChain.h"
+#include "Color.h"
+#include "Point.h"
+
+auto LEDChain::fill(const Color& color) -> void {
+  auto _head = head();
+  for (int i = 0; i < size(); ++i) {
+    _head[i] = color;
+  }
+}
+
+auto LEDChain::get(u16 pixel) -> Color* {
+  return &head()[pixel];
+}
+
+auto LEDChain::get(Point point) -> Color* {
+  return &head()[(size() * point.x) + point.y];
+}
+
+auto LEDChain::set(u16 pixel, const Color& color) -> void {
+  this->operator[](pixel) = color;
+}
+
+auto LEDChain::set(Point point, const Color& color) -> void {
+  this->operator[](point) = color;
+}
+
+auto LEDChain::operator[](u16 pixel) -> Color& {
+  return *get(pixel);
+}
+
+auto LEDChain::operator[](Point point) -> Color& {
+  return *get(point);
+}
