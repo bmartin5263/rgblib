@@ -39,6 +39,10 @@ auto Clock::milli() -> u32 {
   return millis();
 }
 
+auto Clock::time() -> ClockTime {
+  return {millis(), _globalFrame};
+}
+
 auto Clock::stopTick() -> void {
   auto MAX_MS = 5;
   auto stop = millis();

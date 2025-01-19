@@ -15,10 +15,10 @@
                 Log::Info("File: "); \
                 Log::Info(__FILE__); \
                 Log::Info(", Line: "); \
-                Log::InfoLn((unsigned long) __LINE__); \
+                Log::InfoLn((u32) __LINE__); \
                 Log::Info("Message: "); \
                 Log::InfoLn(message);                              \
-                Debug::Instance()->trigger(true);                   \
+                Debug::Instance().trigger(true);                   \
             } \
         } while (false)
 //#else

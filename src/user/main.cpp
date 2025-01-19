@@ -1,13 +1,20 @@
 #include <Arduino.h>
-#include "DemoScene.h"
-#include "core/App.hpp"
+#include <Adafruit_NeoPixel.h>
 
-static DemoScene demoScene{};
+Adafruit_NeoPixel circuit(16, D2, NEO_GRBW + NEO_KHZ800);
 
 void setup() {
-  App::Init(demoScene);
+  // put your setup code here, to run once:
+  circuit.begin();
+  circuit.setBrightness(10);
+
+  circuit.clear();
+  for (int i = 0; i < 16; ++i) {
+    circuit.setPixelColor(i, 0, 0, 255);
+  }
+  circuit.show();
 }
 
 void loop() {
-  App::Loop();
+
 }

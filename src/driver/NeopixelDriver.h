@@ -12,10 +12,12 @@
 class NeopixelDriver : public Driver {
 public:
   NeopixelDriver(u16 ledCount, i16 pinNumber, neoPixelType type);
+  auto draw(LEDChain& chain) -> void override;
 
 private:
   Adafruit_NeoPixel impl;
 
+  static auto FloatToByte(float f, u8 range = 255) -> u8;
 };
 
 

@@ -8,8 +8,8 @@
 #include "core/Types.h"
 
 struct Point {
-  u16 x;
-  u16 y;
+  u16 x{};
+  u16 y{};
 };
 
 

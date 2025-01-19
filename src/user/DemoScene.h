@@ -5,7 +5,12 @@
 #ifndef RGBLIB_DEMOSCENE_H
 #define RGBLIB_DEMOSCENE_H
 
+#include "Adafruit_NeoPixel.h"
 #include "core/Scene.h"
+#include "led/LEDCircuit.h"
+#include "led/LEDSlice.h"
+#include "effect/FillEffect.h"
+#include "effect/TrailingEffect.h"
 
 class DemoScene : public Scene {
 public:
@@ -14,6 +19,20 @@ public:
   auto draw() -> void override;
 
 private:
+  static constexpr int LEDS = 16;
+
+  // Hardware Driver
+  Adafruit_NeoPixel neoPixel{LEDS, 6, NEO_RGBW + NEO_KHZ800};
+
+  // Memory for Pixel Colors
+  LEDCircuit<LEDS> circuit{neoPixel};
+
+  // Divide memory according to physical setup
+  LEDRing ring{circuit.slice(LEDS)};
+
+  // Effects
+  FillEffect fillEffect{};
+  TrailingEffect trailingEffect{};
 
 };
 

@@ -6,6 +6,7 @@
 #define RGBLIB_CLOCK_H
 
 #include "Types.h"
+#include "ClockTime.h"
 
 class Clock {
 public:
@@ -16,6 +17,7 @@ public:
 
   auto milli() -> u32;
   auto frames() -> u32;
+  auto time() -> ClockTime;
 
   static auto Instance() -> Clock&;
 private:
