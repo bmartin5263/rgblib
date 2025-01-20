@@ -5,7 +5,7 @@
 #ifndef RGBLIB_POINT_H
 #define RGBLIB_POINT_H
 
-#include "core/Types.h"
+#include "Types.h"
 
 struct Point {
   u16 x{};

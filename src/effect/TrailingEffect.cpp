@@ -22,12 +22,16 @@ auto TrailingEffect::update() -> void {
 auto TrailingEffect::draw(LEDChain& chain, ColorGenerator& colorGenerator) -> void {
   auto params = Parameters::dynamicEffect(chain, phase, speed);
   auto size = chain.size();
-  for (u8 i = 0; i < length; ++i) {
-    auto absolutePixel = (i + phase) % size;
-    auto relativePixel = i;
-    params.absolutePosition = absolutePixel;
-    params.relativePosition = relativePixel;
-    auto color = colorGenerator.generate(params);
-    chain[absolutePixel] = color;
+  auto replicas = 1;
+
+  for (u8 replica = 0; replica < replicas; ++replica) {
+    for (u16 i = 0; i < length; ++i) {
+      auto absolutePixel = (i + phase) % size;
+      auto relativePixel = i;
+      params.absolutePosition = absolutePixel;
+      params.relativePosition = relativePixel;
+      auto color = colorGenerator.generate(params);
+      chain[absolutePixel] = color;
+    }
   }
 }

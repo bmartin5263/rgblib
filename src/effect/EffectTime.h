@@ -5,7 +5,7 @@
 #ifndef RGBLIB_EFFECTTIME_H
 #define RGBLIB_EFFECTTIME_H
 
-#include "core/Types.h"
+#include "Types.h"
 
 struct EffectTime {
   u16 phase;

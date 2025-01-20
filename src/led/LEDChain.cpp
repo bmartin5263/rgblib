@@ -2,7 +2,7 @@
 // Created by Brandon on 1/5/25.
 //
 
-#include "core/Assertions.h"
+#include "Assertions.h"
 #include "LEDChain.h"
 #include "LEDSlice.h"
 #include "Color.h"

@@ -5,8 +5,11 @@
 #ifndef RGBLIB_TRAILINGEFFECT_H
 #define RGBLIB_TRAILINGEFFECT_H
 
-#include "core/Types.h"
+#include <functional>
+#include "Types.h"
+#include "Color.h"
 
+struct Parameters;
 class LEDChain;
 class ColorGenerator;
 class TrailingEffect {
@@ -18,6 +21,10 @@ public:
 
   auto getSpeed() -> u16;
   auto setSpeed(u16 value) -> void;
+
+  auto setColorGenerator(std::function<Color(Parameters)>) -> void {
+
+  }
 
 private:
   u16 speed{30};

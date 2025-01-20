@@ -6,8 +6,8 @@
 #define RGBLIB_LEDCIRCUIT_H
 
 #include <Adafruit_NeoPixel.h>
-#include "core/Types.h"
-#include "core/Assertions.h"
+#include "Types.h"
+#include "Assertions.h"
 #include "Color.h"
 #include "LEDChain.h"
 #include "LEDSlice.h"

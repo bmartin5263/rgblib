@@ -3,6 +3,7 @@
 //
 
 #include "Scene.h"
+#include "Log.h"
 
 auto Scene::doSetup() -> void {
   setup();
@@ -18,8 +19,4 @@ auto Scene::doDraw() -> void {
 
 auto Scene::doCleanup() -> void {
   cleanup();
-}
-
-auto Scene::cleanup() -> void {
-
 }

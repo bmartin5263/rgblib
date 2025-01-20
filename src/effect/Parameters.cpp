@@ -3,7 +3,7 @@
 //
 
 #include "Parameters.h"
-#include "core/Clock.h"
+#include "Clock.h"
 
 auto Parameters::staticEffect(LEDChain& ledChain) -> Parameters {
   auto clockTime = Clock::Instance().time();

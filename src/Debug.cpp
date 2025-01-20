@@ -3,7 +3,7 @@
 //
 
 #include "Debug.h"
-#include "led/Color.h"
+#include "Color.h"
 #include "led/LEDChain.h"
 
 auto Debug::trigger(bool value) -> void {
@@ -12,7 +12,7 @@ auto Debug::trigger(bool value) -> void {
 
 auto Debug::update() -> void {
   if (debugChain != nullptr && triggered) {
-    debugChain->set(0, Color::RED());
+    debugChain->fill(Color::RED());
   }
 }
 

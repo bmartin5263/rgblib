@@ -5,7 +5,7 @@
 #ifndef RGBLIB_PARAMETERS_H
 #define RGBLIB_PARAMETERS_H
 
-#include "core/Types.h"
+#include "Types.h"
 
 class LEDChain;
 struct Parameters {

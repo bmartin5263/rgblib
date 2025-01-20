@@ -12,10 +12,10 @@ public:
   auto doDraw() -> void;
   auto doCleanup() -> void;
 
-  virtual auto setup() -> void = 0;
+  virtual auto setup() -> void {};
   virtual auto update() -> void = 0;
   virtual auto draw() -> void = 0;
-  virtual auto cleanup() -> void;
+  virtual auto cleanup() -> void {};
 
   virtual ~Scene() = default;
 

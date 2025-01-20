@@ -21,8 +21,4 @@ private:
 
 };
 
-using LEDStrip = LEDSlice;
-using LEDRing = LEDSlice;
-using LEDGrid = LEDSlice;
-
 #endif //RGBLIB_LEDSLICE_H

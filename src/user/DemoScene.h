@@ -6,17 +6,19 @@
 #define RGBLIB_DEMOSCENE_H
 
 #include "Adafruit_NeoPixel.h"
-#include "core/Scene.h"
+#include "Scene.h"
 #include "led/LEDCircuit.h"
 #include "led/LEDSlice.h"
 #include "effect/FillEffect.h"
 #include "effect/TrailingEffect.h"
+#include "effect/BreatheEffect.h"
 
 class DemoScene : public Scene {
 public:
   auto setup() -> void override;
   auto update() -> void override;
   auto draw() -> void override;
+  auto cleanup() -> void override;
 
 private:
   static constexpr int LEDS = 16;
@@ -28,11 +30,12 @@ private:
   LEDCircuit<LEDS> circuit{neoPixel};
 
   // Divide memory according to physical setup
-  LEDRing ring{circuit.slice(LEDS)};
+  LEDRing* ring{&circuit};
 
   // Effects
   FillEffect fillEffect{};
   TrailingEffect trailingEffect{};
+  BreatheEffect breatheEffect{};
 
 };
 

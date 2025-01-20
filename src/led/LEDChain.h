@@ -5,7 +5,7 @@
 #ifndef RGBLIB_LEDCHAIN_H
 #define RGBLIB_LEDCHAIN_H
 
-#include "core/Types.h"
+#include "Types.h"
 #include "Color.h"
 
 struct Point;
@@ -33,5 +33,9 @@ public:
 private:
 
 };
+
+using LEDStrip = LEDChain;
+using LEDRing = LEDChain;
+using LEDGrid = LEDChain;
 
 #endif //RGBLIB_LEDCHAIN_H
