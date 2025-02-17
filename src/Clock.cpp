@@ -11,43 +11,67 @@ auto Clock::Instance() -> Clock& {
   return instance;
 }
 
-auto Clock::initialize(u16 targetFps) -> void {
+auto Clock::init(ft targetFps) -> void {
   this->targetFps = targetFps;
 }
 
 auto Clock::startTick() -> void {
-  u32 currentTime = millis();
-  u32 elapsed = currentTime - lastTimeMs;
+  ms currentTime = milli();
+  ms elapsed = currentTime - lastTime;
 
   if (elapsed >= 1000) { // Update every second
     Log::Info("FPS: ");
-    Log::InfoLn(globalFpsCounter);
+    Log::InfoLn(fpsCounter);
 
-    globalFpsCounter = 0;
-    lastTimeMs = currentTime;
+    fpsCounter = 0;
+    lastTime = currentTime;
   }
 
-  ++globalFpsCounter;
-  ++_globalFrame;
+  ++fpsCounter;
+  ++frameTime;
 }
 
-auto Clock::frames() -> u32 {
-  return _globalFrame;
+auto Clock::frames() const -> ft {
+  return frameTime;
 }
 
-auto Clock::milli() -> u32 {
+auto Clock::milli() const -> ms {
   return millis();
 }
 
-auto Clock::time() -> ClockTime {
-  return {millis(), _globalFrame};
+auto Clock::time() const -> ClockTime {
+  return {milli(), frameTime};
 }
 
-auto Clock::stopTick() -> void {
-  auto MAX_MS = 5;
-  auto stop = millis();
+auto Clock::stopTick() const -> void {
+  ms MAX_MS = 5;
+  auto stop = milli();
   auto time = stop - tickStart;
-  i32 m = MAX_MS - time;
+  i64 m = MAX_MS - time;
   auto sleep = _max(m, 0u);
   delay(sleep);
+}
+
+auto Clock::Init(ft fps) -> void {
+  Instance().init(fps);
+}
+
+auto Clock::StartTick() -> void {
+  Instance().startTick();
+}
+
+auto Clock::Frames() -> ft {
+  return Instance().frames();
+}
+
+auto Clock::Milli() -> ms {
+  return Instance().milli();
+}
+
+auto Clock::Time() -> ClockTime {
+  return Instance().time();
+}
+
+auto Clock::StopTick() -> void {
+  Instance().stopTick();
 }

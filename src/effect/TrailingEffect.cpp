@@ -13,7 +13,7 @@ auto TrailingEffect::update() -> void {
 }
 
 auto TrailingEffect::draw(LEDChain& chain) -> void {
-  auto clockTime = Clock::Instance().time();
+  auto clockTime = Clock::Time();
   auto params = TrailingEffectParameters {
     clockTime.millis,
     clockTime.frames,

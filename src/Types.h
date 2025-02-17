@@ -18,4 +18,7 @@ using u16 = uint16_t;
 using u32 = uint32_t;
 using u64 = uint64_t;
 
+using ms = u32;
+using ft = u32;
+
 #endif //RGBLIB_TYPES_H

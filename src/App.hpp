@@ -14,6 +14,7 @@ public:
   auto operator=(const App& other) -> App& = delete;
   auto operator=(App&& other) noexcept -> App& = delete;
 
+  static auto Init() -> void;
   static auto Init(Scene& scene) -> void;
   static auto Loop() -> void;
   static auto SwitchScene(Scene& scene) -> void;
@@ -24,15 +25,17 @@ private:
 
   static auto Instance() -> App&;
 
+  auto init() -> void;
   auto init(Scene& scene) -> void;
+
   auto loop() -> void;
   auto switchScene(Scene& scene) -> void;
   auto performSceneSwitch() -> void;
   auto update() -> void;
   auto draw() -> void;
 
-  Scene* scene;
-  Scene* nextScene;
+  Scene* scene{};
+  Scene* nextScene{};
 };
 
 

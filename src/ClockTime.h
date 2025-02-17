@@ -8,8 +8,8 @@
 #include "Types.h"
 
 struct ClockTime {
-  u32 millis;
-  u32 frames;
+  ms millis{};
+  ft frames{};
 };
 
 

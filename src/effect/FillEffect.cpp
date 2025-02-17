@@ -7,7 +7,7 @@
 #include "Clock.h"
 
 void FillEffect::draw(LEDChain& chain) {
-  auto time = Clock::Instance().time();
+  auto time = Clock::Time();
   auto params = FillEffectParameters {
     time,
     &chain,

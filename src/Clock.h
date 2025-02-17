@@ -10,24 +10,33 @@
 
 class Clock {
 public:
-  auto initialize(u16 targetFps) -> void;
+  static auto Init(ft fps) -> void;
 
-  auto startTick() -> void;
-  auto stopTick() -> void;
+  static auto StartTick() -> void;
+  static auto StopTick() -> void;
 
-  auto milli() -> u32;
-  auto frames() -> u32;
-  auto time() -> ClockTime;
+  static auto Milli() -> ms;
+  static auto Frames() -> ft;
+  static auto Time() -> ClockTime;
 
-  static auto Instance() -> Clock&;
 private:
   Clock() = default;
+  auto init(ft targetFps) -> void;
 
-  u32 _globalFrame{};
-  u32 globalFpsCounter{};
-  u32 tickStart{};
-  u32 lastTimeMs{};
-  u16 targetFps{};
+  static auto Instance() -> Clock&;
+
+  auto startTick() -> void;
+  auto stopTick() const -> void;
+
+  [[nodiscard]] auto milli() const -> ms;
+  [[nodiscard]] auto frames() const -> ft;
+  [[nodiscard]] auto time() const -> ClockTime;
+
+  ft frameTime{};
+  ft fpsCounter{};
+  ms tickStart{};
+  ms lastTime{};
+  ft targetFps{};
 };
 
 
