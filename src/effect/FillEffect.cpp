@@ -3,15 +3,32 @@
 //
 
 #include "FillEffect.h"
-#include "ColorGenerator.h"
 #include "led/LEDChain.h"
+#include "Clock.h"
 
-void FillEffect::draw(LEDChain& chain, ColorGenerator& colorGenerator) {
-  auto params = Parameters::staticEffect(chain);
+void FillEffect::draw(LEDChain& chain) {
+  auto time = Clock::Instance().time();
+  auto params = FillEffectParameters {
+    time,
+    &chain,
+    0
+  };
   for (u16 i = 0; i < chain.size(); ++i) {
-    params.absolutePosition = i;
-    params.relativePosition = i;
-    auto color = colorGenerator.generate(params);
+    params.position = i;
+    auto color = colorGenerator(params);
     chain[i] = color;
   }
+}
+
+auto FillEffect::setColorGenerator(const FillEffectColorGenerator& value) -> FillEffect& {
+  colorGenerator = std::move(value);
+  return *this;
+}
+
+auto FillEffect::getColorGenerator() -> FillEffectColorGenerator {
+  return colorGenerator;
+}
+
+auto FillEffect::defaultGenerator(const FillEffectParameters& params) -> Color {
+  return Color::MAGENTA();
 }

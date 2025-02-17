@@ -9,24 +9,38 @@
 #include "Types.h"
 #include "Color.h"
 
-struct Parameters;
 class LEDChain;
-class ColorGenerator;
+
+struct TrailingEffectParameters {
+  u32 millis;
+  u32 frames;
+  i16 phase;
+  i16 speed;
+  LEDChain* ledChain;
+  u16 absolutePosition;
+  u16 relativePosition;
+};
+
+using TrailingEffectColorGenerator = std::function<Color(const TrailingEffectParameters&)>;
+
 class TrailingEffect {
 public:
-  TrailingEffect();
-  TrailingEffect(u16 speed);
   auto update() -> void;
-  auto draw(LEDChain& chain, ColorGenerator& colorGenerator) -> void;
+  auto draw(LEDChain& chain) -> void;
 
-  auto getSpeed() -> u16;
-  auto setSpeed(u16 value) -> void;
+  auto getSpeed() const -> u16;
+  auto setSpeed(u16 value) -> TrailingEffect&;
 
-  auto setColorGenerator(std::function<Color(Parameters)>) -> void {
+  auto getLength() const -> u16;
+  auto setLength(u16 value) -> TrailingEffect&;
 
-  }
+  auto getColorGenerator() -> TrailingEffectColorGenerator;
+  auto setColorGenerator(const TrailingEffectColorGenerator& value) -> TrailingEffect&;
 
 private:
+  static auto defaultGenerator(const TrailingEffectParameters& params) -> Color;
+
+  TrailingEffectColorGenerator colorGenerator{defaultGenerator};
   u16 speed{30};
   u16 phase{0};
   u16 length{10};

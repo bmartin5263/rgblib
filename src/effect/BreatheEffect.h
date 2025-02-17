@@ -9,7 +9,6 @@
 #include "Color.h"
 
 class LEDChain;
-class ColorGenerator;
 class BreatheEffect {
 public:
   auto update() -> void;

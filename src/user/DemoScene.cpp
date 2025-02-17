@@ -3,40 +3,52 @@
 //
 
 #include "DemoScene.h"
-#include "effect/SolidColorGenerator.h"
 #include "Debug.h"
 
-static SolidColorGenerator solidColorGenerator{Color::CYAN()};
 
 auto DemoScene::setup() -> void {
+//  neoPixel.begin();
+//  neoPixel.setBrightness(10);
+
+//  Debug::Instance().setDebugChain(ring);
+
+//  trailingEffect.setLength(5)
+//                .setSpeed(10)
+//                .setColorGenerator(Generator{
+//                  return Color::RED();
+//                });
+//
+//  breatheEffect.setHighColor(Color::BLUE())
+//               .setLowColor(Color::RED())
+//               .setSpeed(100);
+//
+//  fillEffect.setColorGenerator(Generator{
+//              return Color::RED();
+//            });
+
   neoPixel.begin();
   neoPixel.setBrightness(10);
-
-  Debug::Instance().setDebugChain(ring);
-
-  auto x = [](const Parameters& params){
-    return solidColorGenerator.generate(params);
-  };
-  trailingEffect.setColorGenerator(x);
-
-  breatheEffect.setHighColor(Color::BLUE())
-               .setLowColor(Color::RED())
-               .setSpeed(100);
-
-
 }
 
 auto DemoScene::update() -> void {
-  trailingEffect.update();
+  neoPixel.clear();
+  neoPixel.setBrightness(10);
+//  circuit.fill(Color::MAGENTA());
+//  trailingEffect.update();
+  for (int i = 0; i < 16; ++i) {
+    neoPixel.setPixelColor(i, 0, 20, 20, 0);
+  }
+  Serial.println(neoPixel.getBrightness());
 }
 
 auto DemoScene::draw() -> void {
-  fillEffect.draw(*ring, solidColorGenerator);
-  trailingEffect.draw(*ring, solidColorGenerator);
+//  fillEffect.draw(*ring);
+//  trailingEffect.draw(*ring);
 
-  circuit.display();
+//  circuit.display();
+  neoPixel.show();
 }
 
 auto DemoScene::cleanup() -> void {
-  Debug::Instance().setDebugChain(nullptr);
+//  Debug::Instance().setDebugChain(nullptr);
 }

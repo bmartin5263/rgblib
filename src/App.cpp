@@ -14,26 +14,27 @@ App::App(): scene(nullptr), nextScene(nullptr) {
 
 auto App::init(Scene& scene) -> void {
   Clock::Instance().initialize(200);
+  this->scene = &scene;
 }
 
 auto App::loop() -> void {
-  auto clock = Clock::Instance();
-  clock.startTick();
-
-  if (nextScene != nullptr) {
-    performSceneSwitch();
-    nextScene = nullptr;
-  }
+//  auto clock = Clock::Instance();
+//  clock.startTick();
+//
+//  if (nextScene != nullptr) {
+//    performSceneSwitch();
+//    nextScene = nullptr;
+//  }
 
   update();
   draw();
-
-  clock.stopTick();
+//
+//  clock.stopTick();
 }
 
 auto App::update() -> void {
   scene->update();
-  Debug::Instance().update();
+//  Debug::Instance().update();
 }
 
 auto App::draw() -> void {

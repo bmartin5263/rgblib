@@ -24,18 +24,13 @@ private:
   static constexpr int LEDS = 16;
 
   // Hardware Driver
-  Adafruit_NeoPixel neoPixel{LEDS, 6, NEO_RGBW + NEO_KHZ800};
+  Adafruit_NeoPixel neoPixel{LEDS, D6, NEO_GRBW + NEO_KHZ800};
 
   // Memory for Pixel Colors
-  LEDCircuit<LEDS> circuit{neoPixel};
+//  LEDCircuit<LEDS> circuit{neoPixel};
 
   // Divide memory according to physical setup
-  LEDRing* ring{&circuit};
-
-  // Effects
-  FillEffect fillEffect{};
-  TrailingEffect trailingEffect{};
-  BreatheEffect breatheEffect{};
+//  LEDRing* ring{&circuit};
 
 };
 

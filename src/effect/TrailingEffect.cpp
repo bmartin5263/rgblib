@@ -4,25 +4,27 @@
 
 #include "led/LEDChain.h"
 #include "TrailingEffect.h"
-#include "Parameters.h"
-#include "ColorGenerator.h"
 
-TrailingEffect::TrailingEffect(): speed(30) {
-
-}
-
-TrailingEffect::TrailingEffect(u16 speed): speed(speed) {
-
-}
+#include <utility>
+#include "Clock.h"
 
 auto TrailingEffect::update() -> void {
 
 }
 
-auto TrailingEffect::draw(LEDChain& chain, ColorGenerator& colorGenerator) -> void {
-  auto params = Parameters::dynamicEffect(chain, phase, speed);
-  auto size = chain.size();
-  auto replicas = 1;
+auto TrailingEffect::draw(LEDChain& chain) -> void {
+  auto clockTime = Clock::Instance().time();
+  auto params = TrailingEffectParameters {
+    clockTime.millis,
+    clockTime.frames,
+    static_cast<i16>(phase),
+    static_cast<i16>(speed),
+    &chain,
+    0,
+    0
+  };
+  u16 size = chain.size();
+  u8 replicas = 1;
 
   for (u8 replica = 0; replica < replicas; ++replica) {
     for (u16 i = 0; i < length; ++i) {
@@ -30,8 +32,39 @@ auto TrailingEffect::draw(LEDChain& chain, ColorGenerator& colorGenerator) -> vo
       auto relativePixel = i;
       params.absolutePosition = absolutePixel;
       params.relativePosition = relativePixel;
-      auto color = colorGenerator.generate(params);
+      auto color = colorGenerator(params);
       chain[absolutePixel] = color;
     }
   }
+}
+
+auto TrailingEffect::setSpeed(u16 value) -> TrailingEffect& {
+  speed = value;
+  return *this;
+}
+
+auto TrailingEffect::getSpeed() const -> u16 {
+  return speed;
+}
+
+auto TrailingEffect::setColorGenerator(const TrailingEffectColorGenerator& value) -> TrailingEffect& {
+  colorGenerator = std::move(value);
+  return *this;
+}
+
+auto TrailingEffect::getColorGenerator() -> TrailingEffectColorGenerator {
+  return colorGenerator;
+}
+
+auto TrailingEffect::setLength(u16 value) -> TrailingEffect& {
+  length = value;
+  return *this;
+}
+
+auto TrailingEffect::getLength() const -> u16 {
+  return length;
+}
+
+auto TrailingEffect::defaultGenerator(const TrailingEffectParameters& params) -> Color {
+  return Color::MAGENTA();
 }
