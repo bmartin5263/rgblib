@@ -8,6 +8,8 @@
 #include "Color.h"
 #include "Point.h"
 
+namespace rgb {
+
 auto LEDChain::fill(const Color& color) -> void {
   auto _head = head();
   for (int i = 0; i < size(); ++i) {
@@ -54,4 +56,6 @@ auto LEDChain::slice(u16 start, u16 length) -> LEDSlice {
 
   Color* head = data + start;
   return {head, length};
+}
+
 }

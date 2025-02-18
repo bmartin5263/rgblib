@@ -3,3 +3,9 @@
 //
 
 #include "Color.h"
+
+namespace rgb {
+
+
+
+}

@@ -7,6 +7,8 @@
 
 #include "Assertions.h"
 
+namespace rgb {
+
 class LEDChain;
 class Driver;
 class Debug {
@@ -23,6 +25,8 @@ private:
   bool triggered{false};
 
 };
+
+}
 
 
 #endif //RGBLIB_DEBUG_H

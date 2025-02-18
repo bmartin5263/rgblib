@@ -7,10 +7,14 @@
 
 #include "Types.h"
 
+namespace rgb {
+
 struct ClockTime {
   ms millis{};
   ft frames{};
 };
+
+}
 
 
 #endif //RGBLIB_CLOCKTIME_H

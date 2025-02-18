@@ -5,6 +5,8 @@
 #include "Scene.h"
 #include "Log.h"
 
+namespace rgb {
+
 auto Scene::doSetup() -> void {
   setup();
 }
@@ -19,4 +21,11 @@ auto Scene::doDraw() -> void {
 
 auto Scene::doCleanup() -> void {
   cleanup();
+}
+
+auto NullScene::Instance() -> NullScene& {
+  static NullScene instance;
+  return instance;
+}
+
 }

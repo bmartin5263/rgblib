@@ -12,6 +12,8 @@
 #include "LEDChain.h"
 #include "LEDSlice.h"
 
+namespace rgb {
+
 template <u16 N>
 class LEDCircuit : public LEDChain {
 public:
@@ -45,6 +47,8 @@ private:
     return ((u8)(f * range)) % (range + 1);
   }
 };
+
+}
 
 
 #endif //RGBLIB_LEDCIRCUIT_H

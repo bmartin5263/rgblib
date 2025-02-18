@@ -6,6 +6,8 @@
 #include "Util.h"
 #include "led/LEDChain.h"
 
+namespace rgb {
+
 auto BreatheEffect::update() -> void {
 
 }
@@ -62,4 +64,6 @@ auto BreatheEffect::setLowTime(u16 value) -> BreatheEffect& {
 auto BreatheEffect::setSpeed(u16 value) -> BreatheEffect& {
   speed = value;
   return *this;
+}
+
 }

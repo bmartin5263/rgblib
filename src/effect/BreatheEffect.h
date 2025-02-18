@@ -8,6 +8,8 @@
 #include "Types.h"
 #include "Color.h"
 
+namespace rgb {
+
 class LEDChain;
 class BreatheEffect {
 public:
@@ -38,5 +40,7 @@ private:
   float phase{0.0f}; // 0.0 - 1.0
 };
 
+
+}
 
 #endif //RGBLIB_BREATHEEFFECT_H

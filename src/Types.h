@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+namespace rgb {
+
 using i8 = int8_t;
 using i16 = int16_t;
 using i32 = int32_t;
@@ -20,5 +22,9 @@ using u64 = uint64_t;
 
 using ms = u32;
 using ft = u32;
+
+using pin_num = u16;
+
+}
 
 #endif //RGBLIB_TYPES_H

@@ -9,6 +9,8 @@
 #include "Types.h"
 #include "Color.h"
 
+namespace rgb {
+
 class LEDChain;
 
 struct TrailingEffectParameters {
@@ -45,6 +47,8 @@ private:
   u16 phase{0};
   u16 length{10};
 };
+
+}
 
 
 #endif //RGBLIB_TRAILINGEFFECT_H

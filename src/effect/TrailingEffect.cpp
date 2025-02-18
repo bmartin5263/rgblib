@@ -8,6 +8,8 @@
 #include <utility>
 #include "Clock.h"
 
+namespace rgb {
+
 auto TrailingEffect::update() -> void {
 
 }
@@ -67,4 +69,6 @@ auto TrailingEffect::getLength() const -> u16 {
 
 auto TrailingEffect::defaultGenerator(const TrailingEffectParameters& params) -> Color {
   return Color::MAGENTA();
+}
+
 }

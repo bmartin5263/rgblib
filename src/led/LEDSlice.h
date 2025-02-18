@@ -7,6 +7,8 @@
 
 #include "LEDChain.h"
 
+namespace rgb {
+
 struct Color;
 class LEDSlice final : public LEDChain {
 public:
@@ -20,5 +22,7 @@ private:
   u16 _size;
 
 };
+
+}
 
 #endif //RGBLIB_LEDSLICE_H

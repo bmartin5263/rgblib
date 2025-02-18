@@ -6,6 +6,8 @@
 #define RGBLIB_WIFI_H
 
 
+namespace rgb {
+
 class OTASupport {
 public:
   static auto Start() -> void;
@@ -22,5 +24,7 @@ private:
   static auto Instance() -> OTASupport&;
 };
 
+
+}
 
 #endif //RGBLIB_WIFI_H

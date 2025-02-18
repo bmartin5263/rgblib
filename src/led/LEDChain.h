@@ -8,6 +8,8 @@
 #include "Types.h"
 #include "Color.h"
 
+namespace rgb {
+
 struct Point;
 class LEDSlice;
 class LEDChain {
@@ -37,5 +39,7 @@ private:
 using LEDStrip = LEDChain;
 using LEDRing = LEDChain;
 using LEDGrid = LEDChain;
+
+}
 
 #endif //RGBLIB_LEDCHAIN_H

@@ -8,6 +8,8 @@
 #include "Types.h"
 #include "ClockTime.h"
 
+namespace rgb {
+
 class Clock {
 public:
   static auto Init(ft fps) -> void;
@@ -36,8 +38,10 @@ private:
   ft fpsCounter{};
   ms tickStart{};
   ms lastTime{};
-  ft targetFps{};
+  ms maxMsPerFrame{};
 };
+
+}
 
 
 #endif //RGBLIB_CLOCK_H

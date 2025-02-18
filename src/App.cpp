@@ -7,62 +7,38 @@
 #include "App.hpp"
 #include "Scene.h"
 #include "Clock.h"
-#include "Debug.h"
-#include "OTASupport.h"
+#include "network/OTASupport.h"
+#include "network/WebServer.h"
 
-Adafruit_NeoPixel circuit(16, D5, NEO_GRBW + NEO_KHZ800);
-int counter = 0;
+namespace rgb {
 
 App::App(): scene(nullptr), nextScene(nullptr) {
 
 }
 
-auto App::init() -> void {
+auto App::init(Scene* scene) -> void {
   Log::Init();
   OTASupport::Start();
+  WebServer::Start();
   Clock::Init(200);
-  this->scene = nullptr;
 
-  circuit.begin();
-  circuit.setBrightness(10);
-}
-
-auto App::init(Scene& scene) -> void {
-  Log::Init();
-  OTASupport::Start();
-  Clock::Init(200);
-  this->scene = &scene;
+  this->scene = scene;
+  this->scene->setup();
 }
 
 auto App::loop() -> void {
   OTASupport::Update();
   Clock::StartTick();
-//
-//  if (nextScene != nullptr) {
-//    performSceneSwitch();
-//    nextScene = nullptr;
-//  }
 
-  if (scene != nullptr) {
-    update();
-    draw();
+  if (nextScene != nullptr) {
+    performSceneSwitch();
+    nextScene = nullptr;
   }
 
-  circuit.clear();
-  for (int i = 0; i < 16; ++i) {
-    circuit.setPixelColor(i, 0, 0, 0, 0);
-  }
+  update();
+  draw();
 
-  for (int i = 0; i < 6; ++i) {
-    auto c = (counter + i) % 16;
-    circuit.setPixelColor(c, 0, 255, 0, 0);
-  }
-  counter = (counter + 1) % 16;
-
-  circuit.show();
-  delay(100);
-
-//  Clock::StopTick();
+  Clock::StopTick();
 }
 
 auto App::update() -> void {
@@ -90,11 +66,11 @@ auto App::Instance() -> App& {
 }
 
 auto App::Init() -> void {
-  Instance().init();
+  Instance().init(&NullScene::Instance());
 }
 
 auto App::Init(Scene& scene) -> void {
-  Instance().init(scene);
+  Instance().init(&scene);
 }
 
 auto App::Loop() -> void {
@@ -103,5 +79,7 @@ auto App::Loop() -> void {
 
 auto App::SwitchScene(Scene& scene) -> void {
   Instance().switchScene(scene);
+}
+
 }
 

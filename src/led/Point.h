@@ -7,10 +7,14 @@
 
 #include "Types.h"
 
+namespace rgb {
+
 struct Point {
   u16 x{};
   u16 y{};
 };
 
+
+}
 
 #endif //RGBLIB_POINT_H

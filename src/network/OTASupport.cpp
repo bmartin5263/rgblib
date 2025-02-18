@@ -2,9 +2,14 @@
 // Created by Brandon on 2/16/25.
 //
 
+#include "OTASupport.h"
+
 #include <WiFi.h>
 #include <ArduinoOTA.h>
-#include "OTASupport.h"
+#include <ESPAsyncWebServer.h>
+#include "Wireless.h"
+
+namespace rgb {
 
 auto OTASupport::Start() -> void {
   Instance().start();
@@ -14,14 +19,7 @@ auto OTASupport::start() -> void {
   if (started) {
     return;
   }
-
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(SSID, PASSWORD);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("Connection Failed! Rebooting...");
-    delay(10000);
-    ESP.restart();
-  }
+  Wifi::Start();
 
   // Port defaults to 3232
   ArduinoOTA.setPort(3232);
@@ -92,4 +90,6 @@ auto OTASupport::update() -> void {
 auto OTASupport::Instance() -> OTASupport& {
   static OTASupport instance;
   return instance;
+}
+
 }

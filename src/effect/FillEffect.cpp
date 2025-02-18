@@ -6,7 +6,9 @@
 #include "led/LEDChain.h"
 #include "Clock.h"
 
-void FillEffect::draw(LEDChain& chain) {
+namespace rgb {
+
+auto FillEffect::draw(LEDChain& chain) -> void {
   auto time = Clock::Time();
   auto params = FillEffectParameters {
     time,
@@ -31,4 +33,6 @@ auto FillEffect::getColorGenerator() -> FillEffectColorGenerator {
 
 auto FillEffect::defaultGenerator(const FillEffectParameters& params) -> Color {
   return Color::MAGENTA();
+}
+
 }

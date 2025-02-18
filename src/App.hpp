@@ -5,6 +5,8 @@
 #ifndef RGBLIB_APP_H
 #define RGBLIB_APP_H
 
+namespace rgb {
+
 class Scene;
 class App {
 public:
@@ -25,8 +27,7 @@ private:
 
   static auto Instance() -> App&;
 
-  auto init() -> void;
-  auto init(Scene& scene) -> void;
+  auto init(Scene* scene) -> void;
 
   auto loop() -> void;
   auto switchScene(Scene& scene) -> void;
@@ -37,6 +38,8 @@ private:
   Scene* scene{};
   Scene* nextScene{};
 };
+
+}
 
 
 #endif //RGBLIB_APP_H

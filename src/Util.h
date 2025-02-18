@@ -14,6 +14,8 @@
 #define MIN(a, b) \
     ({ auto _a = (a); auto _b = (b); _a < _b ? _a : _b; })
 
+namespace rgb {
+
 constexpr void ExtractBytes(u32 input, u8& byte0, u8& byte1, u8& byte2, u8& byte3) {
   // Extract each byte
   byte0 = (input & 0xFF);        // Extract the least significant byte
@@ -53,6 +55,8 @@ constexpr auto LerpClamp(float a, float b, float t) {
     return b;
   }
   return a + (b - a) * t;
+}
+
 }
 
 #endif //RGBLIB_UTIL_H

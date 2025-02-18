@@ -3,3 +3,7 @@
 //
 
 #include "Point.h"
+
+namespace rgb {
+
+}

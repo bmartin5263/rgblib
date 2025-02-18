@@ -12,6 +12,8 @@
 
 #define Generator [](auto& params)
 
+namespace rgb {
+
 class LEDChain;
 
 struct FillEffectParameters {
@@ -37,5 +39,7 @@ private:
 
 };
 
+
+}
 
 #endif //RGBLIB_FILLEFFECT_H

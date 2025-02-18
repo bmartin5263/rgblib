@@ -4,6 +4,8 @@
 
 #include "LEDSlice.h"
 
+namespace rgb {
+
 LEDSlice::LEDSlice(Color* head, u16 size) :
   _head(head), _size(size)
 {
@@ -15,4 +17,6 @@ auto LEDSlice::size() -> u16 {
 
 auto LEDSlice::head() -> Color* {
   return _head;
+}
+
 }

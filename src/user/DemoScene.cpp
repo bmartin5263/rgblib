@@ -5,6 +5,7 @@
 #include "DemoScene.h"
 #include "Debug.h"
 
+namespace rgb {
 
 auto DemoScene::setup() -> void {
 //  neoPixel.begin();
@@ -51,4 +52,6 @@ auto DemoScene::draw() -> void {
 
 auto DemoScene::cleanup() -> void {
 //  Debug::Instance().setDebugChain(nullptr);
+}
+
 }

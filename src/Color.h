@@ -6,6 +6,8 @@
 #define RGBLIB_COLOR_H
 
 
+namespace rgb {
+
 struct Color {
   float r, g, b, w;
 
@@ -149,6 +151,8 @@ private:
     return {r, g, b};
   }
 };
+
+}
 
 
 #endif //RGBLIB_COLOR_H

@@ -13,6 +13,8 @@
 #include "effect/TrailingEffect.h"
 #include "effect/BreatheEffect.h"
 
+namespace rgb {
+
 class DemoScene : public Scene {
 public:
   auto setup() -> void override;
@@ -33,6 +35,8 @@ private:
 //  LEDRing* ring{&circuit};
 
 };
+
+}
 
 
 #endif //RGBLIB_DEMOSCENE_H

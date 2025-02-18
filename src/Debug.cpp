@@ -6,6 +6,8 @@
 #include "Color.h"
 #include "led/LEDChain.h"
 
+namespace rgb {
+
 auto Debug::trigger(bool value) -> void {
   triggered = value;
 }
@@ -23,4 +25,6 @@ auto Debug::setDebugChain(LEDChain* chain) -> void {
 auto Debug::Instance() -> Debug& {
   static Debug instance;
   return instance;
+}
+
 }
