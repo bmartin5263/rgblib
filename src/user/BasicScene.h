@@ -20,12 +20,12 @@ public:
 private:
   WebServerHandle handle{};
   int speed{200};
-  u8 r1{0};
-  u8 g1{255};
+  u8 r1{255};
+  u8 g1{0};
   u8 b1{0};
-  u8 r2{255};
+  u8 r2{16};
   u8 g2{0};
-  u8 b2{255};
+  u8 b2{0};
 };
 
 }

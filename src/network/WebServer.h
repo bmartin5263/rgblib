@@ -17,8 +17,6 @@ public:
   static auto OnGet(const char* uri, HandlerFunction onRequest) -> WebServerHandle;
 
 private:
-  friend class HandleDeleter;
-
   AsyncWebServer server{config::WEB_SERVER_PORT};
   bool started{false};
 
@@ -28,6 +26,8 @@ private:
   auto start() -> void;
   auto onGet(const char* uri, HandlerFunction onRequest) -> WebServerHandle;
   auto removeHandler(WebHandler& handle) -> void;
+
+  friend class HandleDeleter;
 };
 
 }

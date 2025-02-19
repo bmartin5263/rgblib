@@ -10,17 +10,15 @@ namespace rgb {
 
 class OTASupport {
 public:
-  static auto Start() -> void;
+  static auto Start() -> bool;
   static auto Update() -> void;
 
 private:
   bool started{false};
 
-  auto start() -> void;
+  auto start() -> bool;
   auto update() -> void;
 
-  static const char* SSID;
-  static const char* PASSWORD;
   static auto Instance() -> OTASupport&;
 };
 

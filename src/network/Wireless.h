@@ -10,13 +10,13 @@ namespace rgb {
 
 class Wifi {
 public:
-  static auto Start() -> void;
+  static auto Start() -> bool;
 
 private:
   bool started{false};
 
   static auto Instance() -> Wifi&;
-  auto start() -> void;
+  auto start() -> bool;
 
   static const char* NAME;
   static const char* PASSWORD;

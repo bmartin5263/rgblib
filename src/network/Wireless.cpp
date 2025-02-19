@@ -12,22 +12,24 @@ auto Wifi::Instance() -> Wifi& {
   return instance;
 }
 
-auto Wifi::Start() -> void {
-  Instance().start();
+auto Wifi::Start() -> bool {
+  return Instance().start();
 }
 
-auto Wifi::start() -> void {
+auto Wifi::start() -> bool {
   if (started) {
-    return;
+    return true;
   }
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(NAME, PASSWORD);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("Connection Failed! Retrying...");
-    delay(1000);
-    // TODO - max attempts w/ error handling
+  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    WiFi.disconnect(true, false);
+    return false;
   }
+
   started = true;
+  return started;
 }
+
 }
