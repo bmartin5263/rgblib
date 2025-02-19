@@ -23,7 +23,7 @@ using u64 = uint64_t;
 using ms = u32;
 using ft = u32;
 
-using pin_num = u16;
+using pin_num = i16;
 
 }
 

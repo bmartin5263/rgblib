@@ -6,17 +6,26 @@
 #define RGBLIB_BASICSCENE_H
 
 #include "Scene.h"
+#include "network/WebServerFwd.h"
 
 namespace rgb {
 
 class BasicScene : public Scene {
 public:
-  auto setup() -> void;
-  auto update() -> void;
-  auto draw() -> void;
+  auto setup() -> void override;
+  auto update() -> void override;
+  auto draw() -> void override;
+  auto cleanup() -> void override;
 
 private:
-
+  WebServerHandle handle{};
+  int speed{200};
+  u8 r1{0};
+  u8 g1{255};
+  u8 b1{0};
+  u8 r2{255};
+  u8 g2{0};
+  u8 b2{255};
 };
 
 }

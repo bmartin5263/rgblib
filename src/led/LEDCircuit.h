@@ -17,8 +17,17 @@ namespace rgb {
 template <u16 N>
 class LEDCircuit : public LEDChain {
 public:
-  LEDCircuit(Adafruit_NeoPixel& impl): impl(&impl) {
+  explicit LEDCircuit(pin_num pin, neoPixelType type = NEO_GRBW + NEO_KHZ800): data{}, impl(N, pin, type) {
 
+  }
+
+  auto start() -> void {
+    impl.begin();
+  }
+
+  auto setBrightness(u8 brightness) -> LEDChain& {
+    impl.setBrightness(brightness);
+    return *this;
   }
 
   auto head() -> Color* override {
@@ -30,22 +39,16 @@ public:
   }
 
   auto display() -> void {
-    impl->clear();
-    auto c = head();
     for (u16 i = 0; i < N; ++i) {
-      impl->setPixelColor(FloatToByte(c->r), FloatToByte(c->g), FloatToByte(c->b), FloatToByte(c->w));
-      ++c;
+      Color& c = data[i];
+      impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
     }
-    impl->show();
+    impl.show();
   }
 
 private:
-  Adafruit_NeoPixel* impl;
   Color data[N];
-
-  static auto FloatToByte(float f, u8 range = 255) -> u8 {
-    return ((u8)(f * range)) % (range + 1);
-  }
+  Adafruit_NeoPixel impl;
 };
 
 }

@@ -18,15 +18,22 @@ auto LEDChain::fill(const Color& color) -> void {
 }
 
 auto LEDChain::get(u16 pixel) -> Color* {
-  return &head()[pixel];
+  ASSERT(pixel >= 0, "Pixel is negative");
+  ASSERT(pixel < size(), "Pixel is out of bounds");
+  return head() + pixel;
 }
 
 auto LEDChain::get(Point point) -> Color* {
-  return &head()[(size() * point.x) + point.y];
+  u16 pixel = ((size() * point.x) + point.y);
+  ASSERT(pixel >= 0, "Pixel is negative");
+  ASSERT(pixel < size(), "Pixel is out of bounds");
+  return head() + pixel;
 }
 
 auto LEDChain::set(u16 pixel, const Color& color) -> void {
-  this->operator[](pixel) = color;
+  ASSERT(pixel >= 0, "Pixel is negative");
+  ASSERT(pixel < size(), "Pixel is out of bounds");
+  *get(pixel) = color;
 }
 
 auto LEDChain::set(Point point, const Color& color) -> void {

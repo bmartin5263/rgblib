@@ -31,7 +31,7 @@ private:
 
   auto loop() -> void;
   auto switchScene(Scene& scene) -> void;
-  auto performSceneSwitch() -> void;
+  auto checkForSceneSwitch() -> void;
   auto update() -> void;
   auto draw() -> void;
 

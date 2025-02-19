@@ -4,7 +4,7 @@
 
 #include <Adafruit_NeoPixel.h>
 
-#include "App.hpp"
+#include "App.h"
 #include "Scene.h"
 #include "Clock.h"
 #include "network/OTASupport.h"
@@ -17,10 +17,10 @@ App::App(): scene(nullptr), nextScene(nullptr) {
 }
 
 auto App::init(Scene* scene) -> void {
-  Log::Init();
+  Log.init();
   OTASupport::Start();
   WebServer::Start();
-  Clock::Init(200);
+  Clock::Init(config::FPS);
 
   this->scene = scene;
   this->scene->setup();
@@ -30,11 +30,7 @@ auto App::loop() -> void {
   OTASupport::Update();
   Clock::StartTick();
 
-  if (nextScene != nullptr) {
-    performSceneSwitch();
-    nextScene = nullptr;
-  }
-
+  checkForSceneSwitch();
   update();
   draw();
 
@@ -54,10 +50,13 @@ auto App::switchScene(Scene& scene) -> void {
   this->nextScene = &scene;
 }
 
-auto App::performSceneSwitch() -> void {
-  this->scene->cleanup();
-  this->scene = nextScene;
-  this->scene->setup();
+auto App::checkForSceneSwitch() -> void {
+  if (nextScene != nullptr) {
+    scene->cleanup();
+    scene = nextScene;
+    scene->setup();
+    nextScene = nullptr;
+  }
 }
 
 auto App::Instance() -> App& {

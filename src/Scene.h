@@ -5,7 +5,7 @@
 #ifndef RGBLIB_SCENE_H
 #define RGBLIB_SCENE_H
 
-#include <Log.h>
+#include "Log.h"
 
 namespace rgb {
 class Scene {

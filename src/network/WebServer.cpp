@@ -21,17 +21,28 @@ auto WebServer::start() -> void {
     return;
   }
   Wifi::Start();
-
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
-    Serial.println("Arduino Nano ESP32 Web Server: New request received:");
-    Serial.println("GET /");
-    request->send(200, "text/html", "<html><body><h1>Hello, Arduino Nano ESP32!</h1></body></html>");
-  });
-
-  // Start the server
   server.begin();
-
   started = true;
+}
+
+auto WebServer::OnGet(const char* uri, HandlerFunction onRequest) -> WebServerHandle {
+  return Instance().onGet(uri, onRequest);
+}
+
+auto WebServer::onGet(const char* uri, HandlerFunction onRequest) -> WebServerHandle {
+  return WebServerHandle { &server.on(uri, HTTP_GET, onRequest) };
+}
+
+auto WebServer::RemoveHandler(WebHandler& handle) -> void {
+  Instance().removeHandler(handle);
+}
+
+auto WebServer::removeHandler(WebHandler& handle) -> void {
+  server.removeHandler(&handle);
+}
+
+auto HandleDeleter::operator()(WebHandler* ptr) -> void {
+  WebServer::RemoveHandler(*ptr);
 }
 
 }

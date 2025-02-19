@@ -11,13 +11,13 @@
 #define ASSERT(condition, message) \
         do { \
             if (!(condition)) {    \
-                Log::InfoLn("Assertion failed: (" #condition ")"); \
-                Log::Info("File: "); \
-                Log::Info(__FILE__); \
-                Log::Info(", Line: "); \
-                Log::InfoLn((u32) __LINE__); \
-                Log::Info("Message: "); \
-                Log::InfoLn(message);                              \
+                Log.infoLn("Assertion failed: (" #condition ")"); \
+                Log.info("File: "); \
+                Log.info(__FILE__); \
+                Log.info(", Line: "); \
+                Log.infoLn((u32) __LINE__); \
+                Log.info("Message: "); \
+                Log.infoLn(message);                              \
                 Debug::Instance().trigger(true);                   \
             } \
         } while (false)

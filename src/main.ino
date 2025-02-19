@@ -1,4 +1,4 @@
-#include "App.hpp"
+#include "App.h"
 #include "user/BasicScene.h"
 
 using namespace rgb;

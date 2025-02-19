@@ -10,98 +10,57 @@
 
 namespace rgb {
 
-class Log {
+class Log2 {
 public:
 
-  static auto Init(u32 baud = 9600) -> Log& {
-    return Instance().init(baud);
-  }
-
-  static auto InfoLn(const char* msg) -> Log& {
-    return Instance().infoLn(msg);
-  }
-
-  static auto Info(const char* msg) -> Log& {
-    return Instance().info(msg);
-  }
-
-  static auto InfoLn(i32 msg) -> Log& {
-    return Instance().infoLn(msg);
-  }
-
-  static auto Info(i32 msg) -> Log& {
-    return Instance().info(msg);
-  }
-
-  static auto InfoLn(float msg) -> Log& {
-    return Instance().infoLn(msg);
-  }
-
-  static auto Info(float msg) -> Log& {
-    return Instance().info(msg);
-  }
-
-  static auto InfoLn(u32 msg) -> Log& {
-    return Instance().infoLn(msg);
-  }
-
-  static auto Info(u32 msg) -> Log& {
-    return Instance().info(msg);
-  }
-
-  auto init(u32 baud) -> Log& {
+  auto init(u32 baud = 9600) const -> const Log2& {
     Serial.begin(baud);
     return *this;
   }
 
-  auto infoLn(const char* msg) -> Log& {
+  auto infoLn(const char* msg) const -> const Log2& {
     Serial.println(msg);
     return *this;
   }
 
-  auto info(const char* msg) -> Log& {
+  auto info(const char* msg) const -> const Log2& {
     Serial.print(msg);
     return *this;
   }
 
-  auto infoLn(i32 msg) -> Log& {
+  auto infoLn(i32 msg) const -> const Log2& {
     Serial.println(msg);
     return *this;
   }
 
-  auto info(i32 msg) -> Log& {
+  auto info(i32 msg) const -> const Log2& {
     Serial.print(msg);
     return *this;
   }
 
-  auto infoLn(float msg) -> Log& {
+  auto infoLn(float msg) const -> const Log2& {
     Serial.println(msg);
     return *this;
   }
 
-  auto info(float msg) -> Log& {
+  auto info(float msg) const -> const Log2& {
     Serial.print(msg);
     return *this;
   }
 
-  auto infoLn(u32 msg) -> Log& {
+  auto infoLn(u32 msg) const -> const Log2& {
     Serial.println(msg);
     return *this;
   }
 
-  auto info(u32 msg) -> Log& {
+  auto info(u32 msg) const -> const Log2& {
     Serial.print(msg);
     return *this;
   }
-
-private:
-  static Log& Instance() {
-    static Log instance;
-    return instance;
-  }
-
 
 };
+
+constexpr Log2 Log = {};
 
 }
 

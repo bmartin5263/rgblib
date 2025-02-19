@@ -5,6 +5,8 @@
 #ifndef RGBLIB_COLOR_H
 #define RGBLIB_COLOR_H
 
+#include "Types.h"
+#include "Util.h"
 
 namespace rgb {
 
@@ -25,6 +27,10 @@ struct Color {
 
   constexpr Color(float r, float g, float b, float w): r(r), g(g), b(b), w(w) {
 
+  }
+
+  static constexpr auto FromBytes(u8 r, u8 g, u8 b, u8 w = 0) {
+    return Color{ByteToFloat(r), ByteToFloat(g), ByteToFloat(b), ByteToFloat(w)};
   }
 
   static constexpr auto RED() -> Color {
@@ -115,7 +121,7 @@ struct Color {
     return {intensity, 0, intensity, 0};
   }
 
-  static constexpr auto WHITE(float intensity) -> Color {
+  static constexpr auto WHITE(float intensity = 1.0) -> Color {
     return {0, 0, 0, intensity};
   }
 
