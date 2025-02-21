@@ -53,6 +53,10 @@ auto BasicScene::cleanup() -> void {
 }
 
 auto BasicScene::update() -> void {
+  button1.update();
+  button2.update();
+  button3.update();
+  button4.update();
   ++frame;
   if (frame >= speed) {
     counter = (counter + 1) % 16;
