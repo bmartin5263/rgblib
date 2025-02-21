@@ -5,6 +5,7 @@
 #ifndef RGBLIB_TYPES_H
 #define RGBLIB_TYPES_H
 
+#include <optional>
 #include <cstdint>
 
 namespace rgb {
@@ -20,10 +21,11 @@ using u16 = uint16_t;
 using u32 = uint32_t;
 using u64 = uint64_t;
 
-using ms = u32;
-using ft = u32;
-
-using pin_num = i16;
+using milliseconds = unsigned long;
+using microseconds = unsigned long;
+using frame_time = unsigned long;
+using pin_num = i8;
+using cstring = const char*;
 
 }
 

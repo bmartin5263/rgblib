@@ -2,77 +2,50 @@
 // Created by Brandon on 2/17/25.
 //
 
-#include <Arduino.h>
-#include <Adafruit_NeoPixel.h>
-
-// D2 = D5
-
-#include "WebServer.h"
 #include "BasicScene.h"
-#include "sensor/PushButton.h"
 #include "network/WebServer.h"
-#include "led/LEDCircuit.h"
 
 namespace rgb {
-
-LEDCircuit<16> circuit{D2};
 
 int counter = 0;
 int frame = 0;
 
-PushButton button1{D4};
-PushButton button2{D6};
-PushButton button3{D9};
-PushButton button4{D12};
+using ParameterMapping2 = std::pair<cstring, void (*)(BasicScene& scene, String& s)>;
+
+constexpr std::pair<cstring, void (*)(BasicScene& scene, String& s)> x = { "speed", [](BasicScene& scene, String& s){ scene.speed = s.toInt(); } };
+
+constexpr ParameterTable<BasicScene, 7> PARAMETER_MAP {{
+  { "speed", [](BasicScene& scene, const String& s){ scene.speed = s.toInt(); } },
+  { "r1", [](BasicScene& scene, const String& s){ scene.r1 = s.toInt(); } },
+  { "g1", [](BasicScene& scene, const String& s){ scene.g1 = s.toInt(); } },
+  { "b1", [](BasicScene& scene, const String& s){ scene.b1 = s.toInt(); } },
+  { "r2", [](BasicScene& scene, const String& s){ scene.r2 = s.toInt(); } },
+  { "g2", [](BasicScene& scene, const String& s){ scene.g2 = s.toInt(); } },
+  { "b2", [](BasicScene& scene, const String& s){ scene.b2 = s.toInt(); } },
+}};
 
 auto BasicScene::setup() -> void {
-//  circuit.begin();
-//  circuit.setBrightness(10);
-
-  circuit.setBrightness(15);
+  circuit.setBrightness(brightness);
   circuit.start();
-  button1.init();
 
   handle = WebServer::OnGet("/", [this](AsyncWebServerRequest* request){
-    if (request->hasParam("speed")) {
-      auto param = request->getParam("speed");
-      auto valueStr = param->value();
-      speed = valueStr.toInt();
+    Log.infoLn("OnGet() /");
+    for (const auto& [parameterName, receiver] : PARAMETER_MAP) {
+      if (request->hasParam(parameterName)) {
+        auto param = request->getParam(parameterName);
+        auto valueStr = param->value();
+        receiver(*this, valueStr);
+      }
     }
-
-    if (request->hasParam("r1")) {
-      auto param = request->getParam("r1");
-      auto valueStr = param->value();
-      r1 = valueStr.toInt();
-    }
-    if (request->hasParam("g1")) {
-      auto param = request->getParam("g1");
-      auto valueStr = param->value();
-      g1 = valueStr.toInt();
-    }
-    if (request->hasParam("b1")) {
-      auto param = request->getParam("b1");
-      auto valueStr = param->value();
-      b1 = valueStr.toInt();
-    }
-    if (request->hasParam("r2")) {
-      auto param = request->getParam("r2");
-      auto valueStr = param->value();
-      r2 = valueStr.toInt();
-    }
-    if (request->hasParam("g2")) {
-      auto param = request->getParam("g2");
-      auto valueStr = param->value();
-      g2 = valueStr.toInt();
-    }
-    if (request->hasParam("b2")) {
-      auto param = request->getParam("b2");
-      auto valueStr = param->value();
-      b2 = valueStr.toInt();
-    }
-
     request->send(200);
   });
+
+  handle2 = WebServer::ParameterServer("/params", *this, PARAMETER_MAP);
+
+  button1.onPress([this]() { r2 -= 3; });
+  button2.onPress([this]() { r2 += 3; });
+  button3.onPress([this]() { brightness -= 3; });
+  button4.onPress([this]() { brightness += 3; });
 }
 
 auto BasicScene::cleanup() -> void {
@@ -80,26 +53,6 @@ auto BasicScene::cleanup() -> void {
 }
 
 auto BasicScene::update() -> void {
-  auto state = button1.update();
-  if (state == ButtonState::PRESS) {
-    Log.infoLn("Press1");
-  }
-
-  state = button2.update();
-  if (state == ButtonState::PRESS) {
-    Log.infoLn("Press2");
-  }
-
-  state = button3.update();
-  if (state == ButtonState::PRESS) {
-    Log.infoLn("Press3");
-  }
-
-  state = button4.update();
-  if (state == ButtonState::PRESS) {
-    Log.infoLn("Press4");
-  }
-
   ++frame;
   if (frame >= speed) {
     counter = (counter + 1) % 16;

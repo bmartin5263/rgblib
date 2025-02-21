@@ -13,7 +13,7 @@ auto Clock::Instance() -> Clock& {
   return instance;
 }
 
-auto Clock::init(ft targetFps) -> void {
+auto Clock::init(frame_time targetFps) -> void {
   this->maxMsPerFrame = 1000 / targetFps;
 }
 
@@ -32,17 +32,18 @@ auto Clock::startTick() -> void {
   ++frameTime;
 }
 
-auto Clock::frames() const -> ft {
+auto Clock::frames() const -> frame_time {
   return frameTime;
 }
 
-auto Clock::milli() const -> ms {
+auto Clock::milli() const -> milliseconds {
   return millis();
 }
 
 auto Clock::time() const -> ClockTime {
   return {milli(), frameTime};
 }
+
 
 auto Clock::stopTick() const -> void {
   auto stop = milli();
@@ -55,7 +56,7 @@ auto Clock::stopTick() const -> void {
   delay(sleep);
 }
 
-auto Clock::Init(ft fps) -> void {
+auto Clock::Init(frame_time fps) -> void {
   Instance().init(fps);
 }
 
@@ -63,11 +64,11 @@ auto Clock::StartTick() -> void {
   Instance().startTick();
 }
 
-auto Clock::Frames() -> ft {
+auto Clock::Frames() -> frame_time {
   return Instance().frames();
 }
 
-auto Clock::Milli() -> ms {
+auto Clock::Milli() -> milliseconds {
   return Instance().milli();
 }
 
@@ -77,6 +78,10 @@ auto Clock::Time() -> ClockTime {
 
 auto Clock::StopTick() -> void {
   Instance().stopTick();
+}
+
+auto Clock::micro() const -> microseconds {
+  return micros();
 }
 
 }

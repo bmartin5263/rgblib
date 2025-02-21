@@ -12,33 +12,35 @@ namespace rgb {
 
 class Clock {
 public:
-  static auto Init(ft fps) -> void;
+  static auto Init(frame_time fps) -> void;
 
   static auto StartTick() -> void;
   static auto StopTick() -> void;
 
-  static auto Milli() -> ms;
-  static auto Frames() -> ft;
+  static auto Micro() -> microseconds;
+  static auto Milli() -> milliseconds;
+  static auto Frames() -> frame_time;
   static auto Time() -> ClockTime;
 
 private:
   Clock() = default;
-  auto init(ft targetFps) -> void;
+  auto init(frame_time targetFps) -> void;
 
   static auto Instance() -> Clock&;
 
   auto startTick() -> void;
   auto stopTick() const -> void;
 
-  [[nodiscard]] auto milli() const -> ms;
-  [[nodiscard]] auto frames() const -> ft;
+  [[nodiscard]] auto milli() const -> milliseconds ;
+  [[nodiscard]] auto frames() const -> frame_time;
+  [[nodiscard]] auto micro() const -> microseconds ;
   [[nodiscard]] auto time() const -> ClockTime;
 
-  ft frameTime{};
-  ft fpsCounter{};
-  ms tickStart{};
-  ms lastTime{};
-  ms maxMsPerFrame{};
+  frame_time frameTime{};
+  frame_time fpsCounter{};
+  milliseconds tickStart{};
+  milliseconds lastTime{};
+  milliseconds maxMsPerFrame{};
 };
 
 }

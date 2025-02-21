@@ -6,25 +6,28 @@
 #define RGBLIB_PUSHBUTTON_H
 
 
+#include <memory>
 #include "Types.h"
+#include "Pin.h"
 #include "ButtonState.h"
 
 namespace rgb {
 
 class PushButton {
+  using PressCallback = std::function<void()>;
+
 public:
-  PushButton(pin_num pin);
-  auto init() -> PushButton&;
+  explicit PushButton(pin_num pin);
+  auto onPress(PressCallback callback) noexcept -> PushButton&;
+
   auto update() -> ButtonState;
-  auto getState() -> ButtonState;
-  auto wasPressed() -> bool;
-  auto isHeldDown() -> bool;
+
+  auto getState() const noexcept -> ButtonState;
 
 private:
   ButtonState state;
-  u16 timeInState;
-  u16 repeatDelay;
-  pin_num pin;
+  Pin pin;
+  PressCallback onPressCallback;
 };
 
 }

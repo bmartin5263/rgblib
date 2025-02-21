@@ -3,6 +3,7 @@
 //
 
 #include "Wireless.h"
+#include "Log.h"
 #include <WiFi.h>
 
 namespace rgb {
@@ -27,6 +28,8 @@ auto Wifi::start() -> bool {
     WiFi.disconnect(true, false);
     return false;
   }
+
+  Log.infoLn("WIFI Started");
 
   started = true;
   return started;

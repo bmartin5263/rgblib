@@ -3,6 +3,8 @@
 //
 
 #include "WebServer.h"
+
+#include <utility>
 #include "Wireless.h"
 #include "Assertions.h"
 
@@ -15,11 +17,16 @@ auto WebServer::start() -> void {
   Wifi::Start();
   server.begin();
   started = true;
+
+  Log.infoLn("WebServer Started");
 }
 
 auto WebServer::onGet(const char* uri, HandlerFunction onRequest) -> WebServerHandle {
+  Log.infoLn("OnGet Setup");
   ASSERT(started, "WebServer is not started");
-  return WebServerHandle { &server.on(uri, HTTP_GET, onRequest) };
+  auto h = &server.on(uri, HTTP_GET, std::move(onRequest));
+  Log.infoLn("Activating WebHandle");
+  return WebServerHandle { h };
 }
 
 auto WebServer::removeHandler(WebHandler& handle) -> void {
@@ -38,7 +45,7 @@ auto WebServer::Start() -> void {
 
 
 auto WebServer::OnGet(const char* uri, HandlerFunction onRequest) -> WebServerHandle {
-  return Instance().onGet(uri, onRequest);
+  return Instance().onGet(uri, std::move(onRequest));
 }
 
 
@@ -48,6 +55,7 @@ auto WebServer::RemoveHandler(WebHandler& handle) -> void {
 
 
 auto HandleDeleter::operator()(WebHandler* ptr) -> void {
+  Log.infoLn("Shutting Down WebHandle");
   WebServer::RemoveHandler(*ptr);
 }
 

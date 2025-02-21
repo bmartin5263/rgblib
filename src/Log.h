@@ -10,57 +10,28 @@
 
 namespace rgb {
 
-class Log2 {
+class Logger {
 public:
 
-  auto init(u32 baud = 9600) const -> const Log2& {
+  auto init(u32 baud = 9600) const -> void {
     Serial.begin(baud);
-    return *this;
   }
 
-  auto infoLn(const char* msg) const -> const Log2& {
-    Serial.println(msg);
-    return *this;
-  }
-
-  auto info(const char* msg) const -> const Log2& {
+  template<class T>
+  auto info(T msg) const -> const Logger& {
     Serial.print(msg);
     return *this;
   }
 
-  auto infoLn(i32 msg) const -> const Log2& {
+  template<class T>
+  auto infoLn(T msg) const -> const Logger& {
     Serial.println(msg);
-    return *this;
-  }
-
-  auto info(i32 msg) const -> const Log2& {
-    Serial.print(msg);
-    return *this;
-  }
-
-  auto infoLn(float msg) const -> const Log2& {
-    Serial.println(msg);
-    return *this;
-  }
-
-  auto info(float msg) const -> const Log2& {
-    Serial.print(msg);
-    return *this;
-  }
-
-  auto infoLn(u32 msg) const -> const Log2& {
-    Serial.println(msg);
-    return *this;
-  }
-
-  auto info(u32 msg) const -> const Log2& {
-    Serial.print(msg);
     return *this;
   }
 
 };
 
-constexpr Log2 Log = {};
+constexpr Logger Log = {};
 
 }
 

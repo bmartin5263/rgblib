@@ -3,26 +3,34 @@
 //
 
 #include <Arduino.h>
+
+#include <utility>
 #include "PushButton.h"
+#include "Log.h"
 
 namespace rgb {
 
 PushButton::PushButton(pin_num pin)
-  : state(ButtonState::UNPRESSED), timeInState(0), repeatDelay(0), pin(pin)
+  : state(ButtonState::UNPRESSED), pin(pin), onPressCallback()
 {
+  pinMode(pin, INPUT);
 }
 
-auto PushButton::init() -> PushButton& {
-  pinMode(pin, INPUT);
+auto PushButton::onPress(PressCallback callback) noexcept -> PushButton& {
+  onPressCallback = std::move(callback);
   return *this;
 }
 
 auto PushButton::update() -> ButtonState {
-  timeInState += 1;
-
-  auto pressed = digitalRead(pin);
+  auto pressed = digitalRead(*pin);
   if (state == ButtonState::UNPRESSED || state == ButtonState::UNPRESS) {
-    state = pressed ? ButtonState::PRESS : ButtonState::UNPRESSED;
+    if (pressed) {
+      onPressCallback();
+      state = ButtonState::PRESS;
+    }
+    else {
+      state = ButtonState::UNPRESSED;
+    }
   }
   else if (state == ButtonState::PRESS || state == ButtonState::PRESSED) {
     state = pressed ? ButtonState::PRESSED : ButtonState::UNPRESS;
@@ -31,16 +39,8 @@ auto PushButton::update() -> ButtonState {
   return state;
 }
 
-auto PushButton::getState() -> ButtonState {
+auto PushButton::getState() const noexcept -> ButtonState {
   return state;
-}
-
-auto PushButton::isHeldDown() -> bool {
-  return wasPressed() || state == ButtonState::PRESSED;
-}
-
-auto PushButton::wasPressed() -> bool {
-  return state == ButtonState::PRESS;
 }
 
 }

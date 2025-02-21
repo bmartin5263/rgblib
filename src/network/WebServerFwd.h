@@ -5,11 +5,13 @@
 #ifndef RGBLIB_WEBSERVERFWD_H
 #define RGBLIB_WEBSERVERFWD_H
 
+#include <utility>
 #include "ESPAsyncWebServer.h"
+#include "Types.h"
 
 namespace rgb {
 
-class HandleDeleter;
+struct HandleDeleter;
 using HandlerFunction = ArRequestHandlerFunction;
 using WebHandler = AsyncWebHandler;
 
@@ -19,6 +21,12 @@ struct HandleDeleter {
 };
 
 using WebServerHandle = std::unique_ptr<WebHandler, HandleDeleter>;
+
+template<typename T>
+using ParameterMapping = std::pair<cstring, void (*)(T& scene, const String& s)>;
+
+template<typename T, int N>
+using ParameterTable = std::array<ParameterMapping<T>, N>;
 
 }
 
