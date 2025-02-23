@@ -9,11 +9,6 @@ namespace rgb {
 
 int counter = 0;
 int frame = 0;
-
-using ParameterMapping2 = std::pair<cstring, void (*)(BasicScene& scene, String& s)>;
-
-constexpr std::pair<cstring, void (*)(BasicScene& scene, String& s)> x = { "speed", [](BasicScene& scene, String& s){ scene.speed = s.toInt(); } };
-
 constexpr ParameterTable<BasicScene, 7> PARAMETER_MAP {{
   { "speed", [](BasicScene& scene, const String& s){ scene.speed = s.toInt(); } },
   { "r1", [](BasicScene& scene, const String& s){ scene.r1 = s.toInt(); } },

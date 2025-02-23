@@ -23,9 +23,4 @@ auto Scene::doCleanup() -> void {
   cleanup();
 }
 
-auto NullScene::Instance() -> NullScene& {
-  static NullScene instance;
-  return instance;
-}
-
 }

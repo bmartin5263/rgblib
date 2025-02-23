@@ -1,9 +1,9 @@
 #include "App.h"
-#include "user/BasicScene.h"
+#include "user/RpmDisplay.h"
 
 using namespace rgb;
 
-BasicScene scene;
+RpmDisplay scene;
 
 void setup() {
   App::Init(scene);

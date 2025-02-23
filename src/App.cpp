@@ -6,13 +6,14 @@
 
 #include "App.h"
 #include "Scene.h"
+#include "NullScene.h"
 #include "Clock.h"
 #include "network/OTASupport.h"
 #include "network/WebServer.h"
 
 namespace rgb {
 
-App::App(): scene(nullptr), nextScene(nullptr) {
+App::App(): scene(&NullScene::Instance()), nextScene(nullptr) {
 
 }
 
@@ -23,7 +24,7 @@ auto App::init(Scene* scene) -> void {
   Clock::Init(config::FPS);
 
   this->scene = scene;
-  this->scene->setup();
+  this->scene->doSetup();
 }
 
 auto App::loop() -> void {
@@ -38,12 +39,12 @@ auto App::loop() -> void {
 }
 
 auto App::update() -> void {
-  scene->update();
+  scene->doUpdate();
 //  Debug::Instance().update();
 }
 
 auto App::draw() -> void {
-  scene->draw();
+  scene->doDraw();
 }
 
 auto App::switchScene(Scene& scene) -> void {
@@ -52,9 +53,9 @@ auto App::switchScene(Scene& scene) -> void {
 
 auto App::checkForSceneSwitch() -> void {
   if (nextScene != nullptr) {
-    scene->cleanup();
+    scene->doCleanup();
     scene = nextScene;
-    scene->setup();
+    scene->doSetup();
     nextScene = nullptr;
   }
 }

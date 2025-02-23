@@ -35,8 +35,8 @@ private:
   auto update() -> void;
   auto draw() -> void;
 
-  Scene* scene{};
-  Scene* nextScene{};
+  Scene* scene;
+  Scene* nextScene;
 };
 
 }

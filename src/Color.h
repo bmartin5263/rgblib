@@ -33,11 +33,7 @@ struct Color {
     return Color{ByteToFloat(r), ByteToFloat(g), ByteToFloat(b), ByteToFloat(w)};
   }
 
-  static constexpr auto RED() -> Color {
-    return {1.0f, 0, 0, 0};
-  }
-
-  static constexpr auto RED(float intensity) -> Color {
+  static constexpr auto RED(float intensity = 1.0f) -> Color {
     return {intensity, 0, 0, 0};
   }
 
@@ -57,12 +53,8 @@ struct Color {
     return {1.0f, 215, 0, 0};
   }
 
-  static constexpr auto YELLOW(float intensity) -> Color {
+  static constexpr auto YELLOW(float intensity = 1.0f) -> Color {
     return {intensity, intensity, 0, 0};
-  }
-
-  static constexpr auto YELLOW() -> Color {
-    return {1.0f, 1.0f, 0, 0};
   }
 
   static constexpr auto LIME() -> Color {
@@ -73,11 +65,9 @@ struct Color {
     return {0, 1.0f, 127, 0};
   }
 
-  static constexpr auto GREEN() -> Color {
-    return {0, 1.0f, 0, 0};
-  }
+  static constexpr auto GREEN(int intensity) = delete;
 
-  static constexpr auto GREEN(float intensity) -> Color {
+  static constexpr auto GREEN(float intensity = 1.0f) -> Color {
     return {0, intensity, 0, 0};
   }
 
@@ -85,19 +75,11 @@ struct Color {
     return {127, 1.0f, 212, 0};
   }
 
-  static constexpr auto CYAN() -> Color {
-    return {0, 1.0f, 1.0f, 0};
-  }
-
-  static constexpr auto CYAN(float intensity) -> Color {
+  static constexpr auto CYAN(float intensity = 1.0f) -> Color {
     return {0, intensity, intensity, 0};
   }
 
-  static constexpr auto BLUE() -> Color {
-    return {0, 0, 1.0f, 0};
-  }
-
-  static constexpr auto BLUE(float intensity) -> Color {
+  static constexpr auto BLUE(float intensity = 1.0f) -> Color {
     return {0, 0, intensity, 0};
   }
 
@@ -113,11 +95,7 @@ struct Color {
     return {75, 0, 130, 0};
   }
 
-  static constexpr auto MAGENTA() -> Color {
-    return {1.0f, 0, 1.0f, 0};
-  }
-
-  static constexpr auto MAGENTA(float intensity) -> Color {
+  static constexpr auto MAGENTA(float intensity = 1.0f) -> Color {
     return {intensity, 0, intensity, 0};
   }
 
