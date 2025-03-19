@@ -10,8 +10,8 @@
 namespace rgb {
 
 struct ClockTime {
-  milliseconds millis{};
-  frame_time frames{};
+  milliseconds milli{};
+  frames frame{};
 };
 
 }

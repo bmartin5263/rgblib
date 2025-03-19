@@ -341,7 +341,7 @@ byte COBD::begin()
 	long baudrates[] = {115200, 38400};
 	byte version = 0;
 	for (byte n = 0; n < sizeof(baudrates) / sizeof(baudrates[0]) && version == 0; n++) {
-		OBDUART.begin(baudrates[n]);
+		OBDUART.begin(baudrates[n], SERIAL_8N1, RX, TX);
 		version = getVersion(); 
 	}
 	return version;	
@@ -366,6 +366,7 @@ byte COBD::getVersion()
 
 byte COBD::receive(char* buffer, byte bufsize, int timeout)
 {
+  Serial.println("receive");
 	unsigned char n = 0;
 	unsigned long startTime = millis();
 	char c = 0;

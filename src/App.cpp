@@ -19,6 +19,7 @@ App::App(): scene(&NullScene::Instance()), nextScene(nullptr) {
 
 auto App::init(Scene* scene) -> void {
   Log.init();
+  Log.infoLn("Logging Started");
   OTASupport::Start();
   WebServer::Start();
   Clock::Init(config::FPS);
@@ -28,6 +29,7 @@ auto App::init(Scene* scene) -> void {
 }
 
 auto App::loop() -> void {
+  Log.infoLn("Loop");
   OTASupport::Update();
   Clock::StartTick();
 

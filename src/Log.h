@@ -25,6 +25,8 @@ public:
 
   template<class T>
   auto infoLn(T msg) const -> const Logger& {
+    Serial.print(millis());
+    Serial.print(": ");
     Serial.println(msg);
     return *this;
   }

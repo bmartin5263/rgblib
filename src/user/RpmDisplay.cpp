@@ -20,6 +20,7 @@ auto RpmDisplay::setup() -> void {
   Log.infoLn("RPM setup");
   circuit.setBrightness(masterBrightness);
   handle = WebServer::ParameterServer("/params", *this, PARAMETER_MAP);
+  vehicle.connect();
 }
 
 auto RpmDisplay::update() -> void {

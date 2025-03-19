@@ -8,6 +8,7 @@
 #include "Scene.h"
 #include "led/LEDCircuit.h"
 #include "network/WebServerFwd.h"
+#include "sensor/Vehicle.h"
 
 namespace rgb {
 
@@ -20,6 +21,7 @@ public:
 private:
   LEDCircuit<16> circuit{D2};
   WebServerHandle handle{};
+  Vehicle vehicle{};
 
 public:
   std::string colorMap{"gggyyyyyrr"};

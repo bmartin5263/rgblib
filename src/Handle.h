@@ -27,7 +27,15 @@ struct Handle {
     return opt.value();
   }
 
-  auto reset() noexcept -> void {
+  auto get() noexcept -> T& {
+    return opt.value();
+  }
+
+  auto isSet() -> bool {
+    return opt.has_value();
+  }
+
+  auto destroy() noexcept -> void {
     if (opt) {
       D()(*opt);
     }
@@ -35,7 +43,7 @@ struct Handle {
   }
 
   auto reset(T newValue) noexcept -> void {
-    reset();
+    destroy();
     opt = newValue;
   }
 

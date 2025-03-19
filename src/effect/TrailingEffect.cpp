@@ -17,8 +17,8 @@ auto TrailingEffect::update() -> void {
 auto TrailingEffect::draw(LEDChain& chain) -> void {
   auto clockTime = Clock::Time();
   auto params = TrailingEffectParameters {
-    clockTime.millis,
-    clockTime.frames,
+    0,
+    0,
     static_cast<i16>(phase),
     static_cast<i16>(speed),
     &chain,
