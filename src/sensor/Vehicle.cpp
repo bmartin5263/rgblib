@@ -11,25 +11,26 @@ auto OBDDestroyer::operator()(COBD& c) const noexcept -> void {
 }
 
 auto Vehicle::connect() -> bool {
-  Log.infoLn("connect()");
+  Log.infoLn("Vehicle connect()");
   if (obd.isSet() && obd.get().getState() == OBD_STATES::OBD_CONNECTED) {
-    Log.infoLn("already connected");
+    Log.infoLn("Vehicle already connected");
     return true;
   }
 
   obd.reset({});
 
   if (!obd.get().begin()) {
-    Log.infoLn("begin() failed");
+    Log.infoLn("Vehicle begin() failed");
     return false;
   }
 
   if (!obd.get().init()) {
-    Log.infoLn("init() failed");
+    Log.infoLn("Vehicle init() failed");
     return false;
   }
 
-  Log.infoLn("ready");
+  Log.infoLn("Vehicle ready");
+  digitalWrite(LED_RED, LOW);
 
   return true;
 }

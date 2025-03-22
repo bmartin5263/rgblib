@@ -21,6 +21,7 @@ auto PushButton::onPress(PressCallback callback) noexcept -> PushButton& {
   return *this;
 }
 
+// TODO - must be called every frame, but easy to forget
 auto PushButton::update() -> ButtonState {
   auto pressed = digitalRead(*pin);
   if (state == ButtonState::UNPRESSED || state == ButtonState::UNPRESS) {

@@ -14,21 +14,23 @@ struct Point;
 class LEDSlice;
 class LEDChain {
 public:
-  // Accessors
   virtual auto head() -> Color* = 0;
   virtual auto size() -> u16 = 0;
-  virtual auto get(u16 pixel) -> Color*;
-  virtual auto operator[](u16 pixel) -> Color&;
-  virtual auto get(Point pixel) -> Color*;
-  virtual auto operator[](Point point) -> Color&;
 
-  // Mutators
-  virtual auto fill(const Color& color) -> void;
-  virtual auto set(u16 pixel, const Color& color) -> void;
-  virtual auto set(Point pixel, const Color& color) -> void;
+  auto get(u16 pixel) -> Color*;
+  auto operator[](u16 pixel) -> Color&;
+  auto get(Point pixel) -> Color*;
+  auto operator[](Point point) -> Color&;
 
-  virtual auto slice(u16 length) -> LEDSlice;
-  virtual auto slice(u16 start, u16 length) -> LEDSlice;
+  auto fill(const Color& color) -> void;
+  auto clear() -> void {
+    fill(Color::OFF());
+  }
+  auto set(u16 pixel, const Color& color) -> void;
+  auto set(Point pixel, const Color& color) -> void;
+
+  auto slice(u16 length) -> LEDSlice;
+  auto slice(u16 start, u16 length) -> LEDSlice;
 
   virtual ~LEDChain() = default;
 

@@ -8,6 +8,8 @@
 #include <ArduinoOTA.h>
 #include <ESPAsyncWebServer.h>
 #include "Wireless.h"
+#include "Stopwatch.h"
+#include "Log.h"
 
 namespace rgb {
 
@@ -22,12 +24,12 @@ auto OTASupport::start() -> bool {
   if (!Wifi::Start()) {
     return false;
   }
+  Stopwatch sw{"OTASupport::start()"};
 
   ArduinoOTA
     .setPort(3232)
     .setHostname("myesp32")
     .onStart([]() {
-      Serial.println("OnStart()");
       String type;
       if (ArduinoOTA.getCommand() == U_FLASH) {
         Serial.println("type = sketch");
@@ -41,7 +43,7 @@ auto OTASupport::start() -> bool {
       Serial.println("Start updating " + type);
     })
     .onEnd([]() {
-      Serial.println("\nEnd");
+      Serial.println("End");
     })
     .onProgress([](unsigned int progress, unsigned int total) {
       Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
@@ -61,10 +63,6 @@ auto OTASupport::start() -> bool {
       }
     })
     .begin();
-
-  Serial.println("Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
 
   started = true;
   return started;

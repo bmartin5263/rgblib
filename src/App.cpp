@@ -5,48 +5,58 @@
 #include <Adafruit_NeoPixel.h>
 
 #include "App.h"
+#include "AppBuilder.h"
 #include "Scene.h"
 #include "NullScene.h"
 #include "Clock.h"
+#include "Assertions.h"
+#include "SceneManager.h"
+#include "LEDManager.h"
 #include "network/OTASupport.h"
 #include "network/WebServer.h"
 
 namespace rgb {
 
-App::App(): scene(&NullScene::Instance()), nextScene(nullptr) {
+App::App(): scene(nullptr), nextScene(nullptr), sceneManager(nullptr), ledManager(nullptr), started(false) {
 
 }
 
-auto App::init(Scene* scene) -> void {
+auto App::Configure(const AppBuilder& appBuilder) -> void {
+  Instance().configure(appBuilder);
+}
+
+auto App::start() -> void {
+  ASSERT(!started, "App has already started");
+
+  pinMode(LED_BLUE, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
+
   Log.init();
   Log.infoLn("Logging Started");
-  OTASupport::Start();
-  WebServer::Start();
+//  OTASupport::Start();
+//  WebServer::Start();
   Clock::Init(config::FPS);
 
-  this->scene = scene;
-  this->scene->doSetup();
+  this->scene = &sceneManager->start();
+  this->scene->setup();
+  this->started = true;
 }
 
 auto App::loop() -> void {
-  Log.infoLn("Loop");
-  OTASupport::Update();
+//  OTASupport::Update();
   Clock::StartTick();
 
+  sceneManager->update();
   checkForSceneSwitch();
-  update();
-  draw();
+  scene->update();
+
+  ledManager->clear();
+  scene->draw();
+  ledManager->display();
 
   Clock::StopTick();
-}
-
-auto App::update() -> void {
-  scene->doUpdate();
-//  Debug::Instance().update();
-}
-
-auto App::draw() -> void {
-  scene->doDraw();
 }
 
 auto App::switchScene(Scene& scene) -> void {
@@ -55,9 +65,9 @@ auto App::switchScene(Scene& scene) -> void {
 
 auto App::checkForSceneSwitch() -> void {
   if (nextScene != nullptr) {
-    scene->doCleanup();
+    scene->cleanup();
     scene = nextScene;
-    scene->doSetup();
+    scene->setup();
     nextScene = nullptr;
   }
 }
@@ -67,12 +77,8 @@ auto App::Instance() -> App& {
   return instance;
 }
 
-auto App::Init() -> void {
-  Instance().init(&NullScene::Instance());
-}
-
-auto App::Init(Scene& scene) -> void {
-  Instance().init(&scene);
+auto App::Start() -> void {
+  Instance().start();
 }
 
 auto App::Loop() -> void {
@@ -81,6 +87,12 @@ auto App::Loop() -> void {
 
 auto App::SwitchScene(Scene& scene) -> void {
   Instance().switchScene(scene);
+}
+
+auto App::configure(const AppBuilder& appBuilder) -> void {
+  ASSERT(!started, "App has already started");
+  sceneManager = appBuilder.mSceneManager;
+  ledManager = appBuilder.mLedManager;
 }
 
 }

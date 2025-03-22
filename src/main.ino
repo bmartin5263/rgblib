@@ -1,21 +1,46 @@
 #include <thread>
 #include "App.h"
-#include "user/BasicRpmDisplay.h"
+#include "AppBuilder.h"
+#include "sensor/PushButton.h"
+#include "user/RpmDisplay.h"
+#include "user/ChainableScene.h"
+#include "user/SceneCycle.h"
+#include "user/SolidScene.h"
+#include "user/TrailingScene.h"
+#include "user/NeopixelLEDManager.h"
 
 using namespace rgb;
 
-BasicRpmDisplay scene;
+// Input
+PushButton nextSceneButton{D3};
+PushButton prevSceneButton{D4};
+
+// Output
+LEDCircuit<12> ring{D2};
+LEDSlice slice = ring.slice(6);
+NeopixelLEDManager<12> ledManager{ring};
+
+// Scenes
+RpmDisplay rpmDisplay{ring};
+SolidScene solidScene{ring};
+TrailingScene trailingScene{ring};
+
+std::array<Scene*, 1> scenes {
+  &rpmDisplay
+};
+SceneCycle<1> sceneManager{scenes, &trailingScene, 500};
 
 void setup() {
-  App::Init(scene);
-  std::thread t{[](){
-    while (true) {
-      Serial.println("Hello!");
-      delay(1000);
-    }
-  }};
-
-  t.detach();
+  rpmDisplay.rotation = 7;
+  rpmDisplay.yellowStart = 6;
+  rpmDisplay.redStart = 8;
+  trailingScene.moveRate = 7;
+  trailingScene.color = Color::GREEN(ByteToFloat(1));
+  AppBuilder::Create()
+      .DebugOutputLED(&slice)
+      .SetSceneManager(&sceneManager)
+      .SetLEDManager(&ledManager)
+      .Start();
 }
 
 void loop() {

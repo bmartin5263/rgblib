@@ -9,11 +9,16 @@
 
 namespace rgb {
 
-struct Grid;
-
+class PushButton;
 class ChainableScene : public Scene {
 public:
-  explicit ChainableScene(Grid* grid);
+  ChainableScene(
+    PushButton& nextButton,
+    PushButton& prevButton,
+    Scene& theScene,
+    Scene* nextScene = nullptr,
+    Scene* prevScene = nullptr
+  );
 
   auto setup() -> void override;
   auto update() -> void override;
@@ -23,16 +28,12 @@ public:
   auto setNextScene(ChainableScene* next);
   auto setPreviousScene(ChainableScene* prev);
 
-protected:
-  virtual auto userSetup() -> void {};
-  virtual auto userUpdate() -> void = 0;
-  virtual auto userDraw() -> void = 0;
-  virtual auto userCleanup() -> void {};
-
 private:
-  Grid* grid;
-  ChainableScene* next;
-  ChainableScene* prev;
+  PushButton* nextButton;
+  PushButton* prevButton;
+  Scene* theScene;
+  Scene* nextScene;
+  Scene* prevScene;
 
 };
 

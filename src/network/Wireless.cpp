@@ -4,6 +4,7 @@
 
 #include "Wireless.h"
 #include "Log.h"
+#include "Stopwatch.h"
 #include <WiFi.h>
 
 namespace rgb {
@@ -21,6 +22,7 @@ auto Wifi::start() -> bool {
   if (started) {
     return true;
   }
+  Stopwatch sw{"Wifi::start()"};
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(NAME, PASSWORD);
@@ -29,7 +31,8 @@ auto Wifi::start() -> bool {
     return false;
   }
 
-  Log.infoLn("WIFI Started");
+  Log.info("WIFI connected to ").infoLn(WiFi.localIP());
+  digitalWrite(LED_BLUE, LOW);
 
   started = true;
   return started;

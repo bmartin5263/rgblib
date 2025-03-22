@@ -3,84 +3,53 @@
 //
 
 #include "RpmDisplay.h"
-#include "network/WebServer.h"
 
-namespace rgb {
+using namespace rgb;
 
-constexpr ParameterTable<RpmDisplay, 6> PARAMETER_MAP {{
-  { "bright", [](RpmDisplay& scene, const String& s){ scene.brightBrightness = s.toInt(); } },
-  { "master", [](RpmDisplay& scene, const String& s){ scene.masterBrightness = s.toInt(); } },
-  { "dim", [](RpmDisplay& scene, const String& s){ scene.dimBrightness = s.toInt(); } },
-  { "number", [](RpmDisplay& scene, const String& s){ scene.number = s.toInt(); } },
-  { "colors", [](RpmDisplay& scene, const String& s){ scene.colorMap = std::string(s.c_str()); } },
-  { "speed", [](RpmDisplay& scene, const String& s){ scene.speed = s.toInt(); } },
-}};
+RpmDisplay::RpmDisplay(LEDRing& ring): ring(ring) {
+
+}
 
 auto RpmDisplay::setup() -> void {
   Log.infoLn("RPM setup");
-  circuit.setBrightness(masterBrightness);
-  handle = WebServer::ParameterServer("/params", *this, PARAMETER_MAP);
   vehicle.connect();
 }
 
 auto RpmDisplay::update() -> void {
-  if (++frame >= speed) {
-    if (number <= 0 || number >= 11 ) {
-      change = -change;
-    }
-    number += change;
-    frame = 0;
-  }
-
-  circuit.setBrightness(masterBrightness);
+  vehicle.connect();
+  rpm = vehicle.rpm();
 }
 
-constexpr size_t OFFSET = 1;
-constexpr u16 remap(int i) {
-  return (i + OFFSET) % 12;
+constexpr u16 mapToPixelPosition(int level, int rotation, int ledCount) {
+  return (level + rotation) % ledCount;
 }
 
 auto RpmDisplay::draw() -> void {
-  for (int i = 0; i < 10; ++i) {
+  auto ledCount = ring.size();
+  auto levels = ring.size() == 12 ? 9 : 13;
+  auto rpmLevel = rpm / 500;
+  for (int i = 0; i < levels; ++i) {
 
     float brightness;
-    if (i < number) {
+    if (i < rpmLevel) {
       brightness = ByteToFloat(brightBrightness);
     }
     else {
       brightness = ByteToFloat(dimBrightness);
     }
 
-    char colorChar = colorMap[i];
-    auto c = Color::BLUE();
-    if (i < colorMap.size()) {
-      if (colorChar == 'g') {
-        c = Color::GREEN(brightness);
-      }
-      else if (colorChar == 'y') {
-        c = Color::YELLOW(brightness);
-      }
-      else if (colorChar == 'r') {
-        c = Color::RED(brightness);
-      }
-      else if (colorChar == 'p') {
-        c = Color::MAGENTA(brightness);
-      }
-      else if (colorChar == 'c') {
-        c = Color::CYAN(brightness);
-      }
-      else if (colorChar == 'b') {
-        c = Color::BLUE(brightness);
-      }
-      else if (colorChar == 'w') {
-        c = Color::WHITE(brightness);
-      }
+    Color color;
+    if (i < yellowStart) {
+      color = Color::GREEN(brightness);
+    }
+    else if (i < redStart) {
+      color = Color::YELLOW(brightness);
+    }
+    else {
+      color = Color::RED(brightness);
     }
 
-    circuit[remap(i)] = c;
+
+    ring[mapToPixelPosition(i, rotation, ledCount)] = color;
   }
-
-  circuit.display();
-}
-
 }

@@ -9,34 +9,30 @@
 #include "led/LEDCircuit.h"
 #include "network/WebServerFwd.h"
 #include "sensor/Vehicle.h"
+#include "RpmLayout.h"
 
-namespace rgb {
-
-class RpmDisplay : public Scene {
+class RpmDisplay : public rgb::Scene {
 public:
+  explicit RpmDisplay(rgb::LEDRing& ring);
+
   auto setup() -> void override;
   auto update() -> void override;
   auto draw() -> void override;
 
 private:
-  LEDCircuit<16> circuit{D2};
-  WebServerHandle handle{};
-  Vehicle vehicle{};
+  rgb::LEDRing& ring;
+  rgb::Vehicle vehicle{};
+  RpmLayout layout{RpmLayout::SPORT};
+  bool warmupEffect{false};
 
 public:
-  std::string colorMap{"gggyyyyyrr"};
-  int number{3};
-  int change{1};
-  int frame{0};
-  int speed{25};
-  u8 masterBrightness{255};
-  u8 dimBrightness{1};
-  u8 brightBrightness{4};
-//  u8 masterBrightness{15};
-//  u8 dimBrightness{100};
-//  u8 brightBrightness{255};
+  int rpm{0};
+  int rotation{0};
+  rgb::u16 yellowStart{3};
+  rgb::u16 redStart{6};
+  rgb::u8 masterBrightness{255};
+  rgb::u8 dimBrightness{1};
+  rgb::u8 brightBrightness{4};
 };
-
-}
 
 #endif //RGBLIB_RPMDISPLAY_H

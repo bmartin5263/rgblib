@@ -2,29 +2,42 @@
 // Created by Brandon on 3/18/25.
 //
 
+#include "App.h"
 #include "ChainableScene.h"
 #include "user/Grid.h"
 
 namespace rgb {
 
-ChainableScene::ChainableScene(Grid* grid): grid(grid) {
-
+ChainableScene::ChainableScene(
+  PushButton& nextButton,
+  PushButton& prevButton,
+  Scene& theScene,
+  Scene* nextScene,
+  Scene* prevScene
+): nextButton(&nextButton), prevButton(&prevButton), theScene(&theScene), nextScene(nextScene), prevScene(prevScene) {
 }
 
 auto ChainableScene::setup() -> void {
-  userSetup();
+  theScene->setup();
 }
 
 auto ChainableScene::update() -> void {
-  userUpdate();
+  theScene->update();
+
+  if (nextButton->update() == ButtonState::PRESS && nextScene != nullptr) {
+    App::SwitchScene(*nextScene);
+  }
+  if (prevButton->update() == ButtonState::PRESS && prevScene != nullptr) {
+    App::SwitchScene(*prevScene);
+  }
 }
 
 auto ChainableScene::draw() -> void {
-  userDraw();
+  theScene->draw();
 }
 
 auto ChainableScene::cleanup() -> void {
-  userCleanup();
+  theScene->cleanup();
 }
 
 }

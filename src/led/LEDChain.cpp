@@ -17,16 +17,18 @@ auto LEDChain::fill(const Color& color) -> void {
   }
 }
 
+//auto LEDChain::clear() -> void {
+//  fill(Color::OFF());
+//}
+
 auto LEDChain::get(u16 pixel) -> Color* {
-  ASSERT(pixel >= 0, "Pixel is negative");
-  ASSERT(pixel < size(), "Pixel is out of bounds");
+  ASSERT(pixel >= 0 && pixel < size(), "Pixel is out of bounds");
   return head() + pixel;
 }
 
 auto LEDChain::get(Point point) -> Color* {
-  u16 pixel = ((size() * point.x) + point.y);
-  ASSERT(pixel >= 0, "Pixel is negative");
-  ASSERT(pixel < size(), "Pixel is out of bounds");
+  u16 pixel = (size() * point.x) + point.y;
+  ASSERT(pixel >= 0 && pixel < size(), "Pixel is out of bounds");
   return head() + pixel;
 }
 
@@ -48,7 +50,6 @@ auto LEDChain::operator[](Point point) -> Color& {
   return *get(point);
 }
 
-// [0, 1, 2, 3]
 auto LEDChain::slice(u16 length) -> LEDSlice {
   return slice(0, length);
 }
@@ -57,9 +58,9 @@ auto LEDChain::slice(u16 start, u16 length) -> LEDSlice {
   auto N = size();
   auto data = head();
 
-  ASSERT(start < N, "Slice start is beyond length of circuit");
+  ASSERT(start < N, "Slice start is beyond length of chain");
   u16 end = start + length;
-  ASSERT(end < N, "Slice end is beyond length of circuit");
+  ASSERT(end < N, "Slice end is beyond length of chain");
 
   Color* head = data + start;
   return {head, length};

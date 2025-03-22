@@ -7,7 +7,10 @@
 
 namespace rgb {
 
+class AppBuilder;
 class Scene;
+class SceneManager;
+class LEDManager;
 class App {
 public:
   App(const App&) = delete;
@@ -16,9 +19,10 @@ public:
   auto operator=(const App& other) -> App& = delete;
   auto operator=(App&& other) noexcept -> App& = delete;
 
-  static auto Init() -> void;
-  static auto Init(Scene& scene) -> void;
+  static auto Start() -> void;
+  static auto Configure(const AppBuilder& appBuilder) -> void;
   static auto Loop() -> void;
+
   static auto SwitchScene(Scene& scene) -> void;
 
 private:
@@ -27,16 +31,18 @@ private:
 
   static auto Instance() -> App&;
 
-  auto init(Scene* scene) -> void;
+  auto start() -> void;
+  auto configure(const AppBuilder& appBuilder) -> void;
 
   auto loop() -> void;
   auto switchScene(Scene& scene) -> void;
   auto checkForSceneSwitch() -> void;
-  auto update() -> void;
-  auto draw() -> void;
 
   Scene* scene;
   Scene* nextScene;
+  SceneManager* sceneManager;
+  LEDManager* ledManager;
+  bool started;
 };
 
 }
