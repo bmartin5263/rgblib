@@ -11,25 +11,34 @@
 namespace rgb {
 
 auto LEDChain::fill(const Color& color) -> void {
-  auto _head = head();
+  auto h = head();
+  auto s = size();
+  auto r = getShift();
   for (int i = 0; i < size(); ++i) {
-    _head[i] = color;
+    auto led = mapPixelToLED(i, r, s);
+    h[led] = color;
   }
 }
 
-//auto LEDChain::clear() -> void {
-//  fill(Color::OFF());
-//}
+auto LEDChain::clear() -> void {
+  fill(Color::OFF());
+}
 
 auto LEDChain::get(u16 pixel) -> Color* {
-  ASSERT(pixel >= 0 && pixel < size(), "Pixel is out of bounds");
-  return head() + pixel;
+  auto s = size();
+  auto r = getShift();
+  ASSERT(pixel >= 0 && pixel < s, "Pixel is out of bounds");
+  auto led = mapPixelToLED(pixel, r, s);
+  return head() + led;
 }
 
 auto LEDChain::get(Point point) -> Color* {
   u16 pixel = (size() * point.x) + point.y;
-  ASSERT(pixel >= 0 && pixel < size(), "Pixel is out of bounds");
-  return head() + pixel;
+  auto s = size();
+  auto r = getShift();
+  ASSERT(pixel >= 0 && pixel < s, "Pixel is out of bounds");
+  auto led = mapPixelToLED(pixel, r, s);
+  return head() + led;
 }
 
 auto LEDChain::set(u16 pixel, const Color& color) -> void {
@@ -64,6 +73,10 @@ auto LEDChain::slice(u16 start, u16 length) -> LEDSlice {
 
   Color* head = data + start;
   return {head, length};
+}
+
+auto LEDChain::mapPixelToLED(u16 pixel, u16 rotation, u16 size) -> u16 {
+  return (pixel + rotation) % size;
 }
 
 }

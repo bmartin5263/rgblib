@@ -352,7 +352,7 @@ byte COBD::getVersion()
 	byte version = 0;
 	for (byte n = 0; n < 3; n++) {
 		char buffer[32];
-		if (sendCommand("ATI\r", buffer, sizeof(buffer), 1)) {
+		if (sendCommand("ATI\r", buffer, sizeof(buffer), 200)) {
 			char *p = strchr(buffer, ' ');
 			if (p) {
 				p += 2;

@@ -19,10 +19,19 @@ public:
   auto connect() -> bool;
   auto disconnect() -> void;
 
-  auto rpm() -> int;
+  auto readPID(byte pid, int defaultValue = 0) const -> int;
+  auto readPID(const byte pid[], byte count, int result[], int defaultValue = 0) const -> bool;
+
+  auto rpm(int defaultValue = 0) const -> revs_per_minute;
+  auto speed(int defaultValue = 0) const -> mph;
+  auto oilTemp(int defaultValue = 0) const -> fahrenheit;
+
+  auto inLowPowerMode() const -> bool;
+  auto setLowPowerMode(bool value) -> void;
 
 private:
-  Handle<COBD, OBDDestroyer> obd{{}};
+  Handle<COBD, OBDDestroyer> obdHandle{{}};
+  bool lowPowerMode{false};
 };
 
 }

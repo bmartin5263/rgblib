@@ -9,8 +9,10 @@
 #include "sensor/Vehicle.h"
 #include "led/LEDChain.h"
 
+
 class SolidScene : public rgb::Scene {
 public:
+
   explicit SolidScene(rgb::LEDChain& leds);
 
   auto update() -> void override;
@@ -18,7 +20,7 @@ public:
 
 private:
   rgb::LEDChain& leds;
-  rgb::Color color{rgb::Color::BLUE(.1)};
+  rgb::Color color{rgb::Color::BLUE(.01)};
 
 };
 

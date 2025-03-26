@@ -6,17 +6,25 @@
 
 namespace rgb {
 
-LEDSlice::LEDSlice(Color* head, u16 size) :
-  _head(head), _size(size)
+LEDSlice::LEDSlice(Color* head, u16 size, u16 rotation) :
+  mHead(head), mSize(size), mRotation(rotation)
 {
 }
 
 auto LEDSlice::size() -> u16 {
-  return _size;
+  return mSize;
 }
 
 auto LEDSlice::head() -> Color* {
-  return _head;
+  return mHead;
+}
+
+auto LEDSlice::getShift() -> u16 {
+  return mRotation;
+}
+
+auto LEDSlice::setShift(u16 amount) -> void {
+  mRotation = amount;
 }
 
 }

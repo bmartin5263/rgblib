@@ -11,7 +11,13 @@
 namespace rgb {
 
 PushButton::PushButton(pin_num pin)
-  : state(ButtonState::UNPRESSED), pin(pin), onPressCallback()
+  : state(ButtonState::UNPRESSED), pin(pin), onPressCallback(doNothing)
+{
+  pinMode(pin, INPUT);
+}
+
+PushButton::PushButton(pin_num pin, PressCallback callback)
+  : state(ButtonState::UNPRESSED), pin(pin), onPressCallback(std::move(callback))
 {
   pinMode(pin, INPUT);
 }
@@ -26,7 +32,9 @@ auto PushButton::update() -> ButtonState {
   auto pressed = digitalRead(*pin);
   if (state == ButtonState::UNPRESSED || state == ButtonState::UNPRESS) {
     if (pressed) {
-      onPressCallback();
+      if (onPressCallback) {
+        onPressCallback();
+      }
       state = ButtonState::PRESS;
     }
     else {

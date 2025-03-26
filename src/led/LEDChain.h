@@ -16,6 +16,8 @@ class LEDChain {
 public:
   virtual auto head() -> Color* = 0;
   virtual auto size() -> u16 = 0;
+  virtual auto setShift(u16 amount) -> void = 0;
+  virtual auto getShift() -> u16 = 0;
 
   auto get(u16 pixel) -> Color*;
   auto operator[](u16 pixel) -> Color&;
@@ -23,9 +25,7 @@ public:
   auto operator[](Point point) -> Color&;
 
   auto fill(const Color& color) -> void;
-  auto clear() -> void {
-    fill(Color::OFF());
-  }
+  auto clear() -> void;
   auto set(u16 pixel, const Color& color) -> void;
   auto set(Point pixel, const Color& color) -> void;
 
@@ -35,6 +35,7 @@ public:
   virtual ~LEDChain() = default;
 
 private:
+  static auto mapPixelToLED(u16 pixel, u16 rotation, u16 size) -> u16;
 
 };
 

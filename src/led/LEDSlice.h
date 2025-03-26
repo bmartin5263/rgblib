@@ -12,14 +12,17 @@ namespace rgb {
 struct Color;
 class LEDSlice final : public LEDChain {
 public:
-  LEDSlice(Color* _head, u16 _size);
+  LEDSlice(Color* head, u16 size, u16 rotation = 0);
 
   auto head() -> Color* override;
   auto size() -> u16 override;
+  auto getShift() -> u16 override;
+  auto setShift(u16 amount) -> void override;
 
 private:
-  Color* _head;
-  u16 _size;
+  Color* mHead;
+  u16 mSize;
+  u16 mRotation;
 
 };
 

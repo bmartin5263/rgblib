@@ -11,14 +11,14 @@
 #define ASSERT(condition, message) \
         do { \
             if (!(condition)) {    \
-                Log.infoLn("Assertion failed: (" #condition ")") \
+                rgb::Log.infoLn("Assertion failed: (" #condition ")") \
                     .info("File: ") \
                     .info(__FILE__) \
                     .info(", Line: ") \
-                    .info((u32) __LINE__) \
+                    .info((rgb::u32) __LINE__) \
                     .info("Message: ") \
                     .infoLn(message);                              \
-                Debug::Instance().trigger(true);                   \
+                rgb::Debug::Instance().trigger(true);                   \
             } \
         } while (false)
 //#else

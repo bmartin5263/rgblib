@@ -11,31 +11,69 @@
 
 using namespace rgb;
 
-// Input
-PushButton nextSceneButton{D3};
-PushButton prevSceneButton{D4};
+auto staticAssertions() -> void {
+  static_assert(sizeof(i32) > sizeof(u16));
+  static_assert(sizeof(i64) > sizeof(u32));
+  static_assert(sizeof(int) == 4);
+  static_assert(sizeof(int*) == 4);
+  static_assert(sizeof(long) == 4);
+  static_assert(sizeof(long long) == 8);
+  static_assert(sizeof(float) == 4);
+  static_assert(sizeof(double) == 8);
+}
+
+constexpr u16 LED_COUNT = 12;
 
 // Output
-LEDCircuit<12> ring{D2};
-LEDSlice slice = ring.slice(6);
-NeopixelLEDManager<12> ledManager{ring};
+auto ring = LEDCircuit<LED_COUNT>{D2};
+auto slice = ring.slice(6);
+auto ledManager = NeopixelLEDManager<LED_COUNT>{ring};
 
 // Scenes
-RpmDisplay rpmDisplay{ring};
-SolidScene solidScene{ring};
-TrailingScene trailingScene{ring};
+auto vehicle = Vehicle{};
+auto rpmDisplay = RpmDisplay{ring, vehicle};
+auto solidScene = SolidScene{slice};
 
-std::array<Scene*, 1> scenes {
-  &rpmDisplay
+auto trailingSceneParameters = TrailingSceneParameters{
+  .leds = &ring,
+  .colorGenerator = [](auto params){
+    return rgb::Color(
+      0.f,
+      rgb::ByteToFloat(params.relativePosition),
+      0.f
+    );
+  },
+  .speed = 8,
+  .shift = 6,
+  .length = LED_COUNT / 2,
+  .endBuffer = 4
 };
-SceneCycle<1> sceneManager{scenes, &trailingScene, 500};
+auto trailingScene = TrailingScene{trailingSceneParameters};
+
+auto scenes = std::array<Scene*, 3>{
+  &rpmDisplay,
+  &solidScene,
+  &trailingScene
+};
+auto sceneManager = SceneCycle<3>{scenes, &trailingScene, 800};
+
+// Input
+auto nextSceneButton = PushButton{D4, [](){
+  sceneManager.nextScene();
+}};
+auto actionButton = PushButton{D9, [](){
+  if (rpmDisplay.dimBrightness != 0) {
+    rpmDisplay.dimBrightness = 0;
+  }
+  else {
+    rpmDisplay.dimBrightness = 1;
+  }
+}};
+auto toggleLowPower = PushButton{D12, [](){
+  vehicle.setLowPowerMode(!vehicle.inLowPowerMode());
+}};
 
 void setup() {
-  rpmDisplay.rotation = 7;
-  rpmDisplay.yellowStart = 6;
-  rpmDisplay.redStart = 8;
-  trailingScene.moveRate = 7;
-  trailingScene.color = Color::GREEN(ByteToFloat(1));
   AppBuilder::Create()
       .DebugOutputLED(&slice)
       .SetSceneManager(&sceneManager)
@@ -44,138 +82,8 @@ void setup() {
 }
 
 void loop() {
+  nextSceneButton.update();
+  actionButton.update();
+  toggleLowPower.update();
   App::Loop();
 }
-//
-//#include <Arduino.h>
-//#include <Wire.h>
-//#include <OBD.h>
-//#include <Adafruit_NeoPixel.h>
-//
-//COBD obd; /* for Model A (UART version) */
-//Adafruit_NeoPixel circuit{12, D2, NEO_GRBW + NEO_KHZ800};
-//
-//void senderSetup() {
-//  Serial1.begin(9600, SERIAL_8N1, RX, TX);
-//  pinMode(LED_BUILTIN, OUTPUT);
-//}
-//
-//void senderLoop() {
-//  digitalWrite(LED_BLUE, HIGH);
-//
-//  Serial1.println('1');
-//  digitalWrite(LED_BUILTIN, HIGH);
-//  Serial.println("LEDS ON");
-//
-//  while (!Serial1.available()) {
-//    delay(100);
-//  }
-//  char receivedData = Serial1.read();
-//  if (receivedData == '1') {
-//    digitalWrite(LED_BLUE, LOW);
-//  }
-//
-//  Serial1.println('2');
-//  digitalWrite(LED_BUILTIN, LOW);
-//  Serial.println("LEDS OFF");
-//  delay(1000);
-//}
-//
-//void obdSetup() {
-//  // start communication with OBD-II adapter
-//
-//  int x = LOW;
-//  digitalWrite(LED_BLUE, x);
-//  Serial.println("obd.begin()");
-//  while(!obd.begin()) {
-//    x = x == LOW ? HIGH : LOW;
-//    digitalWrite(LED_BLUE, x);
-//    Serial.println("obd.begin()");
-//  }
-//  digitalWrite(LED_BLUE, HIGH);
-//
-//  // initiate OBD-II connection until success
-//  x = LOW;
-//  digitalWrite(LED_GREEN, x);
-//  while (!obd.init()) {
-//    x = x == LOW ? HIGH : LOW;
-//    digitalWrite(LED_GREEN, x);
-//  }
-//  digitalWrite(LED_GREEN, HIGH);
-//
-//  circuit.begin();
-//  circuit.setBrightness(255);
-//
-//  digitalWrite(LED_BUILTIN, HIGH);
-//}
-//
-//void obdLoop() {
-//  int value = 0;
-//  // save engine RPM in variable 'value', return true on success
-//  if (obd.readPID(PID_RPM, value)) {
-//    // light on LED on Arduino board when the RPM exceeds 3000
-//    digitalWrite(LED_RED, value > 1000 ? LOW : HIGH);
-//  }
-//
-//  int rpm = value;
-//  if (rpm < 500) {
-//    rpm = 500;
-//  }
-//
-//  int pixel = (rpm / 500);
-//
-//  int high = 5;
-//  int low = 1;
-//
-//  for (int i = 2; i < 9; ++i) {
-//    if (i - 2 < pixel) {
-//      circuit.setPixelColor(i, 0, high, 0);
-//    }
-//    else {
-//      circuit.setPixelColor(i, 0, low, 0);
-//    }
-//  }
-//  for (int i = 9; i < 11; ++i) {
-//    if (i - 2 < pixel) {
-//      circuit.setPixelColor(i, high, high, 0);
-//    }
-//    else {
-//      circuit.setPixelColor(i, low, low, 0);
-//    }
-//  }
-//  for (int i = 11; i < 12; ++i) {
-//    if (i - 2 < pixel) {
-//      circuit.setPixelColor(i, high, 0, 0);
-//    }
-//    else {
-//      circuit.setPixelColor(i, low, 0, 0);
-//    }
-//  }
-//
-//  circuit.show();
-//}
-//
-//void setup()
-//{
-//  Serial.begin(9600);
-//  delay(1000);
-//  Serial.println("Beginning OBD2 Connection");
-//
-//  pinMode(LED_BLUE, OUTPUT);
-//  pinMode(LED_GREEN, OUTPUT);
-//  pinMode(LED_RED, OUTPUT);
-//  pinMode(LED_BUILTIN, OUTPUT);
-//  digitalWrite(LED_BLUE, HIGH);
-//  digitalWrite(LED_GREEN, HIGH);
-//  digitalWrite(LED_RED, HIGH);
-//  digitalWrite(LED_BUILTIN, LOW);
-//
-////  senderSetup();
-//  obdSetup();
-//}
-//
-//void loop()
-//{
-////  senderLoop();
-//  obdLoop();
-//}

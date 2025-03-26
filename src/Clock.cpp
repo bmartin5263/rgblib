@@ -14,15 +14,15 @@ auto Clock::Instance() -> Clock& {
 }
 
 auto Clock::init(frames targetFps) -> void {
-  this->maxMsPerFrame = 1000 / targetFps;
+  this->maxMicrosPerFrame = 1000000 / targetFps;
 }
 
 auto Clock::startTick() -> void {
-  tickStart = milli();
+  tickStart = micros();
   auto elapsed = tickStart - lastTime;
 
-  if (elapsed >= 1000) { // Update every second
-    Log.info("FPS: ").infoLn(fpsCounter);
+  if (elapsed >= 1'000'000) { // Update every second
+    Log.info("FPS: ").info(fpsCounter).info(" - ").infoLn(maxMicrosPerFrame);
 
     fpsCounter = 0;
     lastTime = tickStart;
@@ -46,14 +46,14 @@ auto Clock::time() const -> ClockTime {
 
 
 auto Clock::stopTick() const -> void {
-  auto stop = milli();
+  auto stop = micros();
   auto time = stop - tickStart;
-  if (time >= maxMsPerFrame) {
+  if (time >= maxMicrosPerFrame) {
     return;
   }
 
-  auto sleep = maxMsPerFrame - time;
-  delay(sleep);
+  auto sleep = maxMicrosPerFrame - time;
+  delayMicroseconds(sleep);
 }
 
 auto Clock::Init(frames fps) -> void {
@@ -70,6 +70,10 @@ auto Clock::FrameTime() -> frames {
 
 auto Clock::Milli() -> milliseconds {
   return Instance().milli();
+}
+
+auto Clock::Micro() -> microseconds {
+  return Instance().micro();
 }
 
 auto Clock::Time() -> ClockTime {

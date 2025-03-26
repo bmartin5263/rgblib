@@ -25,6 +25,9 @@ using milliseconds = unsigned long;
 using microseconds = unsigned long;
 using frames = unsigned long;
 using pin_num = i8;
+using fahrenheit = int;
+using mph = int;
+using revs_per_minute = int;
 using cstring = const char*;
 
 //template<typename V, class Self>

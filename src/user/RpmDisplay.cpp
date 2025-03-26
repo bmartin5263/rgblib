@@ -3,31 +3,65 @@
 //
 
 #include "RpmDisplay.h"
+#include "sensor/PushButton.h"
 
 using namespace rgb;
 
-RpmDisplay::RpmDisplay(LEDRing& ring): ring(ring) {
+RpmDisplay::RpmDisplay(LEDRing& ring, Vehicle& vehicle): ring(ring), vehicle(vehicle) {
 
 }
 
 auto RpmDisplay::setup() -> void {
   Log.infoLn("RPM setup");
+  ring.setShift(2);
   vehicle.connect();
+  if (warmupEffect) {
+    auto levels = ring.size() == 12 ? 9 : 13;
+    if (ring.size() == 12) {
+      yellowStart = 2;
+      redStart = 5;
+    }
+    else {
+      yellowStart = 3;
+      redStart = 6;
+    }
+  }
 }
 
 auto RpmDisplay::update() -> void {
-  vehicle.connect();
   rpm = vehicle.rpm();
+
+  if (warmupEffect && ++warmupTimer >= 1200) {
+    warmupPhase += 1;
+    warmupTimer = 0;
+    if (warmupPhase == 2) {
+      ++yellowStart;
+    }
+    else {
+      bool changed = false;
+      if (redStart < 8) {
+        ++redStart;
+        changed = true;
+      }
+      if (yellowStart < 6) {
+        ++yellowStart;
+        changed = true;
+      }
+      if (!changed) {
+        warmupEffect = false;
+      }
+    }
+  }
 }
 
-constexpr u16 mapToPixelPosition(int level, int rotation, int ledCount) {
-  return (level + rotation) % ledCount;
+constexpr u16 mapToPixelPosition(int level, int ledCount) {
+  return (level) % ledCount;
 }
 
 auto RpmDisplay::draw() -> void {
   auto ledCount = ring.size();
   auto levels = ring.size() == 12 ? 9 : 13;
-  auto rpmLevel = rpm / 500;
+  auto rpmLevel = rpm / rpmLevelRate;
   for (int i = 0; i < levels; ++i) {
 
     float brightness;
@@ -50,6 +84,10 @@ auto RpmDisplay::draw() -> void {
     }
 
 
-    ring[mapToPixelPosition(i, rotation, ledCount)] = color;
+    ring[mapToPixelPosition(i, ledCount)] = color;
   }
+}
+
+auto RpmDisplay::cleanup() -> void {
+  ring.setShift(0);
 }

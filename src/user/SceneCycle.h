@@ -18,16 +18,13 @@ namespace rgb {
 template <uint N>
 class SceneCycle : public SceneManager {
 public:
-  SceneCycle(std::array<Scene*, N>& scenes):
-    scenes(scenes), introScene(introScene), nextSceneButton(D3), prevSceneButton(D4),
-    runIntroSceneFor(runIntroSceneFor), introEndTime(0), currentScene(0), introSceneRunning(false)
-  {
-
-  }
-
-  SceneCycle(std::array<Scene*, N>& scenes, Scene* introScene, milliseconds runIntroSceneFor):
-    scenes(scenes), introScene(introScene), nextSceneButton(D3), prevSceneButton(D4),
-    runIntroSceneFor(runIntroSceneFor), introEndTime(0), currentScene(0), introSceneRunning(false)
+  SceneCycle(
+    std::array<Scene*, N>& scenes,
+    Scene* introScene,
+    milliseconds runIntroSceneFor
+  ):
+    scenes(scenes), introScene(introScene),runIntroSceneFor(runIntroSceneFor), introEndTime(0),
+    currentScene(0), introSceneRunning(false)
   {
 
   }
@@ -53,25 +50,7 @@ public:
       Log.infoLn("Ending Intro Scene");
       nextScene();
     }
-    else {
-      if (nextSceneButton.update() == ButtonState::PRESS) {
-        nextScene();
-      }
-      if (prevSceneButton.update() == ButtonState::PRESS) {
-        prevScene();
-      }
-    }
   }
-
-private:
-  std::array<Scene*, N>& scenes;
-  Scene* introScene;
-  PushButton nextSceneButton;
-  PushButton prevSceneButton;
-  milliseconds runIntroSceneFor;
-  milliseconds introEndTime;
-  int currentScene;
-  bool introSceneRunning;
 
   auto nextScene() -> void {
     introSceneRunning = false;
@@ -84,6 +63,14 @@ private:
     currentScene = (currentScene > 0 ? currentScene : N) - 1;
     App::SwitchScene(*scenes[currentScene]);
   }
+
+private:
+  std::array<Scene*, N>& scenes;
+  Scene* introScene;
+  milliseconds runIntroSceneFor;
+  milliseconds introEndTime;
+  int currentScene;
+  bool introSceneRunning;
 
   auto introSceneShouldEnd(milliseconds now) -> bool {
     return now >= introEndTime;

@@ -38,9 +38,9 @@ private:
 
   frames frameTimer{};
   frames fpsCounter{};
-  milliseconds tickStart{};
-  milliseconds lastTime{};
-  milliseconds maxMsPerFrame{};
+  microseconds tickStart{};
+  microseconds lastTime{};
+  microseconds maxMicrosPerFrame{};
 };
 
 }

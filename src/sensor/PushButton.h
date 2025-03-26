@@ -15,13 +15,14 @@ namespace rgb {
 
 class PushButton {
   using PressCallback = std::function<void()>;
+  constexpr static auto doNothing() -> void {}
 
 public:
   explicit PushButton(pin_num pin);
+  PushButton(pin_num pin, PressCallback callback);
   auto onPress(PressCallback callback) noexcept -> PushButton&;
 
   auto update() -> ButtonState;
-
   auto getState() const noexcept -> ButtonState;
 
 private:

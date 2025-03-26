@@ -5,25 +5,52 @@
 #ifndef RGBLIB_TRAILINGSCENE_H
 #define RGBLIB_TRAILINGSCENE_H
 
+#include <optional>
 #include "Types.h"
 #include "Scene.h"
 #include "sensor/Vehicle.h"
 #include "led/LEDChain.h"
 
+struct TrailingSceneColorGeneratorParameters {
+  rgb::u32 micros;
+  uint speed;
+  uint length;
+  rgb::u16 absolutePosition;
+  rgb::u16 relativePosition;
+};
+
+using TrailingSceneColorGenerator = std::function<rgb::Color(const TrailingSceneColorGeneratorParameters&)>;
+constexpr auto defaultGenerator(const TrailingSceneColorGeneratorParameters&) -> rgb::Color {
+  return rgb::Color::CYAN(.01);
+}
+
+struct TrailingSceneParameters {
+  rgb::LEDChain* leds{nullptr};
+  TrailingSceneColorGenerator colorGenerator{defaultGenerator};
+  rgb::Color color{rgb::Color::RED(rgb::ByteToFloat(4))};
+  uint speed{8};
+  int shift{0};
+  uint length{1};
+  int endBuffer{0};
+  bool continuous{false};
+
+  auto LEDs() -> rgb::LEDChain& {
+    return *leds;
+  }
+};
+
 class TrailingScene : public rgb::Scene {
 public:
-  rgb::Color color{rgb::Color::RED(rgb::ByteToFloat(4))};
-  uint moveRate{10};
+  explicit TrailingScene(TrailingSceneParameters& params);
 
-  explicit TrailingScene(rgb::LEDChain& leds);
-
+  auto setup() -> void override;
   auto update() -> void override;
   auto draw() -> void override;
 
 private:
-  rgb::LEDChain& leds;
-  uint pixel{0};
-  uint moveTime{0};
+  TrailingSceneParameters& params;
+  int pixel{0};
+  int moveTime{0};
 
   auto move() -> void;
 };
