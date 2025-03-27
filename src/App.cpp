@@ -34,8 +34,8 @@ auto App::start() -> void {
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
-  Log.init();
-  Log.infoLn("Logging Started");
+  log::init();
+  INFO("Logging Started");
 //  OTASupport::Start();
 //  WebServer::Start();
   Clock::Init(config::FPS);
@@ -55,7 +55,9 @@ auto App::loop() -> void {
   checkForSceneSwitch();
   scene->update();
 
+  Debug::Instance().draw();
   scene->draw();
+
   ledManager->display();
 
   Clock::StopTick();
@@ -95,6 +97,8 @@ auto App::configure(const AppBuilder& appBuilder) -> void {
   ASSERT(!started, "App has already started");
   sceneManager = appBuilder.mSceneManager;
   ledManager = appBuilder.mLedManager;
+
+  Debug::Instance().setDebugChain(appBuilder.mDebugOutputLED);
 }
 
 }

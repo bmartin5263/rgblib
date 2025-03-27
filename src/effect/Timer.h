@@ -18,6 +18,7 @@ public:
   static auto SetInterval(Duration duration, uint times, const rgb::TimerFunction& function) -> TimerHandle;
   static auto ProcessTimers() -> void;
   static auto Cancel(TimerNode* node) -> void;
+  static auto Count() -> decltype(config::TIMERS);
   static auto Instance() -> Timer&;
 
 private:
@@ -34,9 +35,9 @@ private:
   auto executeTimer(TimerNode* node) -> void;
   auto nextTimerNode() -> TimerNode*;
   auto enqueueForAdding(TimerNode* node) -> void;
-  auto isReady(TimerNode* node) -> bool;
   auto processAdditions() -> void;
   auto reclaimNodes() -> void;
+  auto count() -> decltype(config::TIMERS);
 };
 
 }

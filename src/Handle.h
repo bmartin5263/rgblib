@@ -51,7 +51,7 @@ struct Handle {
   auto operator=(const Handle& rhs) -> Handle& = delete;
 
   ~Handle() {
-    Log.info("~Handle();");
+    TRACE("~Handle();");
     if (opt) {
       D()(*opt);
     }

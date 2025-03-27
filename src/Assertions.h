@@ -11,13 +11,8 @@
 #define ASSERT(condition, message) \
         do { \
             if (!(condition)) {    \
-                rgb::Log.infoLn("Assertion failed: (" #condition ")") \
-                    .info("File: ") \
-                    .info(__FILE__) \
-                    .info(", Line: ") \
-                    .info((rgb::u32) __LINE__) \
-                    .info("Message: ") \
-                    .infoLn(message);                              \
+                Serial.printf("Assertion failed: (%s)\n", #condition);                   \
+                Serial.printf("File: %s, Function: %s, Line: %i, Message: %s\n", __FILE__, __FUNCTION__, __LINE__, message);                   \
                 rgb::Debug::Instance().trigger(true);                 \
             } \
         } while (false)

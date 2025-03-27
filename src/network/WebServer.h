@@ -36,7 +36,7 @@ private:
   template<class T, size_t N>
   auto parameterServer(const char* uri, T& target, const ParameterTable<T, N>& mapping) {
     return onGet(uri, [&mapping, &target, uri](AsyncWebServerRequest* request){
-      Log.info("OnGet() ").infoLn(uri);
+      INFO("OnGet() %s", uri);
       for (const auto& [parameterName, receiver] : mapping) {
         if (request->hasParam(parameterName)) {
           auto param = request->getParam(parameterName);

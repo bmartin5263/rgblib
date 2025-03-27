@@ -13,10 +13,10 @@ class NullScene : public Scene {
 public:
   constexpr NullScene() = default;
   auto update() -> void override {
-    Log.infoLn("NullScene::update()");
+    TRACE("NullScene::update()");
   }
   auto draw() -> void override {
-    Log.infoLn("NullScene::draw()");
+    TRACE("NullScene::draw()");
   }
   static auto Instance() -> NullScene&;
 };

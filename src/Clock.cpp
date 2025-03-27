@@ -22,7 +22,7 @@ auto Clock::startTick() -> void {
   auto elapsed = tickStart - lastTime;
 
   if (elapsed >= 1'000'000) { // Update every second
-    Log.info("FPS: ").info(fpsCounter).info(" - ").infoLn(maxMicrosPerFrame);
+    INFO("FPS: %lu", fpsCounter);
 
     fpsCounter = 0;
     lastTime = tickStart;

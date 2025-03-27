@@ -31,7 +31,7 @@ public:
 
   auto start() -> Scene& override {
     if (introScene != nullptr) {
-      Log.infoLn("Intro Scene");
+      TRACE("Intro Scene");
       currentScene = -1;
       introEndTime = Clock::Milli() + runIntroSceneFor;
       introSceneRunning = true;
@@ -47,7 +47,7 @@ public:
 
   auto update() -> void override {
     if (introSceneRunning && introSceneShouldEnd(Clock::Milli())) {
-      Log.infoLn("Ending Intro Scene");
+      INFO("Ending Intro Scene");
       nextScene();
     }
   }

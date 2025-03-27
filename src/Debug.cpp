@@ -18,6 +18,12 @@ auto Debug::update() -> void {
   }
 }
 
+auto Debug::draw() -> void {
+  if (debugChain != nullptr && triggered) {
+    debugChain->fill(Color::RED(.01));
+  }
+}
+
 auto Debug::setDebugChain(LEDChain* chain) -> void {
   this->debugChain = chain;
 }

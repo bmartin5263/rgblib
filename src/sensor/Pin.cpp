@@ -8,7 +8,7 @@
 namespace rgb {
 
 auto TurnOffPin::operator()(pin_num number) -> void {
-  Log.info("TurnOffPin();");
+  TRACE("TurnOffPin();");
   pinMode(number, LOW);
 }
 

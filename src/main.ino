@@ -83,16 +83,6 @@ void setup() {
       .SetSceneManager(&sceneManager)
       .SetLEDManager(&ledManager)
       .Start();
-
-  handle = Timer::SetInterval(Duration::Milliseconds(100), 100, [](){
-    if (rpmDisplay.dimBrightness != 0) {
-      rpmDisplay.dimBrightness = 0;
-    }
-    else {
-      rpmDisplay.dimBrightness = 1;
-    }
-    flag = !flag;
-  });
 }
 
 void loop() {

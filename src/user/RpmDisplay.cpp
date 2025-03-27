@@ -12,7 +12,7 @@ RpmDisplay::RpmDisplay(LEDRing& ring, Vehicle& vehicle): ring(ring), vehicle(veh
 }
 
 auto RpmDisplay::setup() -> void {
-  Log.infoLn("RPM setup");
+  INFO("RPM setup");
   ring.setShift(2);
   vehicle.connect();
   if (warmupEffect) {

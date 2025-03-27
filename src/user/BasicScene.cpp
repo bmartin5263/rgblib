@@ -24,7 +24,7 @@ auto BasicScene::setup() -> void {
   circuit.start();
 
   handle = WebServer::OnGet("/", [this](AsyncWebServerRequest* request){
-    Log.infoLn("OnGet() /");
+    INFO("OnGet() /");
     for (const auto& [parameterName, receiver] : PARAMETER_MAP) {
       if (request->hasParam(parameterName)) {
         auto param = request->getParam(parameterName);

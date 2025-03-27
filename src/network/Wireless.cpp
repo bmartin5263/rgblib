@@ -31,7 +31,8 @@ auto Wifi::start() -> bool {
     return false;
   }
 
-  Log.info("WIFI connected to ").infoLn(WiFi.localIP());
+  auto address = WiFi.localIP().toString();
+  INFO("WIFI connected to %s", address.c_str());
   digitalWrite(LED_BLUE, LOW);
 
   started = true;

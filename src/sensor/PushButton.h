@@ -15,7 +15,7 @@ namespace rgb {
 
 class PushButton {
   using PressCallback = std::function<void()>;
-  constexpr static auto doNothing() -> void {}
+  static constexpr auto doNothing() -> void {}
 
 public:
   explicit PushButton(pin_num pin);

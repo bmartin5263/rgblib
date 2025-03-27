@@ -14,7 +14,8 @@ Stopwatch::Stopwatch(const char* label): start(Clock::Milli()), label(label) {
 
 Stopwatch::~Stopwatch() {
   auto stop = Clock::Milli();
-  Log.info('\'').info(label).info("' finished in ").info(stop - start).infoLn("ms");
+  auto duration = stop - start;
+  INFO("'%s' finished in %lums", label, duration);
 }
 
 }

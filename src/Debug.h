@@ -15,6 +15,7 @@ class Debug {
 public:
   auto trigger(bool value) -> void;
   auto update() -> void;
+  auto draw() -> void;
   auto setDebugChain(LEDChain* chain) -> void;
 
   static auto Instance() -> Debug&;

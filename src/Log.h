@@ -8,68 +8,44 @@
 #include <Arduino.h>
 #include "Types.h"
 
-namespace rgb {
+namespace rgb::log {
 
-class Logger {
-public:
+constexpr auto MS_PER_HOUR = 1000 * 60 * 60;
+constexpr auto MS_PER_MINUTE = 1000 * 60;
+constexpr auto MS_PER_SECOND = 1000;
 
-  auto init(u32 baud = 9600) -> void {
-    Serial.begin(baud);
-  }
+auto init(u32 baud = 9600) -> void;
+auto printHeader(const char* level, const char* function) -> void;
 
-  template<class T>
-  auto info(T msg) -> Logger& {
-    if (newLine) {
-      printTime();
-      newLine = false;
-    }
-    Serial.print(msg);
-    return *this;
-  }
+#if defined (RGB_VERBOSE)
+#define TRACE(format, ...) do { \
+  rgb::log::printHeader("TRACE", __PRETTY_FUNCTION__);  \
+  Serial.printf(format, ##__VA_ARGS__); \
+  Serial.println();            \
+} while(false)
+#else
+#define TRACE(format, ...)
+#endif
 
-  template<class T>
-  auto infoLn(T msg) -> Logger& {
-    if (newLine) {
-      printTime();
-    }
-    Serial.println(msg);
-    newLine = true;
-    return *this;
-  }
 
-  template<class T>
-  auto error(T msg) -> Logger& {
-    return info(msg);
-  }
+#if defined (RGB_DEBUG) || defined (RGB_VERBOSE)
 
-  template<class T>
-  auto errorLn(T msg) -> Logger& {
-    return errorLn(msg);
-  }
+#define INFO(format, ...) do { \
+  rgb::log::printHeader("INFO", __PRETTY_FUNCTION__);  \
+  Serial.printf(format, ##__VA_ARGS__); \
+  Serial.println();            \
+} while(false)
 
-private:
-  auto printTime() -> void {
-    Serial.print(millis());
-    Serial.print(": ");
-  }
+#define ERROR(format, ...) do { \
+  rgb::log::printHeader("ERROR", __PRETTY_FUNCTION__);  \
+  Serial.printf(format, ##__VA_ARGS__); \
+  Serial.println();            \
+} while(false)
 
-private:
-  bool newLine{true};
-
-};
-
-static Logger Log = {};
-
-#define INFO(message) \
-  do {                \
-    Log.info(__FILE__); \
-        .info("("); \
-        .info(__LINE__); \
-        .info(") : "); \
-        .info(millis()); \
-        .info(": "); \
-        .infoLn(message);   \
-  } while (false)
+#else
+#define INFO(format, ...)
+#define ERROR(format, ...)
+#endif
 
 }
 

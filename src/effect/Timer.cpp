@@ -9,7 +9,7 @@
 namespace rgb {
 
 Timer::Timer() {
-  Log.infoLn("Creating");
+  INFO("Initializing Timers");
   for (int i = 0; i < config::TIMERS; ++i) {
     auto& current = nodes[i];
     if (i > 0) {
@@ -76,16 +76,13 @@ auto Timer::processTimers() -> void {
       continue;
     }
 
-    Log.infoLn("Executing");
     executeTimer(timer);
 
     if (timer->repeatsRemaining > 0) {
       timer->repeat(now);
-      Log.infoLn("Readding");
       enqueueForAdding(timer);
     }
     else {
-      Log.infoLn("Deleting");
       TimerNode::InsertFront(unusedHead, timer);
     }
   }
@@ -121,11 +118,10 @@ auto Timer::processAdditions() -> void {
 
 auto Timer::nextTimerNode() -> TimerNode* {
   if (unusedHead == nullptr) {
-    Log.infoLn("Reclaiming Timer Nodes");
+    INFO("Reclaiming Timer Nodes");
     reclaimNodes();
     ASSERT(unusedHead != nullptr, "No more timer nodes available");
   }
-  Log.infoLn("Popping");
   return TimerNode::Pop(unusedHead);
 }
 
@@ -142,6 +138,22 @@ auto Timer::reclaimNodes() -> void {
 auto Timer::Instance() -> Timer& {
   static Timer timer;
   return timer;
+}
+
+auto Timer::Count() -> decltype(config::TIMERS) {
+  return Instance().count();
+}
+
+auto Timer::count() -> decltype(config::TIMERS) {
+  auto num = static_cast<decltype(config::TIMERS)>(0);
+  auto current = activeHead;
+  while (current != nullptr) {
+    if (!current->tombstone) {
+      ++num;
+    }
+    current = current->next;
+  }
+  return num;
 }
 
 }

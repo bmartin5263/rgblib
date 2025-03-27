@@ -23,11 +23,7 @@ struct TimerNode {
   bool tombstone{};
 
   auto clean() -> void {
-    memset(this, 0, sizeof(TimerNode));
-  }
-
-  auto isReady(microseconds time) -> bool {
-    return executeAt <= time;
+    *this = {};
   }
 
   auto repeat(microseconds now) -> void {

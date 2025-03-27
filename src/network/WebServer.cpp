@@ -18,14 +18,14 @@ auto WebServer::start() -> void {
   server.begin();
   started = true;
 
-  Log.infoLn("WebServer Started");
+  INFO("WebServer Started");
 }
 
 auto WebServer::onGet(const char* uri, HandlerFunction onRequest) -> WebServerHandle {
-  Log.infoLn("OnGet Setup");
+  INFO("OnGet Setup");
   ASSERT(started, "WebServer is not started");
   auto h = &server.on(uri, HTTP_GET, std::move(onRequest));
-  Log.infoLn("Activating WebHandle");
+  INFO("Activating WebHandle");
   return WebServerHandle { h };
 }
 
@@ -55,7 +55,7 @@ auto WebServer::RemoveHandler(WebHandler& handle) -> void {
 
 
 auto WebServerHandleDeleter::operator()(WebHandler* ptr) -> void {
-  Log.infoLn("Shutting Down WebHandle");
+  INFO("Shutting Down WebHandle");
   WebServer::RemoveHandler(*ptr);
 }
 
