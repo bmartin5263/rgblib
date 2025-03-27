@@ -5,7 +5,7 @@
 ### LED vs Pixel vs RGBW
 **LED** is the physical component that lights up
 
-**Pixel** is the address to an LED
+**Pixel** is an abstract handle to some LED
 
 **RGB/W** represent the 3/4 possible color channels for an LED. Not all LEDs have W.
 May be represented as a `float` value between `[0-1]`, or as a `unsigned char` value (which has a range `[0-255]`)
