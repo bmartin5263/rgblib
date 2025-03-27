@@ -16,6 +16,7 @@ class WebServer {
 public:
   static auto Start() -> void;
   static auto OnGet(const char* uri, HandlerFunction onRequest) -> WebServerHandle;
+  static auto RemoveHandler(WebHandler& handle) -> void;
 
   template<class T, size_t N>
   static auto ParameterServer(const char* uri, T& target, const ParameterTable<T, N>& mapping) -> WebServerHandle {
@@ -27,7 +28,6 @@ private:
   bool started{false};
 
   static auto Instance() -> WebServer&;
-  static auto RemoveHandler(WebHandler& handle) -> void;
 
   auto start() -> void;
   auto onGet(const char* uri, HandlerFunction onRequest) -> WebServerHandle;
@@ -47,8 +47,6 @@ private:
       request->send(200);
     });
   }
-
-  friend class HandleDeleter;
 };
 
 }

@@ -11,16 +11,16 @@
 
 namespace rgb {
 
-struct HandleDeleter;
+struct WebServerHandleDeleter;
 using HandlerFunction = ArRequestHandlerFunction;
 using WebHandler = AsyncWebHandler;
 
-struct HandleDeleter {
-  constexpr HandleDeleter() noexcept = default;
+struct WebServerHandleDeleter {
+  constexpr WebServerHandleDeleter() noexcept = default;
   auto operator()(WebHandler* ptr) -> void;
 };
 
-using WebServerHandle = std::unique_ptr<WebHandler, HandleDeleter>;
+using WebServerHandle = std::unique_ptr<WebHandler, WebServerHandleDeleter>;
 
 template<typename T>
 using ParameterMapping = std::pair<cstring, void (*)(T& scene, const String& s)>;

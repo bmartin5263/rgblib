@@ -2,6 +2,7 @@
 #include "App.h"
 #include "AppBuilder.h"
 #include "sensor/PushButton.h"
+#include "effect/Timer.h"
 #include "user/RpmDisplay.h"
 #include "user/ChainableScene.h"
 #include "user/SceneCycle.h"
@@ -50,12 +51,12 @@ auto trailingSceneParameters = TrailingSceneParameters{
 };
 auto trailingScene = TrailingScene{trailingSceneParameters};
 
-auto scenes = std::array<Scene*, 3>{
-  &rpmDisplay,
-  &solidScene,
-  &trailingScene
+auto scenes = std::array {
+  static_cast<Scene*>(&rpmDisplay),
+  static_cast<Scene*>(&solidScene),
+  static_cast<Scene*>(&trailingScene)
 };
-auto sceneManager = SceneCycle<3>{scenes, &trailingScene, 800};
+auto sceneManager = SceneCycle {scenes, &trailingScene, 800};
 
 // Input
 auto nextSceneButton = PushButton{D4, [](){
@@ -73,12 +74,25 @@ auto toggleLowPower = PushButton{D12, [](){
   vehicle.setLowPowerMode(!vehicle.inLowPowerMode());
 }};
 
+TimerHandle handle;
+bool flag;
+
 void setup() {
   AppBuilder::Create()
       .DebugOutputLED(&slice)
       .SetSceneManager(&sceneManager)
       .SetLEDManager(&ledManager)
       .Start();
+
+  handle = Timer::SetInterval(Duration::Milliseconds(100), 100, [](){
+    if (rpmDisplay.dimBrightness != 0) {
+      rpmDisplay.dimBrightness = 0;
+    }
+    else {
+      rpmDisplay.dimBrightness = 1;
+    }
+    flag = !flag;
+  });
 }
 
 void loop() {

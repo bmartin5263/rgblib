@@ -9,6 +9,7 @@ namespace rgb::config {
 
 constexpr auto FPS = 240;
 constexpr auto WEB_SERVER_PORT = 80;
+constexpr auto TIMERS = 10;
 
 }
 

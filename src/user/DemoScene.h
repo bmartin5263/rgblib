@@ -9,9 +9,9 @@
 #include "Scene.h"
 #include "led/LEDCircuit.h"
 #include "led/LEDSlice.h"
-#include "effect/FillEffect.h"
-#include "effect/TrailingEffect.h"
-#include "effect/BreatheEffect.h"
+#include "sample/FillEffect.h"
+#include "sample/TrailingEffect.h"
+#include "sample/BreatheEffect.h"
 
 namespace rgb {
 

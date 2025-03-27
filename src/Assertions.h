@@ -18,7 +18,7 @@
                     .info((rgb::u32) __LINE__) \
                     .info("Message: ") \
                     .infoLn(message);                              \
-                rgb::Debug::Instance().trigger(true);                   \
+                rgb::Debug::Instance().trigger(true);                 \
             } \
         } while (false)
 //#else

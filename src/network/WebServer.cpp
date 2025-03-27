@@ -54,7 +54,7 @@ auto WebServer::RemoveHandler(WebHandler& handle) -> void {
 }
 
 
-auto HandleDeleter::operator()(WebHandler* ptr) -> void {
+auto WebServerHandleDeleter::operator()(WebHandler* ptr) -> void {
   Log.infoLn("Shutting Down WebHandle");
   WebServer::RemoveHandler(*ptr);
 }

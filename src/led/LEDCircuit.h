@@ -47,6 +47,7 @@ public:
   auto display() -> void {
     for (u16 i = 0; i < N; ++i) {
       Color& c = data[i];
+      // TODO - apply rotation/shift here?
       impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
     }
     impl.show();

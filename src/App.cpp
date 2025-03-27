@@ -14,6 +14,7 @@
 #include "LEDManager.h"
 #include "network/OTASupport.h"
 #include "network/WebServer.h"
+#include "effect/Timer.h"
 
 namespace rgb {
 
@@ -47,12 +48,13 @@ auto App::start() -> void {
 auto App::loop() -> void {
 //  OTASupport::Update();
   Clock::StartTick();
+  ledManager->clear();
+  Timer::ProcessTimers();
 
   sceneManager->update();
   checkForSceneSwitch();
   scene->update();
 
-  ledManager->clear();
   scene->draw();
   ledManager->display();
 
