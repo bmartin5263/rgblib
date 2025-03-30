@@ -18,7 +18,7 @@ auto Vehicle::connect() -> bool {
   }
 
   obdHandle.reset({});
-  auto obd = *obdHandle;
+  auto& obd = *obdHandle;
 
   if (!obd.begin()) {
     ERROR("Vehicle begin() failed");
@@ -40,20 +40,21 @@ auto Vehicle::disconnect() -> void {
   obdHandle.reset({});
 }
 
-auto Vehicle::rpm(int defaultValue) const -> revs_per_minute {
+auto Vehicle::rpm(int defaultValue) -> revs_per_minute {
   return readPID(PID_RPM, defaultValue);
 }
 
-auto Vehicle::oilTemp(int defaultValue) const -> fahrenheit {
+auto Vehicle::oilTemp(int defaultValue) -> fahrenheit {
   return readPID(PID_ENGINE_OIL_TEMP, defaultValue);
 }
 
-auto Vehicle::speed(int defaultValue) const -> mph {
+auto Vehicle::speed(int defaultValue) -> mph {
   return readPID(PID_SPEED, defaultValue);
 }
 
-auto Vehicle::readPID(byte pid, int defaultValue) const -> int {
-  auto obd = *obdHandle;
+auto Vehicle::readPID(byte pid, int defaultValue) -> int {
+  auto& obd = *obdHandle;
+
   if (obd.getState() != OBD_CONNECTED) {
     return defaultValue;
   }
@@ -67,8 +68,8 @@ auto Vehicle::readPID(byte pid, int defaultValue) const -> int {
   }
 }
 
-auto Vehicle::readPID(const byte pid[], byte count, int result[], int defaultValue) const -> bool {
-  auto obd = *obdHandle;
+auto Vehicle::readPID(const byte pid[], byte count, int result[], int defaultValue) -> bool {
+  auto& obd = *obdHandle;
   if (obd.getState() != OBD_CONNECTED) {
     std::fill(result, result + count, defaultValue);
     return false;
@@ -88,13 +89,13 @@ auto Vehicle::inLowPowerMode() const -> bool {
 }
 
 auto Vehicle::setLowPowerMode(bool value) -> void {
-  lowPowerMode = value;
-  if (lowPowerMode) {
-    digitalWrite(LED_GREEN, LOW);
-  }
-  else {
-    digitalWrite(LED_GREEN, HIGH);
-  }
+//  lowPowerMode = value;
+//  if (lowPowerMode) {
+//    digitalWrite(LED_GREEN, LOW);
+//  }
+//  else {
+//    digitalWrite(LED_GREEN, HIGH);
+//  }
 }
 
 }

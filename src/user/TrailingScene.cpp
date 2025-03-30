@@ -44,7 +44,7 @@ auto TrailingScene::draw() -> void {
   else {
     for (int i = 0; i < length; ++i) {
       auto led = (pixel + i + 1) - ((rgb::i32) length);
-      if (led >= 0 && led < ledSize) {
+      if (led >= 0 && led < ledSize + 1) {
         led = (led + params.shift) % ledSize;
         colorGeneratorParameters.relativePosition = i;
         colorGeneratorParameters.absolutePosition = led;

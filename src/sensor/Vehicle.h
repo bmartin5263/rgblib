@@ -19,12 +19,12 @@ public:
   auto connect() -> bool;
   auto disconnect() -> void;
 
-  auto readPID(byte pid, int defaultValue = 0) const -> int;
-  auto readPID(const byte pid[], byte count, int result[], int defaultValue = 0) const -> bool;
+  auto readPID(byte pid, int defaultValue = 0) -> int;
+  auto readPID(const byte pid[], byte count, int result[], int defaultValue = 0) -> bool;
 
-  auto rpm(int defaultValue = 0) const -> revs_per_minute;
-  auto speed(int defaultValue = 0) const -> mph;
-  auto oilTemp(int defaultValue = 0) const -> fahrenheit;
+  auto rpm(int defaultValue = 0) -> revs_per_minute;
+  auto speed(int defaultValue = 0) -> mph;
+  auto oilTemp(int defaultValue = 0) -> fahrenheit;
 
   auto inLowPowerMode() const -> bool;
   auto setLowPowerMode(bool value) -> void;

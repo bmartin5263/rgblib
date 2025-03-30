@@ -47,7 +47,8 @@ auto trailingSceneParameters = TrailingSceneParameters{
   .speed = 8,
   .shift = 6,
   .length = LED_COUNT / 2,
-  .endBuffer = 4
+  .endBuffer = 4,
+  .continuous = true
 };
 auto trailingScene = TrailingScene{trailingSceneParameters};
 
@@ -70,9 +71,9 @@ auto actionButton = PushButton{D9, [](){
     rpmDisplay.dimBrightness = 1;
   }
 }};
-auto toggleLowPower = PushButton{D12, [](){
-  vehicle.setLowPowerMode(!vehicle.inLowPowerMode());
-}};
+//auto toggleLowPower = PushButton{D12, [](){
+//  vehicle.setLowPowerMode(!vehicle.inLowPowerMode());
+//}};
 
 TimerHandle handle;
 bool flag;
@@ -88,6 +89,6 @@ void setup() {
 void loop() {
   nextSceneButton.update();
   actionButton.update();
-  toggleLowPower.update();
+//  toggleLowPower.update();
   App::Loop();
 }

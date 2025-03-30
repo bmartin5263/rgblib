@@ -23,9 +23,16 @@ auto Clock::startTick() -> void {
 
   if (elapsed >= 1'000'000) { // Update every second
     INFO("FPS: %lu", fpsCounter);
+    if (fpsCounter < 120) {
+      digitalWrite(LED_GREEN, LOW);
+    }
+    else {
+      digitalWrite(LED_GREEN, HIGH);
+    }
 
     fpsCounter = 0;
     lastTime = tickStart;
+
   }
 
   ++fpsCounter;

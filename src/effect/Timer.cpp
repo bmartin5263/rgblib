@@ -75,21 +75,19 @@ auto Timer::processTimers() -> void {
       TimerNode::InsertFront(unusedHead, timer);
       continue;
     }
-
-    executeTimer(timer);
-
-    if (timer->repeatsRemaining > 0) {
-      timer->repeat(now);
-      enqueueForAdding(timer);
-    }
-    else {
-      TimerNode::InsertFront(unusedHead, timer);
-    }
+    executeTimer(timer, now);
   }
 }
 
-auto Timer::executeTimer(TimerNode* node) -> void {
-  node->timerFunction();
+auto Timer::executeTimer(TimerNode* timer, microseconds now) -> void {
+  timer->timerFunction();
+  if (timer->repeatsRemaining > 0) {
+    timer->repeat(now);
+    enqueueForAdding(timer);
+  }
+  else {
+    TimerNode::InsertFront(unusedHead, timer);
+  }
 }
 
 auto Timer::processAdditions() -> void {

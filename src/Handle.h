@@ -20,12 +20,12 @@ struct Handle {
   auto operator=(Handle&& rhs) noexcept -> Handle& { opt = std::move(rhs.opt); }
 
   auto operator*() noexcept -> T& {
-    return const_cast<T&>(static_cast<const Handle<T, D>*>(this)->operator*());
-  }
-
-  auto operator*() const noexcept -> const T& {
     return opt.value();
   }
+
+//  auto operator*() const noexcept -> const T& {
+//    return opt.value();
+//  }
 
   auto get() noexcept -> T& {
     return opt.value();

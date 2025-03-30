@@ -14,7 +14,11 @@ RpmDisplay::RpmDisplay(LEDRing& ring, Vehicle& vehicle): ring(ring), vehicle(veh
 auto RpmDisplay::setup() -> void {
   INFO("RPM setup");
   ring.setShift(2);
-  vehicle.connect();
+
+  for (int i = 0; i < 100; ++i) {
+    if (vehicle.connect()) break;
+  }
+
   if (warmupEffect) {
     auto levels = ring.size() == 12 ? 9 : 13;
     if (ring.size() == 12) {
