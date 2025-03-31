@@ -15,6 +15,8 @@
 #include "network/OTASupport.h"
 #include "network/WebServer.h"
 #include "effect/Timer.h"
+#include "threading/ThreadPool.h"
+#include "StartOTACommand.h"
 
 namespace rgb {
 
@@ -35,7 +37,12 @@ auto App::start() -> void {
   pinMode(LED_BUILTIN, OUTPUT);
 
   log::init();
-  INFO("Logging Started");
+  ThreadPool::Start();
+
+  // Wifi.mode() must be called on the main thread for some reason
+  WiFi.mode(WIFI_STA);
+  ThreadPool::SubmitTask(StartOTACommand::Instance());
+
 //  OTASupport::Start();
 //  WebServer::Start();
   Clock::Init(config::FPS);
@@ -46,8 +53,10 @@ auto App::start() -> void {
 }
 
 auto App::loop() -> void {
-//  OTASupport::Update();
   Clock::StartTick();
+  OTASupport::Update();
+
+
   ledManager->clear();
   Timer::ProcessTimers();
 
