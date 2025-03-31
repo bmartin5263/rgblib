@@ -22,9 +22,9 @@ auto Wifi::start() -> bool {
   if (started) {
     return true;
   }
+  INFO("Starting Wifi");
   Stopwatch sw{"Wifi::start()"};
 
-  WiFi.mode(WIFI_STA);
   WiFi.begin(NAME, PASSWORD);
   if (WiFi.waitForConnectResult() != WL_CONNECTED) {
     WiFi.disconnect(true, false);
@@ -33,7 +33,6 @@ auto Wifi::start() -> bool {
 
   auto address = WiFi.localIP().toString();
   INFO("WIFI connected to %s", address.c_str());
-  digitalWrite(LED_BLUE, LOW);
 
   started = true;
   return started;

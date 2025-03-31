@@ -24,6 +24,8 @@ auto OTASupport::start() -> bool {
   if (!Wifi::Start()) {
     return false;
   }
+
+  INFO("Starting OTA Support");
   Stopwatch sw{"OTASupport::start()"};
 
   ArduinoOTA
@@ -65,6 +67,8 @@ auto OTASupport::start() -> bool {
     .begin();
 
   started = true;
+  digitalWrite(LED_BLUE, LOW);
+
   return started;
 }
 
