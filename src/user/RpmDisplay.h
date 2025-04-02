@@ -27,16 +27,13 @@ public:
 private:
   rgb::LEDRing& ring;
   rgb::Vehicle& vehicle;
-  RpmLayout layout{RpmLayout::SPORT};
-  bool warmupEffect{true};
-  int warmupTimer{0};
-  int warmupPhase{0};
-  uint rpmLevelRate{500};
+  uint limit{3600};
 
 public:
   int rpm{0};
-  rgb::u16 yellowStart{3};
-  rgb::u16 redStart{6};
+  RpmLayout layout{RpmLayout::SPORT};
+  rgb::u16 yellowLineStart{2800};
+  rgb::u16 redLineStart{3600};
   rgb::u8 dimBrightness{1};
   rgb::u8 brightBrightness{4};
 };

@@ -63,17 +63,28 @@ auto sceneManager = SceneCycle {scenes, &trailingScene, 800};
 auto nextSceneButton = PushButton{D4, [](){
   sceneManager.nextScene();
 }};
-auto actionButton = PushButton{D9, [](){
+auto actionButton = PushButton{D6, [](){
   if (rpmDisplay.dimBrightness != 0) {
     rpmDisplay.dimBrightness = 0;
   }
   else {
     rpmDisplay.dimBrightness = 1;
   }
+  if (rpmDisplay.layout == RpmLayout::SPORT) {
+    rpmDisplay.layout = RpmLayout::TRADITIONAL;
+  }
+  else {
+    rpmDisplay.layout = RpmLayout::SPORT;
+  }
 }};
-//auto toggleLowPower = PushButton{D12, [](){
-//  vehicle.setLowPowerMode(!vehicle.inLowPowerMode());
-//}};
+auto toggleLowPower = PushButton{D9, [](){
+  if (rpmDisplay.layout == RpmLayout::SPORT) {
+    rpmDisplay.layout = RpmLayout::TRADITIONAL;
+  }
+  else {
+    rpmDisplay.layout = RpmLayout::SPORT;
+  }
+}};
 
 TimerHandle handle;
 bool flag;

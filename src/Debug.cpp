@@ -14,13 +14,13 @@ auto Debug::trigger(bool value) -> void {
 
 auto Debug::update() -> void {
   if (debugChain != nullptr && triggered) {
-    debugChain->fill(Color::RED());
+    debugChain->fill(Color::CYAN());
   }
 }
 
 auto Debug::draw() -> void {
   if (debugChain != nullptr && triggered) {
-    debugChain->fill(Color::RED(.01));
+    debugChain->fill(Color::CYAN(.01));
   }
 }
 

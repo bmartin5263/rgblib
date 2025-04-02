@@ -14,57 +14,53 @@ RpmDisplay::RpmDisplay(LEDRing& ring, Vehicle& vehicle): ring(ring), vehicle(veh
 auto RpmDisplay::setup() -> void {
   INFO("RPM setup");
   ring.setShift(2);
-  vehicle.connect();
 
-  if (warmupEffect) {
-    auto levels = ring.size() == 12 ? 9 : 13;
-    if (ring.size() == 12) {
-      yellowStart = 2;
-      redStart = 5;
-    }
-    else {
-      yellowStart = 3;
-      redStart = 6;
-    }
+  for (int i = 0; i < 3; ++i) {
+    if (vehicle.connect()) break;
   }
 }
 
 auto RpmDisplay::update() -> void {
   rpm = vehicle.rpm();
+}
 
-  if (warmupEffect && ++warmupTimer >= 1200) {
-    warmupPhase += 1;
-    warmupTimer = 0;
-    if (warmupPhase == 2) {
-      ++yellowStart;
+constexpr u16 mapToPixelPosition(int level, int ledCount, int offset = 0) {
+  return (level + offset) % ledCount;
+}
+
+constexpr u16 calculateOffset(RpmLayout layout) {
+  return layout == RpmLayout::TRADITIONAL ? 0 : 10;
+}
+
+
+constexpr u16 calculateLevels(u16 ringSize, RpmLayout layout) {
+  if (ringSize == 12) {
+    if (layout == RpmLayout::SPORT) {
+      return 10;
     }
     else {
-      bool changed = false;
-      if (redStart < 8) {
-        ++redStart;
-        changed = true;
-      }
-      if (yellowStart < 6) {
-        ++yellowStart;
-        changed = true;
-      }
-      if (!changed) {
-        warmupEffect = false;
-      }
+      return 9;
+    }
+  }
+  else {
+    if (layout == RpmLayout::SPORT) {
+      return 14;
+    }
+    else {
+      return 13;
     }
   }
 }
 
-constexpr u16 mapToPixelPosition(int level, int ledCount) {
-  return (level) % ledCount;
-}
-
 auto RpmDisplay::draw() -> void {
   auto ledCount = ring.size();
-  auto levels = ring.size() == 12 ? 9 : 13;
+  auto levels = calculateLevels(ring.size(), layout);
+  auto rpmLevelRate = limit / levels;
   auto rpmLevel = rpm / rpmLevelRate;
-  for (int i = 0; i < levels; ++i) {
+  auto offset = calculateOffset(layout);
 
+  for (int i = 0; i < levels; ++i) {
+    auto levelValue = rpmLevelRate * i + rpmLevelRate;
     float brightness;
     if (i < rpmLevel) {
       brightness = ByteToFloat(brightBrightness);
@@ -74,10 +70,10 @@ auto RpmDisplay::draw() -> void {
     }
 
     Color color;
-    if (i < yellowStart) {
+    if (levelValue < yellowLineStart) {
       color = Color::GREEN(brightness);
     }
-    else if (i < redStart) {
+    else if (levelValue < redLineStart) {
       color = Color::YELLOW(brightness);
     }
     else {
@@ -85,7 +81,7 @@ auto RpmDisplay::draw() -> void {
     }
 
 
-    ring[mapToPixelPosition(i, ledCount)] = color;
+    ring[mapToPixelPosition(i, ledCount, offset)] = color;
   }
 }
 
