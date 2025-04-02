@@ -22,9 +22,10 @@ public:
   auto readPID(byte pid, int defaultValue = 0) -> int;
   auto readPID(const byte pid[], byte count, int result[], int defaultValue = 0) -> bool;
 
-  auto rpm(int defaultValue = 0) -> revs_per_minute;
-  auto speed(int defaultValue = 0) -> mph;
-  auto oilTemp(int defaultValue = 0) -> fahrenheit;
+  auto rpm(revs_per_minute defaultValue = 0) -> revs_per_minute;
+  auto speed(kph defaultValue = 0) -> kph;
+  auto oilTemp(celsius defaultValue = 0) -> celsius;
+  auto coolantTemp(celsius defaultValue = 0) -> celsius;
 
   auto inLowPowerMode() const -> bool;
   auto setLowPowerMode(bool value) -> void;

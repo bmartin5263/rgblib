@@ -40,15 +40,20 @@ auto Vehicle::disconnect() -> void {
   obdHandle.reset({});
 }
 
-auto Vehicle::rpm(int defaultValue) -> revs_per_minute {
+auto Vehicle::rpm(revs_per_minute defaultValue) -> revs_per_minute {
   return readPID(PID_RPM, defaultValue);
 }
 
-auto Vehicle::oilTemp(int defaultValue) -> fahrenheit {
+auto Vehicle::oilTemp(celsius defaultValue) -> celsius {
   return readPID(PID_ENGINE_OIL_TEMP, defaultValue);
 }
 
-auto Vehicle::speed(int defaultValue) -> mph {
+
+auto Vehicle::coolantTemp(celsius defaultValue) -> celsius {
+  return readPID(PID_COOLANT_TEMP, defaultValue);
+}
+
+auto Vehicle::speed(kph defaultValue) -> kph {
   return readPID(PID_SPEED, defaultValue);
 }
 
