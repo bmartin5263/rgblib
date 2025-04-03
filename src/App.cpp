@@ -7,16 +7,17 @@
 #include "App.h"
 #include "AppBuilder.h"
 #include "Scene.h"
-#include "NullScene.h"
 #include "Clock.h"
 #include "Assertions.h"
-#include "SceneManager.h"
-#include "LEDManager.h"
+#include "ISceneManager.h"
+#include "ILEDManager.h"
+#include "ISensorManager.h"
 #include "network/OTASupport.h"
 #include "network/WebServer.h"
 #include "effect/Timer.h"
 #include "threading/ThreadPool.h"
 #include "StartOTACommand.h"
+#include "network/Wireless.h"
 
 namespace rgb {
 
@@ -36,14 +37,14 @@ auto App::start() -> void {
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
 
-  log::init();
   ThreadPool::Start();
+  Wifi::SetMode(WIFI_STA); // Wifi.mode() must be called on the main thread, else program crashes
+  Wifi::Start();
+  OTASupport::Start();
+//  if (otaEnabled) {
+//    ThreadPool::SubmitTask(StartOTACommand::Instance());
+//  }
 
-  // Wifi.mode() must be called on the main thread for some reason
-  WiFi.mode(WIFI_STA);
-  ThreadPool::SubmitTask(StartOTACommand::Instance());
-
-//  OTASupport::Start();
 //  WebServer::Start();
   Clock::Init(config::FPS);
 
@@ -54,8 +55,9 @@ auto App::start() -> void {
 
 auto App::loop() -> void {
   Clock::StartTick();
-  OTASupport::Update();
-
+  sensorManager->update();
+  OTASupport::Update(); // todo - race condition
+  Wifi::Update();
 
   ledManager->clear();
   Timer::ProcessTimers();
@@ -106,6 +108,8 @@ auto App::configure(const AppBuilder& appBuilder) -> void {
   ASSERT(!started, "App has already started");
   sceneManager = appBuilder.mSceneManager;
   ledManager = appBuilder.mLedManager;
+  sensorManager = appBuilder.mSensorManager;
+  otaEnabled = appBuilder.mEnabledOTA;
 
   Debug::Instance().setDebugChain(appBuilder.mDebugOutputLED);
 }

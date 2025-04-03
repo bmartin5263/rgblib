@@ -14,6 +14,7 @@ auto Clock::Instance() -> Clock& {
 }
 
 auto Clock::init(frames targetFps) -> void {
+  this->targetFps = targetFps;
   this->maxMicrosPerFrame = 1000000 / targetFps;
 }
 
@@ -23,11 +24,11 @@ auto Clock::startTick() -> void {
 
   if (elapsed >= 1'000'000) { // Update every second
     INFO("FPS: %lu", fpsCounter);
-    if (fpsCounter < 120) {
-      digitalWrite(LED_GREEN, LOW);
+    if (fpsCounter < (targetFps / 2)) {
+      digitalWrite(LED_RED, LOW);
     }
     else {
-      digitalWrite(LED_GREEN, HIGH);
+      digitalWrite(LED_RED, HIGH);
     }
 
     fpsCounter = 0;

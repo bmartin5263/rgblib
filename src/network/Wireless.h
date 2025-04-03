@@ -6,17 +6,22 @@
 #define RGBLIB_WIRELESS_H
 
 
+#include <esp_wifi_types.h>
+
 namespace rgb {
 
 class Wifi {
 public:
+  static auto SetMode(wifi_mode_t mode) -> void;
   static auto Start() -> bool;
+  static auto Update() -> void;
 
 private:
   bool started{false};
 
   static auto Instance() -> Wifi&;
   auto start() -> bool;
+  auto update() -> void;
 
   static const char* NAME;
   static const char* PASSWORD;

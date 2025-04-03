@@ -6,9 +6,12 @@
 #define RGBLIB_VEHICLE_H
 
 #include <OBD.h>
+#include <atomic>
+#include <shared_mutex>
 #include "Handle.h"
 
 namespace rgb {
+
 
 struct OBDDestroyer {
   auto operator()(COBD& c) const noexcept -> void;
@@ -16,23 +19,36 @@ struct OBDDestroyer {
 
 class Vehicle {
 public:
+  using mutex = std::shared_mutex;
+  using atomic_int = std::atomic_int;
+  using atomic_bool = std::atomic_bool;
+
+  auto update() -> void;
   auto connect() -> bool;
-  auto disconnect() -> void;
-
-  auto readPID(byte pid, int defaultValue = 0) -> int;
-  auto readPID(const byte pid[], byte count, int result[], int defaultValue = 0) -> bool;
-
-  auto rpm(revs_per_minute defaultValue = 0) -> revs_per_minute;
-  auto speed(kph defaultValue = 0) -> kph;
-  auto oilTemp(celsius defaultValue = 0) -> celsius;
-  auto coolantTemp(celsius defaultValue = 0) -> celsius;
-
-  auto inLowPowerMode() const -> bool;
   auto setLowPowerMode(bool value) -> void;
+
+  auto rpm() const -> revs_per_minute;
+  auto speed() const -> kph;
+  auto oilTemp() const -> celsius;
+  auto coolantTemp() const -> celsius;
+  auto inLowPowerMode() const -> bool;
+  auto isConnected() const -> bool;
 
 private:
   Handle<COBD, OBDDestroyer> obdHandle{{}};
-  bool lowPowerMode{false};
+  mutable mutex mu{};
+  atomic_int mRpm{};
+  atomic_int mSpeed{};
+  atomic_int mOilTemp{};
+  atomic_int mCoolantTemp{};
+  atomic_bool mConnected{false};
+  milliseconds lastCheck{0};
+  milliseconds lastResponse{0};
+  atomic_bool mLowPowerMode{false};
+
+  auto disconnect() -> void;
+  auto readPID(byte pid, atomic_int& result, milliseconds timeout, milliseconds now) -> void;
+  auto readPID(const byte pid[], byte count, int result[], int defaultValue = 0) -> bool;
 };
 
 }

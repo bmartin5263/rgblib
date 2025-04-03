@@ -73,19 +73,19 @@ void COBD::sendQuery(byte pid)
 	write(cmd);
 }
 
-bool COBD::readPID(byte pid, int& result)
+bool COBD::readPID(byte pid, int& result, int timeout)
 {
 	// send a query command
 	sendQuery(pid);
 	// receive and parse the response
-	return getResult(pid, result);
+	return getResult(pid, result, timeout);
 }
 
 byte COBD::readPID(const byte pid[], byte count, int result[])
 {
 	byte results = 0; 
 	for (byte n = 0; n < count; n++) {
-		if (readPID(pid[n], result[n])) {
+		if (readPID(pid[n], result[n], 1000)) {
 			results++;
 		}
 	}
@@ -227,7 +227,7 @@ int COBD::normalizeData(byte pid, char* data)
 	return result;
 }
 
-char* COBD::getResponse(byte& pid, char* buffer, byte bufsize)
+char* COBD::getResponse(byte& pid, char* buffer, byte bufsize, int timeout)
 {
 	while (receive(buffer, bufsize, 5) > 0) {
 		char *p = buffer;
@@ -246,10 +246,10 @@ char* COBD::getResponse(byte& pid, char* buffer, byte bufsize)
 	return 0;
 }
 
-bool COBD::getResult(byte& pid, int& result)
+bool COBD::getResult(byte& pid, int& result, int timeout)
 {
 	char buffer[64];
-	char* data = getResponse(pid, buffer, sizeof(buffer));
+	char* data = getResponse(pid, buffer, sizeof(buffer), timeout);
 	if (!data) {
 		recover();
 		errors++;
@@ -352,7 +352,7 @@ byte COBD::getVersion()
 	byte version = 0;
 	for (byte n = 0; n < 3; n++) {
 		char buffer[32];
-		if (sendCommand("ATI\r", buffer, sizeof(buffer), 200)) {
+		if (sendCommand("ATI\r", buffer, sizeof(buffer), 20)) {
 			char *p = strchr(buffer, ' ');
 			if (p) {
 				p += 2;

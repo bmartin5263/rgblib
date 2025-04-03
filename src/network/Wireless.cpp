@@ -18,24 +18,33 @@ auto Wifi::Start() -> bool {
   return Instance().start();
 }
 
+auto Wifi::Update() -> void {
+  Instance().update();
+}
+
+auto Wifi::SetMode(wifi_mode_t mode) -> void {
+  WiFi.mode(mode);
+}
+
 auto Wifi::start() -> bool {
   if (started) {
     return true;
   }
+
   INFO("Starting Wifi");
   Stopwatch sw{"Wifi::start()"};
 
   WiFi.begin(NAME, PASSWORD);
-  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    WiFi.disconnect(true, false);
-    return false;
-  }
 
-  auto address = WiFi.localIP().toString();
-  INFO("WIFI connected to %s", address.c_str());
-
-  started = true;
   return started;
+}
+
+auto Wifi::update() -> void {
+  if (WiFi.isConnected() && !started) {
+    auto address = WiFi.localIP().toString();
+    INFO("WIFI connected to %s", address.c_str());
+    started = true;
+  }
 }
 
 }

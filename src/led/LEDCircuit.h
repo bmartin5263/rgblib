@@ -18,7 +18,7 @@ template <u16 N>
 class LEDCircuit : public LEDChain {
 public:
   explicit LEDCircuit(pin_num pin, u16 rotation = 0, neoPixelType type = NEO_GRBW + NEO_KHZ800):
-    data{}, impl(N, pin, type), mRotation(rotation)
+    data{}, impl(N, pin, type), mRotation(rotation), reversed(false)
   {
 
   }
@@ -46,9 +46,14 @@ public:
 
   auto display() -> void {
     for (u16 i = 0; i < N; ++i) {
-      Color& c = data[i];
-      // TODO - apply rotation/shift here?
-      impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
+      if (reversed) {
+        Color& c = data[N - 1 - i];
+        impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
+      }
+      else {
+        Color& c = data[i];
+        impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
+      }
     }
     impl.show();
   }
@@ -57,12 +62,15 @@ public:
     mRotation = amount;
   }
 
-
+  auto reverse() -> void {
+    reversed = !reversed;
+  }
 
 private:
   Color data[N];
   Adafruit_NeoPixel impl;
   u16 mRotation;
+  bool reversed;
 };
 
 }

@@ -40,6 +40,7 @@ private:
   frames fpsCounter{};
   microseconds tickStart{};
   microseconds lastTime{};
+  microseconds targetFps{};
   microseconds maxMicrosPerFrame{};
 };
 

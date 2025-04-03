@@ -2,13 +2,16 @@
 #include "App.h"
 #include "AppBuilder.h"
 #include "sensor/PushButton.h"
+#include "sensor/ConnectToVehicleCommand.h"
 #include "effect/Timer.h"
 #include "user/RpmDisplay.h"
 #include "user/ChainableScene.h"
-#include "user/SceneCycle.h"
+#include "user/SceneManager.h"
 #include "user/SolidScene.h"
 #include "user/TrailingScene.h"
-#include "user/NeopixelLEDManager.h"
+#include "user/LEDManager.h"
+#include "user/SensorManager.h"
+#include "threading/ThreadPool.h"
 
 using namespace rgb;
 
@@ -23,12 +26,12 @@ auto staticAssertions() -> void {
   static_assert(sizeof(double) == 8);
 }
 
-constexpr u16 LED_COUNT = 12;
+constexpr u16 LED_COUNT = 16;
 
 // Output
 auto ring = LEDCircuit<LED_COUNT>{D2};
-auto slice = ring.slice(6);
-auto ledManager = NeopixelLEDManager<LED_COUNT>{ring};
+auto slice = ring.slice(3);
+auto ledManager = LEDManager<LED_COUNT>{ring};
 
 // Scenes
 auto vehicle = Vehicle{};
@@ -53,11 +56,11 @@ auto trailingSceneParameters = TrailingSceneParameters{
 auto trailingScene = TrailingScene{trailingSceneParameters};
 
 auto scenes = std::array {
-  static_cast<Scene*>(&rpmDisplay),
-  static_cast<Scene*>(&solidScene),
-  static_cast<Scene*>(&trailingScene)
+  static_cast<Scene*>(&trailingScene),
+//  static_cast<Scene*>(&rpmDisplay),
+//  static_cast<Scene*>(&solidScene)
 };
-auto sceneManager = SceneCycle {scenes, &trailingScene, 800};
+auto sceneManager = SceneManager {scenes, nullptr, 0};
 
 // Input
 auto nextSceneButton = PushButton{D4, [](){
@@ -86,20 +89,38 @@ auto toggleLowPower = PushButton{D9, [](){
   }
 }};
 
-TimerHandle handle;
-bool flag;
+auto sensors = std::array<SensorFunction, 0>{
+//  SensorFunction { []() { nextSceneButton.update(); } },
+//  SensorFunction { []() { actionButton.update(); } },
+//  SensorFunction { []() { toggleLowPower.update(); } },
+};
+auto sensorManager = SensorManager { sensors };
+
+auto connectToVehicleCmd = ConnectToVehicleCommand { &vehicle };
 
 void setup() {
+  if (LED_COUNT == 12) {
+    ring.setShift(2);
+  }
+  else if (LED_COUNT == 16) {
+    ring.setShift(10);
+    ring.reverse();
+  }
+  log::init();
+//  delay(3000);
+//  ThreadPool::Start();
+//  ThreadPool::SubmitTask(connectToVehicleCmd);
+  connectToVehicleCmd.execute();
   AppBuilder::Create()
+      .EnableOTA()
       .DebugOutputLED(&slice)
       .SetSceneManager(&sceneManager)
       .SetLEDManager(&ledManager)
+      .SetSensorManager(&sensorManager)
       .Start();
 }
 
 void loop() {
-  nextSceneButton.update();
-  actionButton.update();
-//  toggleLowPower.update();
+  vehicle.update();
   App::Loop();
 }

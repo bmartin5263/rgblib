@@ -6,13 +6,13 @@
 #define RGBLIB_NEOPIXEL_LED_MANAGER_H
 
 #include <array>
-#include "LEDManager.h"
+#include "ILEDManager.h"
 #include "led/LEDCircuit.h"
 
 template <uint N>
-class NeopixelLEDManager : public rgb::LEDManager {
+class LEDManager : public rgb::ILEDManager {
 public:
-  NeopixelLEDManager(rgb::LEDCircuit<N>& circuit):
+  LEDManager(rgb::LEDCircuit<N>& circuit):
     circuit(circuit) {
 
   }

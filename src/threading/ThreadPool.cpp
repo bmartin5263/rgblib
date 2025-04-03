@@ -12,21 +12,21 @@ namespace rgb {
 auto ThreadPool::start() -> void {
   INFO("Starting ThreadPool");
 
-  for (auto i = 0; i < 1; ++i) {
-    auto t = std::thread([&](){
-      while (true) {
-        auto command = buffer.pop();
-        if (command != nullptr) {
-          command->execute();
-        }
-      }
-    });
-    t.detach();
-  }
+//  for (auto i = 0; i < 1; ++i) {
+//    auto t = std::thread([&](){
+//      while (true) {
+//        auto command = commandBuffer.pop();
+//        if (command != nullptr) {
+//          command->execute();
+//        }
+//      }
+//    });
+//    t.detach();
+//  }
 }
 
 auto ThreadPool::submitTask(ThreadCommand& task) -> void {
-  buffer.push(&task);
+  commandBuffer.push(&task);
 }
 
 }

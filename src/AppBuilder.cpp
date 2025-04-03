@@ -12,19 +12,29 @@ auto AppBuilder::DebugOutputLED(LEDChain* ledChain) -> self {
   return *this;
 }
 
-auto AppBuilder::SetSceneManager(SceneManager* sceneManager) -> self {
+auto AppBuilder::SetSceneManager(ISceneManager* sceneManager) -> self {
   this->mSceneManager = sceneManager;
   return *this;
 }
 
-auto AppBuilder::SetLEDManager(LEDManager* ledManager) -> self {
+auto AppBuilder::SetLEDManager(ILEDManager* ledManager) -> self {
   this->mLedManager = ledManager;
+  return *this;
+}
+
+auto AppBuilder::EnableOTA() -> self {
+  mEnabledOTA = true;
   return *this;
 }
 
 auto AppBuilder::Start() -> void {
   App::Configure(*this);
   App::Start();
+}
+
+auto AppBuilder::SetSensorManager(ISensorManager* sensorManager) -> AppBuilder& {
+  mSensorManager = sensorManager;
+  return *this;
 }
 
 

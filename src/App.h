@@ -9,8 +9,9 @@ namespace rgb {
 
 class AppBuilder;
 class Scene;
-class SceneManager;
-class LEDManager;
+class ISceneManager;
+class ILEDManager;
+class ISensorManager;
 class App {
 public:
   App(const App&) = delete;
@@ -40,9 +41,11 @@ private:
 
   Scene* scene;
   Scene* nextScene;
-  SceneManager* sceneManager;
-  LEDManager* ledManager;
+  ISceneManager* sceneManager;
+  ILEDManager* ledManager;
+  ISensorManager* sensorManager;
   bool started;
+  bool otaEnabled;
 };
 
 }

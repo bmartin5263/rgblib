@@ -27,13 +27,13 @@ public:
 private:
   rgb::LEDRing& ring;
   rgb::Vehicle& vehicle;
-  uint limit{3600};
-
 public:
+
   int rpm{0};
-  RpmLayout layout{RpmLayout::SPORT};
-  rgb::u16 yellowLineStart{2800};
-  rgb::u16 redLineStart{3600};
+  RpmLayout layout{RpmLayout::TRADITIONAL};
+  uint yellowLineStart{5500};
+  uint redLineStart{6500};
+  uint limit{7000};
   rgb::u8 dimBrightness{1};
   rgb::u8 brightBrightness{4};
 };

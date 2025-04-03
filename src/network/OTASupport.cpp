@@ -10,6 +10,7 @@
 #include "Wireless.h"
 #include "Stopwatch.h"
 #include "Log.h"
+#include "Config.h"
 
 namespace rgb {
 
@@ -21,9 +22,9 @@ auto OTASupport::start() -> bool {
   if (started) {
     return true;
   }
-  if (!Wifi::Start()) {
-    return false;
-  }
+//  if (!Wifi::Start()) {
+//    return false;
+//  }
 
   INFO("Starting OTA Support");
   Stopwatch sw{"OTASupport::start()"};
@@ -67,7 +68,7 @@ auto OTASupport::start() -> bool {
     .begin();
 
   started = true;
-  digitalWrite(LED_BLUE, LOW);
+  digitalWrite(rgb::config::LED_OTA_CONNECTED, LOW);
 
   return started;
 }

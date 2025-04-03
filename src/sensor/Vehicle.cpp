@@ -3,6 +3,9 @@
 //
 
 #include "Vehicle.h"
+#include "Config.h"
+#include "Clock.h"
+#include "threading/ThreadPool.h"
 
 namespace rgb {
 
@@ -11,65 +14,95 @@ auto OBDDestroyer::operator()(COBD& c) const noexcept -> void {
 }
 
 auto Vehicle::connect() -> bool {
-//  Log.infoLn("Vehicle connect()");
+  auto lock = std::unique_lock { mu };
   if ((*obdHandle).getState() == OBD_STATES::OBD_CONNECTED) {
-    TRACE("Vehicle already connected");
+    INFO("Vehicle already connected");
+    mConnected = true;
     return true;
   }
 
+  INFO("Connecting");
+
   obdHandle.reset({});
+  mConnected = false;
+
   auto& obd = *obdHandle;
 
   if (!obd.begin()) {
     ERROR("Vehicle begin() failed");
+    digitalWrite(rgb::config::LED_DROPPING_FRAMES, LOW);
     return false;
   }
 
   if (!obd.init()) {
     ERROR("Vehicle init() failed");
+    digitalWrite(rgb::config::LED_DROPPING_FRAMES, LOW);
     return false;
   }
 
-  ERROR("Vehicle ready");
-  digitalWrite(LED_RED, LOW);
+  INFO("Vehicle ready");
+  digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, LOW);
+  digitalWrite(rgb::config::LED_DROPPING_FRAMES, HIGH);
+  mConnected = true;
 
   return true;
 }
 
 auto Vehicle::disconnect() -> void {
   obdHandle.reset({});
+  digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, HIGH);
+  mConnected = false;
 }
 
-auto Vehicle::rpm(revs_per_minute defaultValue) -> revs_per_minute {
-  return readPID(PID_RPM, defaultValue);
+auto Vehicle::update() -> void {
+//  auto lock = std::unique_lock { mu };
+
+  auto now = Clock::Milli();
+  if (!mConnected && (now - lastCheck) >= 5000) {
+    lastCheck = now;
+    connect();
+//    INFO("Not connected");
+    return;
+  }
+
+  readPID(PID_RPM, mRpm, 1, now);
+//  readPID(PID_ENGINE_OIL_TEMP, mOilTemp, 1);
+//  readPID(PID_COOLANT_TEMP, mCoolantTemp, 1);
+//  readPID(PID_SPEED, mSpeed, 1);
 }
 
-auto Vehicle::oilTemp(celsius defaultValue) -> celsius {
-  return readPID(PID_ENGINE_OIL_TEMP, defaultValue);
+auto Vehicle::rpm() const -> revs_per_minute {
+  return mRpm;
 }
 
-
-auto Vehicle::coolantTemp(celsius defaultValue) -> celsius {
-  return readPID(PID_COOLANT_TEMP, defaultValue);
+auto Vehicle::oilTemp() const -> celsius {
+  return mOilTemp;
 }
 
-auto Vehicle::speed(kph defaultValue) -> kph {
-  return readPID(PID_SPEED, defaultValue);
+auto Vehicle::coolantTemp() const -> celsius {
+  return mCoolantTemp;
 }
 
-auto Vehicle::readPID(byte pid, int defaultValue) -> int {
+auto Vehicle::speed() const-> kph {
+  return mSpeed;
+}
+
+auto Vehicle::readPID(byte pid, atomic_int& result, milliseconds timeout, milliseconds now) -> void {
   auto& obd = *obdHandle;
 
   if (obd.getState() != OBD_CONNECTED) {
-    return defaultValue;
+    return;
   }
 
   int value;
-  if (obd.readPID(pid, value)) {
-    return value;
+  if (obd.readPID(pid, value, (int) timeout)) {
+    result = value;
+    lastResponse = now;
   }
   else {
-    return defaultValue;
+    if (now - lastResponse >= 1000) {
+      disconnect();
+    }
   }
 }
 
@@ -90,17 +123,22 @@ auto Vehicle::readPID(const byte pid[], byte count, int result[], int defaultVal
 }
 
 auto Vehicle::inLowPowerMode() const -> bool {
-  return lowPowerMode;
+  return mLowPowerMode;
+}
+
+auto Vehicle::isConnected() const -> bool {
+  return mConnected;
 }
 
 auto Vehicle::setLowPowerMode(bool value) -> void {
-//  lowPowerMode = value;
-//  if (lowPowerMode) {
-//    digitalWrite(LED_GREEN, LOW);
-//  }
-//  else {
-//    digitalWrite(LED_GREEN, HIGH);
-//  }
+  auto lock = std::unique_lock { mu };
+  mLowPowerMode = value;
+  if (mLowPowerMode) {
+    digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, HIGH);
+  }
+  else {
+    digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, LOW);
+  }
 }
 
 }

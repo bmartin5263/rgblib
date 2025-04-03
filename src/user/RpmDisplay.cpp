@@ -13,11 +13,6 @@ RpmDisplay::RpmDisplay(LEDRing& ring, Vehicle& vehicle): ring(ring), vehicle(veh
 
 auto RpmDisplay::setup() -> void {
   INFO("RPM setup");
-  ring.setShift(2);
-
-  for (int i = 0; i < 3; ++i) {
-    if (vehicle.connect()) break;
-  }
 }
 
 auto RpmDisplay::update() -> void {
@@ -28,8 +23,13 @@ constexpr u16 mapToPixelPosition(int level, int ledCount, int offset = 0) {
   return (level + offset) % ledCount;
 }
 
-constexpr u16 calculateOffset(RpmLayout layout) {
-  return layout == RpmLayout::TRADITIONAL ? 0 : 10;
+constexpr u16 calculateOffset(u16 ringSize, RpmLayout layout) {
+  if (ringSize == 12) {
+    return layout == RpmLayout::TRADITIONAL ? 0 : 10;
+  }
+  else {
+    return layout == RpmLayout::TRADITIONAL ? 5 : 3;
+  }
 }
 
 
@@ -44,7 +44,7 @@ constexpr u16 calculateLevels(u16 ringSize, RpmLayout layout) {
   }
   else {
     if (layout == RpmLayout::SPORT) {
-      return 14;
+      return 13;
     }
     else {
       return 13;
@@ -54,10 +54,10 @@ constexpr u16 calculateLevels(u16 ringSize, RpmLayout layout) {
 
 auto RpmDisplay::draw() -> void {
   auto ledCount = ring.size();
-  auto levels = calculateLevels(ring.size(), layout);
+  auto levels = calculateLevels(ledCount, layout);
   auto rpmLevelRate = limit / levels;
   auto rpmLevel = rpm / rpmLevelRate;
-  auto offset = calculateOffset(layout);
+  auto offset = calculateOffset(ledCount, layout);
 
   for (int i = 0; i < levels; ++i) {
     auto levelValue = rpmLevelRate * i + rpmLevelRate;

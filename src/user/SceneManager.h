@@ -6,7 +6,7 @@
 #define RGBLIB_SCENECYCLE_H
 
 #include <array>
-#include "SceneManager.h"
+#include "ISceneManager.h"
 #include "Clock.h"
 #include "Types.h"
 #include "NullScene.h"
@@ -16,9 +16,9 @@
 namespace rgb {
 
 template <uint N>
-class SceneCycle : public SceneManager {
+class SceneManager : public ISceneManager {
 public:
-  SceneCycle(
+  SceneManager(
     std::array<Scene*, N>& scenes,
     Scene* introScene,
     milliseconds runIntroSceneFor

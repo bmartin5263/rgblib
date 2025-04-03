@@ -38,7 +38,7 @@ struct number_wrapper {
   V value;
 
   constexpr explicit number_wrapper(V value) : value(value) {}
-  constexpr number_wrapper(Self& wrapper) : value(wrapper.value) {}
+  constexpr explicit number_wrapper(Self& wrapper) : value(wrapper.value) {}
 
   constexpr auto operator=(V rhs) -> self_type& {
     value = rhs;

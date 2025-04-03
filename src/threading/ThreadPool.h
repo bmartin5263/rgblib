@@ -19,7 +19,7 @@ public:
 
 private:
 //  std::array<std::thread, 2> pool{};
-  CircularBuffer buffer{};
+  CircularBuffer commandBuffer{};
 
   static auto Instance() -> ThreadPool& {
     static ThreadPool instance;
