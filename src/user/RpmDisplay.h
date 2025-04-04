@@ -22,7 +22,6 @@ public:
   auto setup() -> void override;
   auto update() -> void override;
   auto draw() -> void override;
-  auto cleanup() -> void override;
 
 private:
   rgb::LEDRing& ring;

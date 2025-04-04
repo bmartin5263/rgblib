@@ -21,9 +21,9 @@ public:
   SceneManager(
     std::array<Scene*, N>& scenes,
     Scene* introScene,
-    milliseconds runIntroSceneFor
+    Duration runIntroSceneFor
   ):
-    scenes(scenes), introScene(introScene),runIntroSceneFor(runIntroSceneFor), introEndTime(0),
+    scenes(scenes), introScene(introScene), runIntroSceneFor(runIntroSceneFor), introEndTime(0),
     currentScene(0), introSceneRunning(false)
   {
 
@@ -33,7 +33,7 @@ public:
     if (introScene != nullptr) {
       TRACE("Intro Scene");
       currentScene = -1;
-      introEndTime = Clock::Milli() + runIntroSceneFor;
+      introEndTime = Clock::Micro() + runIntroSceneFor.value;
       introSceneRunning = true;
       return *introScene;
     }
@@ -46,7 +46,7 @@ public:
   }
 
   auto update() -> void override {
-    if (introSceneRunning && introSceneShouldEnd(Clock::Milli())) {
+    if (introSceneRunning && introSceneShouldEnd(Clock::Micro())) {
       INFO("Ending Intro Scene");
       nextScene();
     }
@@ -67,12 +67,12 @@ public:
 private:
   std::array<Scene*, N>& scenes;
   Scene* introScene;
-  milliseconds runIntroSceneFor;
-  milliseconds introEndTime;
+  Duration runIntroSceneFor;
+  microseconds introEndTime;
   int currentScene;
   bool introSceneRunning;
 
-  auto introSceneShouldEnd(milliseconds now) -> bool {
+  auto introSceneShouldEnd(microseconds now) -> bool {
     return now >= introEndTime;
   }
 };

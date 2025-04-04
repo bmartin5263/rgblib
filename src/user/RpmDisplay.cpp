@@ -84,7 +84,3 @@ auto RpmDisplay::draw() -> void {
     ring[mapToPixelPosition(i, ledCount, offset)] = color;
   }
 }
-
-auto RpmDisplay::cleanup() -> void {
-  ring.setShift(0);
-}
