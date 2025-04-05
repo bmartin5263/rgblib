@@ -40,16 +40,19 @@ auto solidScene = SolidScene{slice};
 
 auto trailingScene = TrailingScene{ TrailingSceneParameters {
   .leds = &ring,
-  .colorGenerator = [](auto params){
-    return rgb::Color(
-      0.f,
-      rgb::ByteToFloat(params.relativePosition),
-      0.f
-    );
+  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
+    auto x = LerpClamp(.5f, 1.f, params.relativePosition, params.length);
+    auto rgb = Color::HslToRgb(x) * .02f;
+    return rgb;
   },
-  .speed = Duration::Milliseconds(50),
+//  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
+//    auto x = Pulse(params.now.asSeconds(), .5f);
+//    auto rgb = Color::HslToRgb(x) * .02f;
+//    return rgb;
+//  },
+  .speed = Duration::Seconds(1),
   .shift = 6,
-  .length = LED_COUNT / 2,
+  .length = 10,
   .endBuffer = 4,
   .continuous = true
 }};

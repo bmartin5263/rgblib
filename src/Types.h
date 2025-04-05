@@ -53,12 +53,12 @@ struct number_wrapper {
     return Self { value - rhs.value };
   }
 
-  constexpr auto operator+(V rhs) const -> Self {
-    return Self { value + rhs } ;
+  constexpr auto operator*(const Self& rhs) const -> Self {
+    return Self { value * rhs.value };
   }
 
-  constexpr auto operator-(V rhs) const -> Self {
-    return Self { value - rhs };
+  constexpr auto operator/(const Self& rhs) const -> Self {
+    return Self { value / rhs.value };
   }
 
   constexpr auto operator+=(const Self& rhs) -> Self& {
@@ -197,16 +197,20 @@ struct Duration : public number_wrapper<unsigned long, Duration> {
   static constexpr auto Minutes(unsigned long amount) -> Duration { return Duration(amount * 60000000); }
   static constexpr auto Milliseconds(unsigned long amount) -> Duration { return Duration(amount * 1000); }
   static constexpr auto Microseconds(unsigned long amount) -> Duration { return Duration(amount); }
-  constexpr auto asSeconds() -> unsigned long { return value * 1000000; }
-  constexpr auto asMinutes() -> unsigned long { return value * 60000000; }
-  constexpr auto asMilliseconds() -> unsigned long { return value * 1000; }
-  constexpr auto asMicroseconds() -> unsigned long { return value; }
+  constexpr auto asSeconds() -> float { return static_cast<float>(value) / 1000000.f; }
+  constexpr auto asMinutes() -> float { return static_cast<float>(value) / 60000000.f; }
+  constexpr auto asMilliseconds() -> float { return static_cast<float>(value) / 1000.f; }
+  constexpr auto asMicroseconds() -> float { return static_cast<float>(value); }
 };
 
 struct Timestamp : public number_wrapper<unsigned long, Timestamp> {
   constexpr explicit Timestamp() : number_wrapper<unsigned long, Timestamp>(0) {}
   constexpr explicit Timestamp(unsigned long microseconds) : number_wrapper<unsigned long, Timestamp>(microseconds) {}
   static constexpr auto OfMicroseconds(unsigned long amount) -> Timestamp { return Timestamp(amount); }
+  constexpr auto asSeconds() -> float { return static_cast<float>(value) / 1000000.f; }
+  constexpr auto asMinutes() -> float { return static_cast<float>(value) / 60000000.f; }
+  constexpr auto asMilliseconds() -> float { return static_cast<float>(value) / 1000.f; }
+  constexpr auto asMicroseconds() -> float { return static_cast<float>(value); }
 
   constexpr auto operator+(const Duration& rhs) const -> Timestamp {
     return Timestamp { value + rhs.value };

@@ -17,7 +17,7 @@ struct Color {
 
   }
 
-  constexpr Color(float w): r(0.f), g(0.f), b(0.f), w(w) {
+  explicit constexpr Color(float w): r(0.f), g(0.f), b(0.f), w(w) {
 
   }
 
@@ -27,6 +27,18 @@ struct Color {
 
   constexpr Color(float r, float g, float b, float w): r(r), g(g), b(b), w(w) {
 
+  }
+
+  constexpr auto operator*=(float rhs) -> Color& {
+    r *= rhs;
+    g *= rhs;
+    b *= rhs;
+    w *= rhs;
+    return *this;
+  }
+
+  constexpr auto operator*(float rhs) const -> Color {
+    return Color { r * rhs, g * rhs, b * rhs, w * rhs };
   }
 
   static constexpr auto FromBytes(u8 r, u8 g, u8 b, u8 w = 0) -> Color {
@@ -104,20 +116,10 @@ struct Color {
   }
 
   static constexpr auto OFF() -> Color {
-    return {0, 0, 0, 0};
+    return {0.f, 0.f, 0.f, 0.f};
   }
 
-  static constexpr auto HueToRgb(float p, float q, float t) -> float {
-    if (t < 0) t += 1;
-    if (t > 1) t -= 1;
-    if (t < 1.0f / 6) return p + (q - p) * 6 * t;
-    if (t < 1.0f / 2) return q;
-    if (t < 2.0f / 3) return p + (q - p) * (2.0f / 3 - t) * 6;
-    return p;
-  }
-
-private:
-  static constexpr auto HslToRgb(float h, float s, float l) -> Color {
+  static constexpr auto HslToRgb(float h, float s = 1.0f, float l = .5f) -> Color {
     float r{}, g{}, b{};
 
     if (s == 0.f) {
@@ -133,6 +135,17 @@ private:
 
     // Convert to 0-1.0f range
     return {r, g, b};
+  }
+
+private:
+
+  static constexpr auto HueToRgb(float p, float q, float t) -> float {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1.0f / 6) return p + (q - p) * 6 * t;
+    if (t < 1.0f / 2) return q;
+    if (t < 2.0f / 3) return p + (q - p) * (2.0f / 3 - t) * 6;
+    return p;
   }
 };
 

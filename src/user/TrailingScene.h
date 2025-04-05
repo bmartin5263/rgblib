@@ -14,7 +14,7 @@
 struct TrailingSceneColorGeneratorParameters {
   rgb::Timestamp now;
   rgb::Duration speed;
-  uint length;
+  rgb::u16 length;
   rgb::u16 absolutePosition;
   rgb::u16 relativePosition;
 };
@@ -30,7 +30,7 @@ struct TrailingSceneParameters {
   rgb::Color color{rgb::Color::RED(rgb::ByteToFloat(4))};
   rgb::Duration speed{rgb::Duration::Seconds(1)};
   int shift{0};
-  uint length{1};
+  rgb::u16 length{1};
   int endBuffer{0};
   bool continuous{false};
 
