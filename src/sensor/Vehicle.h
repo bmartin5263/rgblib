@@ -42,12 +42,12 @@ private:
   atomic_int mOilTemp{};
   atomic_int mCoolantTemp{};
   atomic_bool mConnected{false};
-  milliseconds lastCheck{0};
-  milliseconds lastResponse{0};
+  milliseconds_t lastCheck{0};
+  milliseconds_t lastResponse{0};
   atomic_bool mLowPowerMode{false};
 
   auto disconnect() -> void;
-  auto readPID(byte pid, atomic_int& result, milliseconds timeout, milliseconds now) -> void;
+  auto readPID(byte pid, atomic_int& result, milliseconds_t timeout, milliseconds_t now) -> void;
   auto readPID(const byte pid[], byte count, int result[], int defaultValue = 0) -> bool;
 };
 

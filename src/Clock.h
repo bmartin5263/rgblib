@@ -12,36 +12,38 @@ namespace rgb {
 
 class Clock {
 public:
-  static auto Init(frames fps) -> void;
+  static auto Init(frames_t fps) -> void;
 
   static auto StartTick() -> void;
   static auto StopTick() -> void;
 
-  static auto Micro() -> microseconds;
-  static auto Milli() -> milliseconds;
-  static auto FrameTime() -> frames;
+  static auto Now() -> Timestamp;
+  static auto Delta() -> Duration;
+  static auto Milli() -> milliseconds_t;
+  static auto Frames() -> frames_t;
   static auto Time() -> ClockTime;
 
 private:
   Clock() = default;
-  auto init(frames targetFps) -> void;
+  auto init(frames_t targetFps) -> void;
 
   static auto Instance() -> Clock&;
 
   auto startTick() -> void;
-  auto stopTick() const -> void;
+  auto stopTick() -> void;
 
-  [[nodiscard]] auto milli() const -> milliseconds ;
-  [[nodiscard]] auto frameTime() const -> frames;
-  [[nodiscard]] auto micro() const -> microseconds ;
+  [[nodiscard]] auto milli() const -> milliseconds_t ;
+  [[nodiscard]] auto frames() const -> frames_t;
   [[nodiscard]] auto time() const -> ClockTime;
+  [[nodiscard]] auto delta() const -> Duration;
 
-  frames frameTimer{};
-  frames fpsCounter{};
-  microseconds tickStart{};
-  microseconds lastTime{};
-  microseconds targetFps{};
-  microseconds maxMicrosPerFrame{};
+  frames_t mFrames{};
+  frames_t mFpsCounter{};
+  frames_t mTargetFps{};
+  microseconds_t mTickStart{};
+  microseconds_t mLastFrameRateCheck{};
+  microseconds_t mMaxMicrosPerFrame{};
+  microseconds_t mDelta{};
 };
 
 }

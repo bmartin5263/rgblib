@@ -33,7 +33,7 @@ public:
     if (introScene != nullptr) {
       TRACE("Intro Scene");
       currentScene = -1;
-      introEndTime = Clock::Micro() + runIntroSceneFor.value;
+      introEndTime = Clock::Now() + runIntroSceneFor;
       introSceneRunning = true;
       return *introScene;
     }
@@ -46,7 +46,7 @@ public:
   }
 
   auto update() -> void override {
-    if (introSceneRunning && introSceneShouldEnd(Clock::Micro())) {
+    if (introSceneRunning && introSceneShouldEnd(Clock::Now())) {
       INFO("Ending Intro Scene");
       nextScene();
     }
@@ -68,11 +68,11 @@ private:
   std::array<Scene*, N>& scenes;
   Scene* introScene;
   Duration runIntroSceneFor;
-  microseconds introEndTime;
+  Timestamp introEndTime;
   int currentScene;
   bool introSceneRunning;
 
-  auto introSceneShouldEnd(microseconds now) -> bool {
+  auto introSceneShouldEnd(Timestamp now) -> bool {
     return now >= introEndTime;
   }
 };

@@ -34,12 +34,12 @@ auto Timer::SetInterval(rgb::Duration duration, uint times, const rgb::TimerFunc
 }
 
 auto Timer::setTimeout(Duration duration, uint repeatCount, const rgb::TimerFunction& function) -> TimerHandle {
-  auto time = Clock::Micro();
+  auto time = Clock::Now();
   auto timer = nextTimerNode();
 
   timer->clean();
   timer->timerFunction = function;
-  timer->executeAt = time + duration.value;
+  timer->executeAt = time + duration;
   timer->repeatsRemaining = repeatCount;
   timer->timeBetweenExecutions = duration;
 
@@ -68,7 +68,7 @@ auto Timer::ProcessTimers() -> void {
 auto Timer::processTimers() -> void {
   processAdditions();
 
-  auto now = Clock::Micro();
+  auto now = Clock::Now();
   while (activeHead != nullptr && activeHead->executeAt <= now) {
     auto timer = TimerNode::Pop(activeHead);
     if (timer->tombstone) {
@@ -79,7 +79,7 @@ auto Timer::processTimers() -> void {
   }
 }
 
-auto Timer::executeTimer(TimerNode* timer, microseconds now) -> void {
+auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
   timer->timerFunction();
   if (timer->repeatsRemaining > 0) {
     timer->repeat(now);

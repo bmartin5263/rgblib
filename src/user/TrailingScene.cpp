@@ -6,19 +6,20 @@
 #include "TrailingScene.h"
 #include "Clock.h"
 
-TrailingScene::TrailingScene(TrailingSceneParameters& params): params(params) {
+TrailingScene::TrailingScene(TrailingSceneParameters params): params(std::move(params)) {
   ASSERT(params.leds != nullptr, "TrailingScene: LEDs is null");
 }
 
 auto TrailingScene::setup() -> void {
-  moveTime = 0;
+  nextMoveTime.value = 0;
   pixel = 0;
 }
 
 auto TrailingScene::update() -> void {
-  if (moveTime++ >= params.speed) {
+  auto now = rgb::Clock::Now();
+  if (now >= nextMoveTime) {
     move();
-    moveTime = 0;
+    nextMoveTime = now + params.speed;
   }
 }
 
@@ -26,10 +27,10 @@ auto TrailingScene::draw() -> void {
   auto& leds = params.LEDs();
   auto ledSize = leds.size();
   auto length = params.length;
-  auto time = rgb::Clock::Micro();
+  auto now = rgb::Clock::Now();
 
   auto colorGeneratorParameters = TrailingSceneColorGeneratorParameters {
-    .micros = time,
+    .now = now,
     .speed = params.speed,
     .length = length
   };

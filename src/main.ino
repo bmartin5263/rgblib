@@ -38,7 +38,7 @@ auto vehicle = Vehicle{};
 auto rpmDisplay = RpmDisplay{ring, vehicle};
 auto solidScene = SolidScene{slice};
 
-auto trailingSceneParameters = TrailingSceneParameters{
+auto trailingScene = TrailingScene{ TrailingSceneParameters {
   .leds = &ring,
   .colorGenerator = [](auto params){
     return rgb::Color(
@@ -47,17 +47,16 @@ auto trailingSceneParameters = TrailingSceneParameters{
       0.f
     );
   },
-  .speed = 8,
+  .speed = Duration::Milliseconds(50),
   .shift = 6,
   .length = LED_COUNT / 2,
   .endBuffer = 4,
   .continuous = true
-};
-auto trailingScene = TrailingScene{trailingSceneParameters};
+}};
 
 auto scenes = std::array {
-//  static_cast<Scene*>(&trailingScene),
   static_cast<Scene*>(&rpmDisplay),
+  static_cast<Scene*>(&trailingScene),
 //  static_cast<Scene*>(&solidScene)
 };
 auto sceneManager = SceneManager {scenes, &trailingScene, Duration::Seconds(1)};

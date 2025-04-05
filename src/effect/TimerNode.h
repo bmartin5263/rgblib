@@ -17,7 +17,7 @@ struct TimerNode {
   TimerNode* prev{};
   TimerNode* next{};
   TimerFunction timerFunction{};
-  microseconds executeAt{};
+  Timestamp executeAt{};
   Duration timeBetweenExecutions{};
   uint repeatsRemaining{};
   bool tombstone{};
@@ -26,10 +26,10 @@ struct TimerNode {
     *this = {};
   }
 
-  auto repeat(microseconds now) -> void {
+  auto repeat(Timestamp now) -> void {
     ASSERT(repeatsRemaining > 0, "No repeats remaining");
     --repeatsRemaining;
-    executeAt = now + timeBetweenExecutions.value;
+    executeAt = now + timeBetweenExecutions;
   }
 
   static auto InsertFront(TimerNode*& head, TimerNode* node) {

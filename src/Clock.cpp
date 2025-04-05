@@ -13,58 +13,59 @@ auto Clock::Instance() -> Clock& {
   return instance;
 }
 
-auto Clock::init(frames targetFps) -> void {
-  this->targetFps = targetFps;
-  this->maxMicrosPerFrame = 1000000 / targetFps;
+auto Clock::init(frames_t targetFps) -> void {
+  this->mTargetFps = targetFps;
+  this->mMaxMicrosPerFrame = 1000000 / targetFps;
 }
 
 auto Clock::startTick() -> void {
-  tickStart = micros();
-  auto elapsed = tickStart - lastTime;
+  mTickStart = micros();
+  auto elapsed = mTickStart - mLastFrameRateCheck;
 
   if (elapsed >= 1'000'000) { // Update every second
-    INFO("FPS: %lu", fpsCounter);
-    if (fpsCounter < (targetFps / 2)) {
+    INFO("FPS: %lu", mFpsCounter);
+    if (mFpsCounter < (mTargetFps / 2)) {
       digitalWrite(LED_RED, LOW);
     }
     else {
       digitalWrite(LED_RED, HIGH);
     }
 
-    fpsCounter = 0;
-    lastTime = tickStart;
+    mFpsCounter = 0;
+    mLastFrameRateCheck = mTickStart;
 
   }
 
-  ++fpsCounter;
-  ++frameTimer;
+  ++mFpsCounter;
+  ++mFrames;
 }
 
-auto Clock::frameTime() const -> frames {
-  return frameTimer;
+auto Clock::frames() const -> frames_t {
+  return mFrames;
 }
 
-auto Clock::milli() const -> milliseconds {
+auto Clock::milli() const -> milliseconds_t {
   return millis();
 }
 
 auto Clock::time() const -> ClockTime {
-  return {milli(), frameTimer};
+  return {micros(), millis(), mFrames};
 }
 
 
-auto Clock::stopTick() const -> void {
+auto Clock::stopTick() -> void {
   auto stop = micros();
-  auto time = stop - tickStart;
-  if (time >= maxMicrosPerFrame) {
+  auto duration = stop - mTickStart;
+  if (duration >= mMaxMicrosPerFrame) {
     return;
   }
 
-  auto sleep = maxMicrosPerFrame - time;
+  auto sleep = mMaxMicrosPerFrame - duration;
+  mDelta = duration + sleep;
   delayMicroseconds(sleep);
 }
 
-auto Clock::Init(frames fps) -> void {
+auto Clock::Init(frames_t fps) -> void {
   Instance().init(fps);
 }
 
@@ -72,16 +73,20 @@ auto Clock::StartTick() -> void {
   Instance().startTick();
 }
 
-auto Clock::FrameTime() -> frames {
-  return Instance().frameTime();
+auto Clock::Frames() -> frames_t {
+  return Instance().frames();
 }
 
-auto Clock::Milli() -> milliseconds {
+auto Clock::Milli() -> milliseconds_t {
   return Instance().milli();
 }
 
-auto Clock::Micro() -> microseconds {
-  return Instance().micro();
+auto Clock::Now() -> Timestamp {
+  return Timestamp::OfMicroseconds(micros());
+}
+
+auto Clock::Delta() -> Duration {
+  return Instance().delta();
 }
 
 auto Clock::Time() -> ClockTime {
@@ -92,8 +97,8 @@ auto Clock::StopTick() -> void {
   Instance().stopTick();
 }
 
-auto Clock::micro() const -> microseconds {
-  return micros();
+auto Clock::delta() const -> Duration {
+  return Duration { mDelta };
 }
 
 }

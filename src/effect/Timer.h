@@ -32,7 +32,7 @@ private:
   auto setTimeout(Duration duration, uint intervals, const rgb::TimerFunction& function) -> TimerHandle;
   auto cancel(TimerNode* node) -> void;
   auto processTimers() -> void;
-  auto executeTimer(TimerNode* node, microseconds now) -> void;
+  auto executeTimer(TimerNode* node, Timestamp now) -> void;
   auto nextTimerNode() -> TimerNode*;
   auto enqueueForAdding(TimerNode* node) -> void;
   auto processAdditions() -> void;

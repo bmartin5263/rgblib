@@ -10,6 +10,7 @@
 #include "network/WebServerFwd.h"
 #include "sensor/Vehicle.h"
 #include "RpmLayout.h"
+#include "RpmColorMode.h"
 
 namespace rgb {
   class PushButton;
@@ -30,6 +31,7 @@ public:
 
   int rpm{0};
   RpmLayout layout{RpmLayout::TRADITIONAL};
+  RpmColorMode colorMode{RpmColorMode::FULL};
   uint yellowLineStart{5500};
   uint redLineStart{6500};
   uint limit{7000};

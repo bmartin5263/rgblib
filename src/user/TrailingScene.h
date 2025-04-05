@@ -12,8 +12,8 @@
 #include "led/LEDChain.h"
 
 struct TrailingSceneColorGeneratorParameters {
-  rgb::u32 micros;
-  uint speed;
+  rgb::Timestamp now;
+  rgb::Duration speed;
   uint length;
   rgb::u16 absolutePosition;
   rgb::u16 relativePosition;
@@ -28,7 +28,7 @@ struct TrailingSceneParameters {
   rgb::LEDChain* leds{nullptr};
   TrailingSceneColorGenerator colorGenerator{defaultGenerator};
   rgb::Color color{rgb::Color::RED(rgb::ByteToFloat(4))};
-  uint speed{8};
+  rgb::Duration speed{rgb::Duration::Seconds(1)};
   int shift{0};
   uint length{1};
   int endBuffer{0};
@@ -41,16 +41,16 @@ struct TrailingSceneParameters {
 
 class TrailingScene : public rgb::Scene {
 public:
-  explicit TrailingScene(TrailingSceneParameters& params);
+  explicit TrailingScene(TrailingSceneParameters params);
 
   auto setup() -> void override;
   auto update() -> void override;
   auto draw() -> void override;
 
+  TrailingSceneParameters params;
 private:
-  TrailingSceneParameters& params;
   int pixel{0};
-  int moveTime{0};
+  rgb::Timestamp nextMoveTime{0};
 
   auto move() -> void;
 };

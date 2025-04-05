@@ -16,7 +16,7 @@ public:
   ~Stopwatch();
 
 private:
-  milliseconds start;
+  milliseconds_t start;
   const char* label;
 };
 

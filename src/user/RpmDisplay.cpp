@@ -70,14 +70,27 @@ auto RpmDisplay::draw() -> void {
     }
 
     Color color;
-    if (levelValue < yellowLineStart) {
-      color = Color::GREEN(brightness);
-    }
-    else if (levelValue < redLineStart) {
-      color = Color::YELLOW(brightness);
+    if (colorMode == RpmColorMode::SEGMENTED) {
+      if (levelValue < yellowLineStart) {
+        color = Color::GREEN(brightness);
+      }
+      else if (levelValue < redLineStart) {
+        color = Color::YELLOW(brightness);
+      }
+      else {
+        color = Color::RED(brightness);
+      }
     }
     else {
-      color = Color::RED(brightness);
+      if (rpm < yellowLineStart) {
+        color = Color::GREEN(brightness);
+      }
+      else if (rpm < redLineStart) {
+        color = Color::YELLOW(brightness);
+      }
+      else {
+        color = Color::RED(brightness);
+      }
     }
 
 

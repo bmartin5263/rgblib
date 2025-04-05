@@ -87,7 +87,7 @@ auto Vehicle::speed() const-> kph {
   return mSpeed;
 }
 
-auto Vehicle::readPID(byte pid, atomic_int& result, milliseconds timeout, milliseconds now) -> void {
+auto Vehicle::readPID(byte pid, atomic_int& result, milliseconds_t timeout, milliseconds_t now) -> void {
   auto& obd = *obdHandle;
 
   if (obd.getState() != OBD_CONNECTED) {
