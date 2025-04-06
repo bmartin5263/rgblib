@@ -11,7 +11,7 @@
 #include "user/TrailingScene.h"
 #include "user/LEDManager.h"
 #include "user/SensorManager.h"
-#include "threading/ThreadPool.h"
+#include "threading/VehicleThread.h"
 
 using namespace rgb;
 
@@ -41,18 +41,19 @@ auto solidScene = SolidScene{slice};
 auto trailingScene = TrailingScene{ TrailingSceneParameters {
   .leds = &ring,
   .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
-    auto x = LerpClamp(.5f, 1.f, params.relativePosition, params.length);
-    auto rgb = Color::HslToRgb(x) * .02f;
-    return rgb;
+    auto r = LerpClamp(1.0, 0.0, vehicle.rpm(), 5000);
+    auto g = 0.0f;
+    auto b = LerpClamp(0.0, 1.0, vehicle.rpm(), 5000);
+    return Color { r, g, b } * .05f;
   },
 //  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
 //    auto x = Pulse(params.now.asSeconds(), .5f);
 //    auto rgb = Color::HslToRgb(x) * .02f;
 //    return rgb;
 //  },
-  .speed = Duration::Seconds(1),
+  .speed = Duration::Milliseconds(500),
   .shift = 6,
-  .length = 10,
+  .length = 6,
   .endBuffer = 4,
   .continuous = true
 }};
@@ -79,13 +80,14 @@ auto actionButton = PushButton{D4, [](){
   }
 }};
 auto toggleLowPower = PushButton{D5, [](){
-  INFO("Toggle Low Power");
-  if (rpmDisplay.dimBrightness != 0) {
-    rpmDisplay.dimBrightness = 0;
-  }
-  else {
-    rpmDisplay.dimBrightness = 1;
-  }
+  VehicleThread::Start(vehicle);
+//  INFO("Toggle Low Power");
+//  if (rpmDisplay.dimBrightness != 0) {
+//    rpmDisplay.dimBrightness = 0;
+//  }
+//  else {
+//    rpmDisplay.dimBrightness = 1;
+//  }
 }};
 
 auto sensors = std::array {
@@ -99,10 +101,11 @@ auto connectToVehicleCmd = ConnectToVehicleCommand { &vehicle };
 
 void setup() {
   if (LED_COUNT == 12) {
-    ring.setShift(2);
+    ring.setShift(1);
     rpmDisplay.yellowLineStart = 3500;
     rpmDisplay.redLineStart = 4500;
     rpmDisplay.limit = 5000;
+    rpmDisplay.colorMode = RpmColorMode::SEGMENTED;
   }
   else if (LED_COUNT == 16) {
     ring.setShift(10);
@@ -115,7 +118,7 @@ void setup() {
 //  delay(3000);
 //  ThreadPool::Start();
 //  ThreadPool::SubmitTask(connectToVehicleCmd);
-  connectToVehicleCmd.execute();
+//  connectToVehicleCmd.execute();
   AppBuilder::Create()
       .EnableOTA()
       .DebugOutputLED(&slice)
@@ -125,7 +128,13 @@ void setup() {
       .Start();
 }
 
+constexpr auto easeOutCirc(float t) -> float {
+  return sqrt(1.0f - pow(t - 1.0f, 2.0f));
+}
+
 void loop() {
-  vehicle.update();
+//  vehicle.update();
+  auto t = vehicle.speed() / 160.0f;
+  trailingScene.params.speed = Duration::Milliseconds(LerpClamp(100, 4, easeOutCirc(t)));
   App::Loop();
 }

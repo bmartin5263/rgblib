@@ -8,6 +8,7 @@
 #include "ISensorManager.h"
 
 #include <array>
+#include "Log.h"
 
 using SensorFunction = void (*)();
 

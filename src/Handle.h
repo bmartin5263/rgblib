@@ -23,9 +23,12 @@ struct Handle {
     return opt.value();
   }
 
-//  auto operator*() const noexcept -> const T& {
-//    return opt.value();
-//  }
+  auto operator->() noexcept -> T* {
+    if (opt) {
+      return &opt.value();
+    }
+    return nullptr;
+  }
 
   auto get() noexcept -> T& {
     return opt.value();

@@ -24,7 +24,7 @@ auto Clock::startTick() -> void {
 
   if (elapsed >= 1'000'000) { // Update every second
     INFO("FPS: %lu", mFpsCounter);
-    if (mFpsCounter < (mTargetFps / 2)) {
+    if (mFpsCounter < (mTargetFps - 10)) {
       digitalWrite(LED_RED, LOW);
     }
     else {

@@ -229,7 +229,7 @@ int COBD::normalizeData(byte pid, char* data)
 
 char* COBD::getResponse(byte& pid, char* buffer, byte bufsize, int timeout)
 {
-	while (receive(buffer, bufsize, 5) > 0) {
+	while (receive(buffer, bufsize, timeout) > 0) {
 		char *p = buffer;
 		while ((p = strstr(p, "41 "))) {
 		    p += 3;

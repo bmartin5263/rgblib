@@ -31,7 +31,7 @@ public:
 
   int rpm{0};
   RpmLayout layout{RpmLayout::TRADITIONAL};
-  RpmColorMode colorMode{RpmColorMode::FULL};
+  RpmColorMode colorMode{RpmColorMode::SEGMENTED};
   uint yellowLineStart{5500};
   uint redLineStart{6500};
   uint limit{7000};

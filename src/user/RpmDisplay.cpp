@@ -18,11 +18,6 @@ auto RpmDisplay::setup() -> void {
 
 auto RpmDisplay::update() -> void {
   rpm = vehicle.rpm();
-  auto now = Clock::Now();
-  auto a = Pulse(now.asSeconds());
-  auto b = Pulse(now.asMilliseconds());
-  auto c = Pulse(now.asSeconds() * 3);
-  INFO("A: %f   B: %f   C: %f", a, b, c);
 }
 
 constexpr u16 mapToPixelPosition(int level, int ledCount, int offset = 0) {

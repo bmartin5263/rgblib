@@ -212,32 +212,42 @@ struct Timestamp : public number_wrapper<unsigned long, Timestamp> {
   constexpr auto asMilliseconds() -> float { return static_cast<float>(value) / 1000.f; }
   constexpr auto asMicroseconds() -> float { return static_cast<float>(value); }
 
+  using number_wrapper::operator+;
   constexpr auto operator+(const Duration& rhs) const -> Timestamp {
     return Timestamp { value + rhs.value };
   }
 
+  using number_wrapper::operator-;
   constexpr auto operator-(const Duration& rhs) const -> Timestamp {
     return Timestamp { value - rhs.value };
   }
 
+  using number_wrapper::operator+=;
   constexpr auto operator+=(const Duration& rhs) -> Timestamp& {
     value += rhs.value;
     return static_cast<Timestamp&>(*this);
   }
 
+  using number_wrapper::operator-=;
   constexpr auto operator-=(const Duration& rhs) -> Timestamp& {
     value -= rhs.value;
     return *this;
   }
 
+  using number_wrapper::operator*=;
   constexpr auto operator*=(const Duration& rhs) -> Timestamp& {
     value *= rhs.value;
     return *this;
   }
 
+  using number_wrapper::operator/=;
   constexpr auto operator/=(const Duration& rhs) -> Timestamp& {
     value /= rhs.value;
     return *this;
+  }
+
+  constexpr auto TimeSince(const Timestamp& earlierTime) -> Duration {
+    return Duration { value - earlierTime.value };
   }
 };
 

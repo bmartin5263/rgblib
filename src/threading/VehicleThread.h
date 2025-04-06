@@ -5,6 +5,8 @@
 #ifndef RGBLIB_SENSORTHREAD_H
 #define RGBLIB_SENSORTHREAD_H
 
+#include <task.h>
+
 namespace rgb {
 
 class Vehicle;
@@ -13,7 +15,7 @@ public:
   static auto Start(Vehicle& vehicle) -> void { Instance().start(vehicle); }
 
 private:
-  Vehicle* vehicle;
+  TaskHandle_t taskHandle;
 
   auto start(Vehicle& vehicle) -> void;
 
