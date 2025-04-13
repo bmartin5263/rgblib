@@ -24,13 +24,15 @@ auto Clock::startTick() -> void {
 
   if (elapsed >= 1'000'000) { // Update every second
     INFO("FPS: %lu", mFpsCounter);
-    if (mFpsCounter < (mTargetFps - 10)) {
+
+    if (mFpsCounter < (mTargetFps / 2)) {
       digitalWrite(LED_RED, LOW);
     }
     else {
       digitalWrite(LED_RED, HIGH);
     }
 
+    mLastFps = mFpsCounter;
     mFpsCounter = 0;
     mLastFrameRateCheck = mTickStart;
 
@@ -93,12 +95,20 @@ auto Clock::Time() -> ClockTime {
   return Instance().time();
 }
 
+auto Clock::Fps() -> frames_t {
+  return Instance().fps();
+}
+
 auto Clock::StopTick() -> void {
   Instance().stopTick();
 }
 
 auto Clock::delta() const -> Duration {
   return Duration { mDelta };
+}
+
+auto Clock::fps() const -> frames_t {
+  return mLastFps;
 }
 
 }

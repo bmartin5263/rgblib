@@ -12,6 +12,7 @@
 #include "user/LEDManager.h"
 #include "user/SensorManager.h"
 #include "threading/VehicleThread.h"
+#include "U8g2lib.h"
 
 using namespace rgb;
 
@@ -29,7 +30,8 @@ auto staticAssertions() -> void {
 constexpr u16 LED_COUNT = 12;
 
 // Output
-auto ring = LEDCircuit<LED_COUNT>{D2};
+U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2(U8G2_R0, /* cs=*/ 10, /* dc=*/ 9, /* reset=*/ 8);
+auto ring = LEDCircuit<LED_COUNT>{D5};
 auto slice = ring.slice(3);
 auto ledManager = LEDManager<LED_COUNT>{ring};
 
@@ -38,12 +40,33 @@ auto vehicle = Vehicle{};
 auto rpmDisplay = RpmDisplay{ring, vehicle};
 auto solidScene = SolidScene{slice};
 
+auto easeOutBounce(float t) -> float {
+  auto n1 = 7.5625;
+  auto d1 = 2.75;
+
+  if (t < 1.f / d1) {
+    return n1 * t * t;
+  } else if (t < 2.f / d1) {
+    return n1 * (t -= 1.5f / d1) * t + 0.75f;
+  } else if (t < 2.5 / d1) {
+    return n1 * (t -= 2.25f / d1) * t + 0.9375f;
+  } else {
+    return n1 * (t -= 2.625f / d1) * t + 0.984375f;
+  }
+}
+
+auto easeInOutBounce(float t) -> float {
+  return t < 0.5
+         ? (1 - easeOutBounce(1.f - 2.f * t)) / 2.f
+         : (1 + easeOutBounce(2.f * t - 1.f)) / 2.f;
+}
+
 auto trailingScene = TrailingScene{ TrailingSceneParameters {
   .leds = &ring,
   .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
-    auto r = LerpClamp(1.0, 0.0, vehicle.rpm(), 5000);
+    auto r = LerpClamp(1.0, 0.0, vehicle.rpm() - 600, 3500);
     auto g = 0.0f;
-    auto b = LerpClamp(0.0, 1.0, vehicle.rpm(), 5000);
+    auto b = LerpClamp(0.0, 1.0, vehicle.rpm() - 600, 3500);
     return Color { r, g, b } * .05f;
   },
 //  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
@@ -100,6 +123,7 @@ auto sensorManager = SensorManager { sensors };
 auto connectToVehicleCmd = ConnectToVehicleCommand { &vehicle };
 
 void setup() {
+  u8g2.begin();
   if (LED_COUNT == 12) {
     ring.setShift(1);
     rpmDisplay.yellowLineStart = 3500;
@@ -120,21 +144,47 @@ void setup() {
 //  ThreadPool::SubmitTask(connectToVehicleCmd);
 //  connectToVehicleCmd.execute();
   AppBuilder::Create()
-      .EnableOTA()
-      .DebugOutputLED(&slice)
-      .SetSceneManager(&sceneManager)
-      .SetLEDManager(&ledManager)
-      .SetSensorManager(&sensorManager)
-      .Start();
+    .EnableOTA()
+    .DebugOutputLED(&slice)
+    .SetSceneManager(&sceneManager)
+    .SetLEDManager(&ledManager)
+    .SetSensorManager(&sensorManager)
+    .Start();
 }
 
 constexpr auto easeOutCirc(float t) -> float {
   return sqrt(1.0f - pow(t - 1.0f, 2.0f));
 }
 
+constexpr auto easeOutCubic(float t) -> float {
+  return 1 - pow(1.0f - t, 3.0f);
+}
+
+auto lastUpdate = Timestamp {0};
+
 void loop() {
-//  vehicle.update();
-  auto t = vehicle.speed() / 160.0f;
-  trailingScene.params.speed = Duration::Milliseconds(LerpClamp(100, 4, easeOutCirc(t)));
+  if (vehicle.isConnected()) {
+    auto t = vehicle.speed() / 220.0f;
+    auto now = Clock::Now();
+    trailingScene.params.speed = Duration::Milliseconds(LerpClamp(100, 4, t));
+    if (now.TimeSince(lastUpdate) >= Duration::Milliseconds(100)) {
+      u8g2.clearBuffer();
+      u8g2.setFont(u8g2_font_samim_10_t_all);
+      u8g2.println();
+      auto rpmStr = std::string("RPM: ") + std::to_string(vehicle.rpm());
+      auto speedStr = std::string("Speed: ") + std::to_string(vehicle.speed());
+      auto oilStr = std::string("Oil Temp: ") + std::to_string(vehicle.oilTemp());
+      auto coolantStr = std::string("Cool Temp: ") + std::to_string(vehicle.coolantTemp());
+      auto fpsStr = std::string("FPS: ") + std::to_string(Clock::Fps());
+      u8g2.drawStr(0, 20, rpmStr.c_str());
+      u8g2.drawStr(0, 30, speedStr.c_str());
+      u8g2.drawStr(0, 40, oilStr.c_str());
+      u8g2.drawStr(0, 50, coolantStr.c_str());
+      u8g2.drawStr(0, 60, fpsStr.c_str());
+      u8g2.sendBuffer();
+      lastUpdate = now;
+    }
+  }
+
   App::Loop();
 }

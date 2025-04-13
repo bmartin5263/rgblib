@@ -130,7 +130,7 @@ public:
 	// get connection state
 	virtual OBD_STATES getState() { return m_state; }
 	// read specified OBD-II PID value
-	virtual bool readPID(byte pid, int& result, int timeout);
+	virtual bool readPID(byte pid, int& result);
 	// read multiple (up to 8) OBD-II PID values, return number of values obtained
 	virtual byte readPID(const byte pid[], byte count, int result[]);
 	// set device into low power mode
@@ -154,7 +154,7 @@ public:
 	// send query for specified PID
 	virtual void sendQuery(byte pid);
 	// retrive and parse the response of specifie PID
-	virtual bool getResult(byte& pid, int& result, int timeout);
+	virtual bool getResult(byte& pid, int& result);
 	// determine if the PID is supported
 	virtual bool isValidPID(byte pid);
 	// get adapter firmware version
@@ -166,7 +166,7 @@ public:
 	// bit map of supported PIDs
 	byte pidmap[4 * 4];
 protected:
-	virtual char* getResponse(byte& pid, char* buffer, byte bufsize, int timeout);
+	virtual char* getResponse(byte& pid, char* buffer, byte bufsize);
 	virtual byte receive(char* buffer, byte bufsize, int timeout = OBD_TIMEOUT_SHORT);
 	virtual void write(const char* s);
 	virtual void dataIdleLoop() {}

@@ -15,7 +15,8 @@ public:
   static auto Start(Vehicle& vehicle) -> void { Instance().start(vehicle); }
 
 private:
-  TaskHandle_t taskHandle;
+  TaskHandle_t taskHandle{};
+  bool started{false};
 
   auto start(Vehicle& vehicle) -> void;
 

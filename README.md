@@ -1,10 +1,13 @@
 # RGBLib
 
 ## TODO
-- [ ] Vehicle Thread to eliminate blocking main thread when accessing vehicle data
+- [X] Vehicle Thread to eliminate blocking main thread when accessing vehicle data
 - [ ] Update sensors on every frame in main thread
 - [ ] Debug LEDS on top layer
 - [ ] Resiliency - able to automatically recover subsystems if connection issues
+- [ ] OTA led turns on even when its not active
+- [ ] Check if vehicle supports PID
+- [ ] Git submodules for libs
 
 ## Terminology
 

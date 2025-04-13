@@ -22,6 +22,7 @@ public:
   static auto Milli() -> milliseconds_t;
   static auto Frames() -> frames_t;
   static auto Time() -> ClockTime;
+  static auto Fps() -> frames_t;
 
 private:
   Clock() = default;
@@ -36,9 +37,11 @@ private:
   [[nodiscard]] auto frames() const -> frames_t;
   [[nodiscard]] auto time() const -> ClockTime;
   [[nodiscard]] auto delta() const -> Duration;
+  [[nodiscard]] auto fps() const -> frames_t;
 
   frames_t mFrames{};
   frames_t mFpsCounter{};
+  frames_t mLastFps{};
   frames_t mTargetFps{};
   microseconds_t mTickStart{};
   microseconds_t mLastFrameRateCheck{};

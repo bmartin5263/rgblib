@@ -34,11 +34,9 @@ auto App::start() -> void {
   pinMode(LED_BLUE, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_RED, OUTPUT);
-  pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BLUE, HIGH);
   digitalWrite(LED_GREEN, HIGH);
   digitalWrite(LED_RED, HIGH);
-  digitalWrite(LED_BUILTIN, LOW);
 
 //  ThreadPool::Start();
   Wifi::SetMode(WIFI_STA); // Wifi.mode() must be called on the main thread, else program crashes

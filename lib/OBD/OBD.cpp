@@ -73,19 +73,19 @@ void COBD::sendQuery(byte pid)
 	write(cmd);
 }
 
-bool COBD::readPID(byte pid, int& result, int timeout)
+bool COBD::readPID(byte pid, int& result)
 {
 	// send a query command
 	sendQuery(pid);
 	// receive and parse the response
-	return getResult(pid, result, timeout);
+	return getResult(pid, result);
 }
 
 byte COBD::readPID(const byte pid[], byte count, int result[])
 {
 	byte results = 0; 
 	for (byte n = 0; n < count; n++) {
-		if (readPID(pid[n], result[n], 1000)) {
+		if (readPID(pid[n], result[n])) {
 			results++;
 		}
 	}
@@ -227,9 +227,9 @@ int COBD::normalizeData(byte pid, char* data)
 	return result;
 }
 
-char* COBD::getResponse(byte& pid, char* buffer, byte bufsize, int timeout)
+char* COBD::getResponse(byte& pid, char* buffer, byte bufsize)
 {
-	while (receive(buffer, bufsize, timeout) > 0) {
+	while (receive(buffer, bufsize) > 0) {
 		char *p = buffer;
 		while ((p = strstr(p, "41 "))) {
 		    p += 3;
@@ -246,10 +246,10 @@ char* COBD::getResponse(byte& pid, char* buffer, byte bufsize, int timeout)
 	return 0;
 }
 
-bool COBD::getResult(byte& pid, int& result, int timeout)
+bool COBD::getResult(byte& pid, int& result)
 {
 	char buffer[64];
-	char* data = getResponse(pid, buffer, sizeof(buffer), timeout);
+	char* data = getResponse(pid, buffer, sizeof(buffer));
 	if (!data) {
 		recover();
 		errors++;
