@@ -68,7 +68,6 @@ private:
     }
     else {
       if (now.TimeSince(mLastResponse) >= Duration::Seconds(1)) {
-        ASSERT(false, "Connection lost");
         disconnect();
       }
     }

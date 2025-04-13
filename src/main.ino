@@ -13,14 +13,14 @@
 #include "user/SensorManager.h"
 #include "threading/VehicleThread.h"
 #include "screen/DebugScreen.h"
-//#include "U8g2lib.h"
 
 using namespace rgb;
 
-auto staticAssertions() -> void {
+constexpr auto staticAssertions() -> void {
   static_assert(sizeof(i32) > sizeof(u16));
   static_assert(sizeof(i64) > sizeof(u32));
   static_assert(sizeof(int) == 4);
+  static_assert(sizeof(int) == sizeof(float));
   static_assert(sizeof(int*) == 4);
   static_assert(sizeof(long) == 4);
   static_assert(sizeof(long long) == 8);
@@ -32,7 +32,7 @@ constexpr u16 LED_COUNT = 12;
 
 // Output
 auto ring = LEDCircuit<LED_COUNT>{D5};
-auto slice = ring.slice(3);
+auto slice = ring.slice(6);
 auto ledManager = LEDManager<LED_COUNT>{ring};
 
 // Scenes
@@ -40,35 +40,20 @@ auto vehicle = Vehicle{};
 auto rpmDisplay = RpmDisplay{ring, vehicle};
 auto solidScene = SolidScene{slice};
 
-auto easeOutBounce(float t) -> float {
-  auto n1 = 7.5625;
-  auto d1 = 2.75;
-
-  if (t < 1.f / d1) {
-    return n1 * t * t;
-  } else if (t < 2.f / d1) {
-    return n1 * (t -= 1.5f / d1) * t + 0.75f;
-  } else if (t < 2.5 / d1) {
-    return n1 * (t -= 2.25f / d1) * t + 0.9375f;
-  } else {
-    return n1 * (t -= 2.625f / d1) * t + 0.984375f;
-  }
-}
-
-auto easeInOutBounce(float t) -> float {
-  return t < 0.5
-         ? (1 - easeOutBounce(1.f - 2.f * t)) / 2.f
-         : (1 + easeOutBounce(2.f * t - 1.f)) / 2.f;
-}
-
 auto trailingScene = TrailingScene{ TrailingSceneParameters {
   .leds = &ring,
   .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
-    auto r = LerpClamp(1.0, 0.0, vehicle.rpm() - 600, 3500.0f);
-    auto g = 0.0f;
-    auto b = LerpClamp(0.0, 1.0, vehicle.rpm() - 600, 3500.0f);
-    return Color { r, g, b } * .05f;
+    auto r = LerpClamp(0.0f, 1.0f, vehicle.rpm() - 600, 3500.0f);
+    auto g = LerpClamp(1.0f, 0.0f, vehicle.rpm() - 600, 3500.0f);
+    auto b = 0.0f;
+    return Color { r, g, b } * .03f;
   },
+//  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
+//    auto r = LerpClamp(1.0f, .75f, vehicle.rpm() - 600, 3500.0f);
+//    auto g = 0.0f;
+//    auto b = LerpClamp(0.0f, .25f, vehicle.rpm() - 600, 3500.0f);
+//    return Color { r, g, b } * .05f;
+//  },
 //  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
 //    auto x = Pulse(params.now.asSeconds(), .5f);
 //    auto rgb = Color::HslToRgb(x) * .02f;
@@ -159,18 +144,8 @@ void setup() {
   VehicleThread::Start(vehicle);
 }
 
-constexpr auto easeOutCirc(float t) -> float {
-  return sqrt(1.0f - pow(t - 1.0f, 2.0f));
-}
-
-constexpr auto easeOutCubic(float t) -> float {
-  return 1 - pow(1.0f - t, 3.0f);
-}
-
-auto lastUpdate = Timestamp {0};
-
 void loop() {
-  auto t = easeOutCubic(vehicle.speed() / 140.0f);
+  auto t = EaseOutCubic(vehicle.speed() / 140.0f);
   trailingScene.params.speed = Duration::Milliseconds(LerpClamp(100, 4, t));
   DebugScreen::Display();
   App::Loop();

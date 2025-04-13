@@ -18,6 +18,7 @@ public:
   static auto Display() -> void { Instance().display(); }
 
 private:
+  U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2{U8G2_R0, /* cs=*/ 10, /* dc=*/ 9, /* reset=*/ 8};
   DrawFunction drawFunction{};
   Timestamp lastUpdate{};
   bool started{false};
@@ -29,9 +30,6 @@ private:
 
   auto start(const DrawFunction& drawFunction) -> void;
   auto display() -> void;
-
-  U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2{U8G2_R0, /* cs=*/ 10, /* dc=*/ 9, /* reset=*/ 8};
-
 
 };
 

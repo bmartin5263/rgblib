@@ -116,6 +116,38 @@ constexpr auto CToF(celsius value) -> fahrenheit {
   return (value * 9.0f / 5.0f) + 32.0f;
 }
 
+constexpr auto EaseOutBounce(float t) -> float {
+  auto n1 = 7.5625f;
+  auto d1 = 2.75f;
+
+  if (t < 1.f / d1) {
+    return n1 * t * t;
+  } else if (t < 2.f / d1) {
+    auto x = t -= 1.5f / d1;
+    return n1 * x * t + 0.75f;
+  } else if (t < 2.5 / d1) {
+    auto x = t -= 2.25f / d1;
+    return n1 * x * t + 0.9375f;
+  } else {
+    auto x = t -= 2.625f / d1;
+    return n1 * x * t + 0.984375f;
+  }
+}
+
+constexpr auto EaseInOutBounce(float t) -> float {
+  return t < 0.5
+         ? (1 - EaseOutBounce(1.f - 2.f * t)) / 2.f
+         : (1 + EaseOutBounce(2.f * t - 1.f)) / 2.f;
+}
+
+constexpr auto EaseOutCirc(float t) -> float {
+  return sqrt(1.0f - pow(t - 1.0f, 2.0f));
+}
+
+constexpr auto EaseOutCubic(float t) -> float {
+  return 1 - pow(1.0f - t, 3.0f);
+}
+
 }
 
 #endif //RGBLIB_UTIL_H

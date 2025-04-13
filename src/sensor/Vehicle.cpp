@@ -16,7 +16,7 @@ auto OBDDestroyer::operator()(COBD& c) const noexcept -> void {
 
 auto Vehicle::connect() -> bool {
   auto lock = std::unique_lock { mu };
-  if ((*obdHandle).getState() == OBD_STATES::OBD_CONNECTED) {
+  if (obdHandle->getState() == OBD_STATES::OBD_CONNECTED) {
     INFO("Vehicle already connected");
     mConnected = true;
     return true;
@@ -27,29 +27,28 @@ auto Vehicle::connect() -> bool {
   obdHandle.reset({});
   mConnected = false;
 
-  auto& obd = *obdHandle;
-
-  if (!obd.begin()) {
+  if (!obdHandle->begin()) {
     ERROR("Vehicle begin() failed");
-    ASSERT(false, "false");
+//    ASSERT(false, "false");
     return false;
   }
 
-  if (!obd.init()) {
+  if (!obdHandle->init()) {
     ERROR("Vehicle init() failed");
-    ASSERT(false, "false");
+//    ASSERT(false, "false");
     return false;
   }
 
   INFO("Vehicle ready");
   digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, LOW);
   mConnected = true;
+  mLastResponse = Clock::Now();
 
   return true;
 }
 
 auto Vehicle::disconnect() -> void {
-  auto lock = std::unique_lock { mu };
+  // CANNOT LOCK - reentrancy
   obdHandle.reset({});
   digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, HIGH);
   mConnected = false;
@@ -63,7 +62,9 @@ auto Vehicle::update() -> void {
 
   auto now = Clock::Now();
   readPID(PID_RPM, mRpm, now);
+  if (!mConnected) { return; }
   readPID(PID_COOLANT_TEMP, mCoolantTemp, now, CToF);
+  if (!mConnected) { return; }
   readPID(PID_SPEED, mSpeed, now, KphToMph);
 }
 
@@ -79,40 +80,6 @@ auto Vehicle::speed() const-> mph {
   return mSpeed;
 }
 
-//auto Vehicle::readPID(byte pid, atomic_float& result, Timestamp now) -> void {
-//  auto& obd = *obdHandle;
-//  ASSERT(obd.getState() == OBD_CONNECTED, "OBD not connected");
-//
-//  int value;
-//  if (obd.readPID(pid, value)) {
-//    result = static_cast<float>(value);
-//    mLastResponse = now;
-//  }
-//  else {
-//    if (now.TimeSince(mLastResponse) >= Duration::Seconds(1)) {
-//      ASSERT(false, "Connection lost");
-//      disconnect();
-//    }
-//  }
-//}
-//
-//
-//auto Vehicle::readPID2(byte pid, atomic_float& result, Timestamp now) -> void {
-//  auto& obd = *obdHandle;
-//  ASSERT(obd.getState() == OBD_CONNECTED, "OBD not connected");
-//
-//  int value;
-//  if (obd.readPID(pid, value)) {
-//    result = CToF(static_cast<float>(value));
-//    mLastResponse = now;
-//  }
-//  else {
-//    if (now.TimeSince(mLastResponse) >= Duration::Seconds(1)) {
-//      ASSERT(false, "Connection lost");
-//      disconnect();
-//    }
-//  }
-//}
 
 auto Vehicle::readPID(const byte pid[], byte count, int result[], int defaultValue) -> bool {
   auto& obd = obdHandle;
