@@ -37,7 +37,7 @@ auto printHeader(const char* level, const char* function) -> void;
 } while(false)
 
 #define ERROR(format, ...) do { \
-  rgb::log::printHeader("ERROR", __PRETTY_FUNCTION__);  \
+  rgb::log::printHeader("ERROR", __PRETTY_FUNCTION__); \
   Serial.printf(format, ##__VA_ARGS__); \
   Serial.println();            \
 } while(false)

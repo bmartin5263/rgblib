@@ -7,7 +7,7 @@
 
 #include <OBD.h>
 #include <atomic>
-#include <shared_mutex>
+#include <mutex>
 #include "Handle.h"
 #include "Assertions.h"
 
@@ -22,7 +22,7 @@ public:
   template<typename T>
   using TypeRemapper = T(*)(T);
 
-  using mutex = std::shared_mutex;
+  using mutex = std::recursive_mutex;
   using atomic_int = std::atomic_int;
   using atomic_bool = std::atomic_bool;
   using atomic_float = std::atomic<float>;

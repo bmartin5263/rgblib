@@ -8,12 +8,14 @@
 //#ifndef NDEBUG
 #include "Debug.h"
 #include "Log.h"
+#include "screen/DebugScreen.h"
 #define ASSERT(condition, message) \
         do { \
             if (!(condition)) {    \
                 Serial.printf("Assertion failed: (%s)\n", #condition);                   \
                 Serial.printf("File: %s, Function: %s, Line: %i, Message: %s\n", __FILE__, __FUNCTION__, __LINE__, message);                   \
-                rgb::Debug::Instance().trigger(true);                 \
+                rgb::Debug::Instance().trigger(true);                                    \
+                rgb::DebugScreen::PrintLine(4, message);                   \
             } \
         } while (false)
 //#else

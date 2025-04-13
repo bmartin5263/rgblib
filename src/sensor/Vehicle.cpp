@@ -48,7 +48,7 @@ auto Vehicle::connect() -> bool {
 }
 
 auto Vehicle::disconnect() -> void {
-  // CANNOT LOCK - reentrancy
+  auto lock = std::unique_lock { mu };
   obdHandle.reset({});
   digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, HIGH);
   mConnected = false;

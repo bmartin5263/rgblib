@@ -14,12 +14,18 @@ class DebugScreen {
 public:
   using DrawFunction = std::function<void(U8G2&)>;
 
-  static auto Start(const DrawFunction& drawFunction) -> void { Instance().start(drawFunction); }
+  static auto Start() -> void { Instance().start(); }
+  static auto PrintLine(int row, const std::string& msg) -> void { Instance().printLine(row, msg); }
   static auto Display() -> void { Instance().display(); }
+  static auto ReadyForUpdate() -> bool { return Instance().readyForUpdate(); }
 
 private:
   U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2{U8G2_R0, /* cs=*/ 10, /* dc=*/ 9, /* reset=*/ 8};
-  DrawFunction drawFunction{};
+  std::string line0{};
+  std::string line1{};
+  std::string line2{};
+  std::string line3{};
+  std::string line4{};
   Timestamp lastUpdate{};
   bool started{false};
 
@@ -28,8 +34,10 @@ private:
     return instance;
   }
 
-  auto start(const DrawFunction& drawFunction) -> void;
+  auto start() -> void;
   auto display() -> void;
+  auto readyForUpdate() -> bool;
+  auto printLine(int row, const std::string& msg) -> void;
 
 };
 

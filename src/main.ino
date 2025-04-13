@@ -32,7 +32,7 @@ constexpr u16 LED_COUNT = 12;
 
 // Output
 auto ring = LEDCircuit<LED_COUNT>{D5};
-auto slice = ring.slice(6);
+auto slice = ring.slice(1);
 auto ledManager = LEDManager<LED_COUNT>{ring};
 
 // Scenes
@@ -43,10 +43,10 @@ auto solidScene = SolidScene{slice};
 auto trailingScene = TrailingScene{ TrailingSceneParameters {
   .leds = &ring,
   .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
-    auto r = LerpClamp(0.0f, 1.0f, vehicle.rpm() - 600, 3500.0f);
-    auto g = LerpClamp(1.0f, 0.0f, vehicle.rpm() - 600, 3500.0f);
+    auto r = LerpClamp(0.0f, 1.0f, vehicle.rpm() - 600, 4500.0f);
+    auto g = LerpClamp(1.0f, 0.0f, vehicle.rpm() - 600, 4500.0f);
     auto b = 0.0f;
-    return Color { r, g, b } * .03f;
+    return Color { r, g, b } * LerpClamp(.01f, .03f, vehicle.rpm() - 600, 4500.0f);
   },
 //  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
 //    auto r = LerpClamp(1.0f, .75f, vehicle.rpm() - 600, 3500.0f);
@@ -95,7 +95,6 @@ auto toggleLowPower = PushButton{D5, [](){
   else {
     rpmDisplay.dimBrightness = 1;
   }
-  vehicle.setLowPowerMode(!vehicle.inLowPowerMode());
 }};
 
 auto sensors = std::array {
@@ -107,17 +106,8 @@ auto sensorManager = SensorManager { sensors };
 
 auto connectToVehicleCmd = ConnectToVehicleCommand { &vehicle };
 
-void setup() {
-  DebugScreen::Start([](U8G2& u8g2){
-    auto rpmStr = std::string("RPM: ") + std::to_string(vehicle.rpm());
-    auto speedStr = std::string("MPH: ") + std::to_string(vehicle.speed());
-    auto coolantStr = std::string("Temp: ") + std::to_string(vehicle.coolantTemp());
-    auto fpsStr = std::string("FPS: ") + std::to_string(Clock::Fps());
-    u8g2.drawStr(0, 20, rpmStr.c_str());
-    u8g2.drawStr(0, 30, speedStr.c_str());
-    u8g2.drawStr(0, 40, coolantStr.c_str());
-    u8g2.drawStr(0, 50, fpsStr.c_str());
-  });
+auto setup() -> void {
+  DebugScreen::Start();
   if (LED_COUNT == 12) {
     ring.setShift(1);
     rpmDisplay.yellowLineStart = 3500;
@@ -144,9 +134,25 @@ void setup() {
   VehicleThread::Start(vehicle);
 }
 
-void loop() {
+auto updateDisplay() -> void;
+
+auto loop() -> void {
   auto t = EaseOutCubic(vehicle.speed() / 140.0f);
   trailingScene.params.speed = Duration::Milliseconds(LerpClamp(100, 4, t));
-  DebugScreen::Display();
+  if (DebugScreen::ReadyForUpdate()) {
+    updateDisplay();
+    DebugScreen::Display();
+  }
   App::Loop();
+}
+
+auto updateDisplay() -> void {
+  auto rpmStr = std::string("RPM: ") + std::to_string(vehicle.rpm());
+  auto speedStr = std::string("MPH: ") + std::to_string(vehicle.speed());
+  auto coolantStr = std::string("Temp: ") + std::to_string(vehicle.coolantTemp());
+  auto fpsStr = std::string("FPS: ") + std::to_string(Clock::Fps());
+  DebugScreen::PrintLine(0, rpmStr);
+  DebugScreen::PrintLine(1, speedStr);
+  DebugScreen::PrintLine(2, coolantStr);
+  DebugScreen::PrintLine(3, fpsStr);
 }
