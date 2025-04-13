@@ -67,7 +67,7 @@ auto Vehicle::update() -> void {
 
   readPID(PID_RPM, mRpm, Duration::Milliseconds(5), now);
 //  readPID(PID_ENGINE_OIL_TEMP, mOilTemp, 1);
-//  readPID(PID_COOLANT_TEMP, mCoolantTemp, 1);
+  readPID(PID_COOLANT_TEMP, mCoolantTemp, Duration::Milliseconds(5), now);
   readPID(PID_SPEED, mSpeed, Duration::Milliseconds(5), now);
 }
 
