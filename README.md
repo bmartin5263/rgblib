@@ -8,6 +8,7 @@
 - [ ] OTA led turns on even when its not active
 - [ ] Check if vehicle supports PID
 - [ ] Git submodules for libs
+- [ ] Scene Manager timer for intro
 
 ## Terminology
 

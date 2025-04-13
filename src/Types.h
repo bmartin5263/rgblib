@@ -25,10 +25,11 @@ using milliseconds_t = unsigned long;
 using microseconds_t = unsigned long;
 using frames_t = unsigned long;
 using pin_num = i8;
-using fahrenheit = int;
-using celsius = int;
-using kph = int;
-using revs_per_minute = int;
+using fahrenheit = float;
+using celsius = float;
+using kph = float;
+using mph = float;
+using revs_per_minute = float;
 using cstring = const char*;
 
 template<typename V, class Self>

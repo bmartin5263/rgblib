@@ -60,16 +60,15 @@ auto App::loop() -> void {
   OTASupport::Update(); // todo - race condition
   Wifi::Update();
 
-  ledManager->clear();
   Timer::ProcessTimers();
 
   sceneManager->update();
   checkForSceneSwitch();
   scene->update();
 
-  Debug::Instance().draw();
+  ledManager->clear();
   scene->draw();
-
+  Debug::Instance().draw();
   ledManager->display();
 
   Clock::StopTick();

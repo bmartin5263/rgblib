@@ -108,6 +108,14 @@ return x == 0 ? 0
     : (pow(2, -20 * x + 10) * sinf((20 * x - 11.125f) * c5)) / 2 + 1;
 }
 
+constexpr auto KphToMph(kph value) -> mph {
+  return static_cast<mph>(value * 0.621371f);
+}
+
+constexpr auto CToF(celsius value) -> fahrenheit {
+  return (value * 9.0f / 5.0f) + 32.0f;
+}
+
 }
 
 #endif //RGBLIB_UTIL_H

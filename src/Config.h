@@ -6,12 +6,14 @@
 #define RGBLIB_CONFIG_H
 
 #include "pins_arduino.h"
+#include "Types.h"
 
 namespace rgb::config {
 
 constexpr auto FPS = 240;
 constexpr auto WEB_SERVER_PORT = 80;
 constexpr auto TIMERS = 10;
+constexpr auto DEBUG_SCREEN_REFRESH_RATE = Duration::Milliseconds(100);
 
 constexpr auto LED_OTA_CONNECTED = LED_BLUE;
 constexpr auto LED_VEHICLE_CONNECTED = LED_GREEN;
