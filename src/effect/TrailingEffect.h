@@ -20,13 +20,13 @@ struct TrailingEffectShaderParameters {
   float positionRatio;
 };
 
-using TrailingEffectShader = std::function<Color(const TrailingEffectShaderParameters&)>;
+using TrailingEffectShader = std::function<void(Color&, const TrailingEffectShaderParameters&)>;
 
 class LEDChain;
 class TrailingEffect {
 public:
-  constexpr static auto DefaultShader(const TrailingEffectShaderParameters&) -> Color {
-    return Color::CYAN(.01);
+  constexpr static auto DefaultShader(Color& color, const TrailingEffectShaderParameters&) -> void {
+    color = Color::CYAN(.01);
   }
 
   auto init() -> void;

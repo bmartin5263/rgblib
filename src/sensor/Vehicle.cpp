@@ -60,12 +60,15 @@ auto Vehicle::update() -> void {
   }
   auto lock = std::unique_lock { mu };
 
-  auto now = Clock::Now();
-  readPID(PID_RPM, mRpm, now);
+  readPID(PID_RPM, mRpm, ToFloat);
   if (!mConnected) { return; }
-  readPID(PID_COOLANT_TEMP, mCoolantTemp, now, CToF);
+  readPID(PID_COOLANT_TEMP, mCoolantTemp, ToFahrenheit);
   if (!mConnected) { return; }
-  readPID(PID_SPEED, mSpeed, now, KphToMph);
+  readPID(PID_SPEED, mSpeed, ToMph);
+  if (!mConnected) { return; }
+  readPID(PID_FUEL_LEVEL, mFuelLevel, ToPercent);
+  if (!mConnected) { return; }
+  readPID(PID_THROTTLE, mThrottlePosition, ToPercent);
 }
 
 auto Vehicle::rpm() const -> revs_per_minute {
@@ -76,25 +79,16 @@ auto Vehicle::coolantTemp() const -> fahrenheit {
   return mCoolantTemp;
 }
 
-auto Vehicle::speed() const-> mph {
-  return mSpeed;
+auto Vehicle::fuelLevel() const -> percent {
+  return mFuelLevel;
 }
 
+auto Vehicle::throttlePosition() const -> percent {
+  return mThrottlePosition;
+}
 
-auto Vehicle::readPID(const byte pid[], byte count, int result[], int defaultValue) -> bool {
-  auto& obd = obdHandle;
-  if (obd->getState() != OBD_CONNECTED) {
-    std::fill(result, result + count, defaultValue);
-    return false;
-  }
-
-  if (obd->readPID(pid, count, result)) {
-    return true;
-  }
-  else {
-    std::fill(result, result + count, defaultValue);
-    return false;
-  }
+auto Vehicle::speed() const-> mph {
+  return mSpeed;
 }
 
 auto Vehicle::inLowPowerMode() const -> bool {

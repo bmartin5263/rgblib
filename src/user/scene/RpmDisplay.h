@@ -27,8 +27,12 @@ public:
 private:
   rgb::LEDRing& ring;
   rgb::Vehicle& vehicle;
+  rgb::Timestamp lastPulseReset{0};
 public:
 
+  rgb::Color greenColor{rgb::Color::GREEN()};
+  rgb::Color yellowColor{rgb::Color::YELLOW()};
+  rgb::Color redColor{rgb::Color::RED()};
   int rpm{0};
   RpmLayout layout{RpmLayout::TRADITIONAL};
   RpmColorMode colorMode{RpmColorMode::SEGMENTED};
@@ -37,6 +41,10 @@ public:
   uint limit{7000};
   rgb::u8 dimBrightness{1};
   rgb::u8 brightBrightness{4};
+  bool glow{true};
+
+private:
+  bool lastFrameWasYellow{false};
 };
 
 #endif //RGBLIB_RPMDISPLAY_H

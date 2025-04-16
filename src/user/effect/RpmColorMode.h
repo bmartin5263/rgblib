@@ -7,7 +7,8 @@
 
 enum class RpmColorMode {
   SEGMENTED,
-  FULL
+  SINGLE,
+  SMOOTH
 };
 
 #endif //RGBLIB_COLORMODE_H

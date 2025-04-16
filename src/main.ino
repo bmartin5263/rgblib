@@ -104,6 +104,7 @@ auto setup() -> void {
     rpmDisplay.redLineStart = 4500;
     rpmDisplay.limit = 5000;
     rpmDisplay.colorMode = RpmColorMode::SEGMENTED;
+    rpmDisplay.glow = true;
   }
   else if (LED_COUNT == 16) {
     ring.setOffset(10);
@@ -125,16 +126,16 @@ auto setup() -> void {
 }
 
 auto updateDisplay() -> void {
-  auto rpmStr = std::string("RPM: ") + std::to_string(vehicle.rpm());
-  auto speedStr = std::string("MPH: ") + std::to_string(vehicle.speed());
-  auto coolantStr = std::string("Temp: ") + std::to_string(vehicle.coolantTemp());
-  auto fpsStr = std::string("FPS: ") + std::to_string(Clock::Fps());
-  auto brightness = std::string("Brightness: ") + std::to_string(Pulse(Clock::Now().asMilliseconds(), 10000.0f));
-  DebugScreen::PrintLine(0, rpmStr);
-  DebugScreen::PrintLine(1, speedStr);
-  DebugScreen::PrintLine(2, coolantStr);
-  DebugScreen::PrintLine(3, fpsStr);
-  DebugScreen::PrintLine(4, brightness);
+  auto fpsStr = "FPS: " + std::to_string(Clock::Fps())
+                + "  MPH: " + std::to_string(static_cast<int>(vehicle.speed()));
+  auto rpmStr = "RPM: " + std::to_string(static_cast<int>(vehicle.rpm()))
+    + "  Coolant: " + std::to_string(static_cast<int>(vehicle.coolantTemp())) + "°F";
+  auto fuelStr = "Fuel: " + std::to_string(static_cast<int>(vehicle.fuelLevel())) + "%"
+    + "  Throttle: " + std::to_string(static_cast<int>(vehicle.throttlePosition() * 100)) + "%";
+  DebugScreen::PrintLine(0, fpsStr);
+  DebugScreen::PrintLine(1, rpmStr);
+  DebugScreen::PrintLine(2, fuelStr);
+  DebugScreen::PrintLine(3, std::to_string(static_cast<int>(vehicle.fuelLevel())));
 }
 
 auto loop() -> void {

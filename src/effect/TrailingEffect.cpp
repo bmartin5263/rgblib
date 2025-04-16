@@ -39,7 +39,7 @@ auto TrailingEffect::draw(LEDChain& chain) -> void {
         params.relativePosition = i;
         params.positionRatio = i / static_cast<float>(trailLength);
         params.absolutePosition = led;
-        chain[led] = shader(params);
+        shader(chain[led], params);
       }
     }
   }
@@ -50,7 +50,7 @@ auto TrailingEffect::draw(LEDChain& chain) -> void {
         led = (led + offset) % chainLength;
         params.relativePosition = i;
         params.absolutePosition = led;
-        chain[led] = shader(params);
+        shader(chain[led], params);
       }
     }
   }

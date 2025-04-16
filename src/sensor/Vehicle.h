@@ -10,6 +10,8 @@
 #include <mutex>
 #include "Handle.h"
 #include "Assertions.h"
+#include "time/Clock.h"
+#include "Util.h"
 
 namespace rgb {
 
@@ -20,7 +22,7 @@ struct OBDDestroyer {
 class Vehicle {
 public:
   template<typename T>
-  using TypeRemapper = T(*)(T);
+  using TypeRemapper = T(*)(int);
 
   using mutex = std::recursive_mutex;
   using atomic_int = std::atomic_int;
@@ -34,6 +36,8 @@ public:
   auto rpm() const -> revs_per_minute;
   auto speed() const -> kph;
   auto coolantTemp() const -> fahrenheit;
+  auto fuelLevel() const -> percent;
+  auto throttlePosition() const -> percent;
   auto inLowPowerMode() const -> bool;
   auto isConnected() const -> bool;
 
@@ -41,33 +45,35 @@ private:
   Handle<COBD, OBDDestroyer> obdHandle{{}};
   mutable mutex mu{};
   std::atomic<revs_per_minute> mRpm{};
-  std::atomic<mph> mSpeed{};  // mph
+  std::atomic<mph> mSpeed{};
   std::atomic<fahrenheit> mCoolantTemp{};
+  std::atomic<percent> mFuelLevel{};
+  std::atomic<percent> mThrottlePosition{};
   atomic_bool mConnected{false};
-  Timestamp mLastCheck{0};
   Timestamp mLastResponse{0};
   atomic_bool mLowPowerMode{false};
 
   auto disconnect() -> void;
 //  auto readPID(byte pid, atomic_float& result, Timestamp now) -> void;
-  auto readPID(const byte pid[], byte count, int result[], int defaultValue = 0) -> bool;
 
-  constexpr static auto DoNothing(float value) -> float {
-    return value;
-  }
+  constexpr static auto NoRemapping(int value) -> int { return value; }
+  constexpr static auto ToPercent(int value) -> percent { return static_cast<float>(value) / 100.f; }
+  constexpr static auto ToFloat(int value) -> float { return static_cast<float>(value); }
+  constexpr static auto ToFahrenheit(int value) -> float { return CToF(static_cast<float>(value)); }
+  constexpr static auto ToMph(int value) -> float { return KphToMph(static_cast<float>(value)); }
 
   template<typename T>
-  auto readPID(byte pid, std::atomic<T>& result, Timestamp now, TypeRemapper<T> remapper = DoNothing) -> void {
+  auto readPID(byte pid, std::atomic<T>& result, TypeRemapper<T> remapper = NoRemapping) -> void {
     auto& obd = *obdHandle;
     ASSERT(obd.getState() == OBD_CONNECTED, "OBD not connected");
 
     int value;
     if (obd.readPID(pid, value)) {
-      result = remapper(static_cast<float>(value));
-      mLastResponse = now;
+      result = remapper(value);
+      mLastResponse = Clock::Now();
     }
     else {
-      if (now.TimeSince(mLastResponse) >= Duration::Seconds(1)) {
+      if (Clock::Now().TimeSince(mLastResponse) >= Duration::Seconds(1)) {
         disconnect();
       }
     }

@@ -26,6 +26,7 @@ using microseconds_t = unsigned long;
 using frames_t = unsigned long;
 using pin_num = i8;
 using fahrenheit = float;
+using percent = float;
 using celsius = float;
 using kph = float;
 using mph = float;
@@ -62,6 +63,10 @@ struct number_wrapper {
     return Self { value / rhs.value };
   }
 
+  constexpr auto operator%(const Self& rhs) const -> Self {
+    return Self { value % rhs.value };
+  }
+
   constexpr auto operator+=(const Self& rhs) -> Self& {
     value += rhs.value;
     return static_cast<Self&>(*this);
@@ -79,6 +84,11 @@ struct number_wrapper {
 
   constexpr auto operator/=(const Self& rhs) -> Self& {
     value /= rhs.value;
+    return *this;
+  }
+
+  constexpr auto operator%=(const Self& rhs) -> Self& {
+    value %= rhs.value;
     return *this;
   }
 
@@ -233,6 +243,17 @@ struct Timestamp : public number_wrapper<unsigned long, Timestamp> {
   constexpr auto operator-=(const Duration& rhs) -> Timestamp& {
     value -= rhs.value;
     return *this;
+  }
+
+  using number_wrapper::operator%;
+  constexpr auto operator%(const Duration& rhs) const -> Timestamp {
+    return Timestamp { value % rhs.value };
+  }
+
+  using number_wrapper::operator%=;
+  constexpr auto operator%=(const Duration& rhs) -> Timestamp& {
+    value %= rhs.value;
+    return static_cast<Timestamp&>(*this);
   }
 
   using number_wrapper::operator*=;

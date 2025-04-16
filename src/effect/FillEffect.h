@@ -15,9 +15,9 @@ struct FillEffectShaderParameters {
   u16 position;
 };
 
-using FillEffectShader = std::function<Color(const FillEffectShaderParameters&)>;
+using FillEffectShader = std::function<Color(FillEffectShaderParameters&)>;
 
-constexpr auto defaultShader(const FillEffectShaderParameters&) -> Color {
+constexpr auto defaultShader(FillEffectShaderParameters&) -> Color {
   return Color::CYAN(.01);
 }
 

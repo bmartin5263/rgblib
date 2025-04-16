@@ -5,6 +5,7 @@
 #include "RpmDisplay.h"
 #include "sensor/PushButton.h"
 #include "time/Clock.h"
+#include "debug/DebugScreen.h"
 
 using namespace rgb;
 
@@ -14,6 +15,7 @@ RpmDisplay::RpmDisplay(LEDRing& ring, Vehicle& vehicle): ring(ring), vehicle(veh
 
 auto RpmDisplay::setup() -> void {
   INFO("RPM setup");
+  lastPulseReset = Clock::Now();
 }
 
 auto RpmDisplay::update() -> void {
@@ -55,16 +57,40 @@ constexpr u16 calculateLevels(u16 ringSize, RpmLayout layout) {
 
 auto RpmDisplay::draw() -> void {
   auto ledCount = ring.getSize();
-  auto levels = calculateLevels(ledCount, layout);
-  auto rpmLevelRate = limit / levels;
-  auto rpmLevel = rpm / rpmLevelRate;
+  auto levelCount = calculateLevels(ledCount, layout);
+  auto rpmPerLevel = limit / levelCount;
+  auto yellowLevel = (yellowLineStart / rpmPerLevel);
+  auto redLevel = (redLineStart / rpmPerLevel);
+  auto rpmLevelAchieved = rpm / rpmPerLevel;
   auto offset = calculateOffset(ledCount, layout);
+  auto now = Clock::Now();
 
-  for (int i = 0; i < levels; ++i) {
-    auto levelValue = rpmLevelRate * i + rpmLevelRate;
+  for (int level = 0; level < levelCount; ++level) {
+    auto minRpmToAchieveLevel = (rpmPerLevel * level) + rpmPerLevel;
     float brightness;
-    if (i < rpmLevel) {
-      brightness = ByteToFloat(brightBrightness);
+    if (level < rpmLevelAchieved) {
+      if (rpmLevelAchieved > yellowLevel && glow) {
+        if (!lastFrameWasYellow) {
+          lastPulseReset = now - Duration::Milliseconds(500);
+        }
+        auto d = ByteToFloat(brightBrightness);
+        auto b = ByteToFloat(brightBrightness + 8);
+        brightness = Lerp(d, b, Pulse((now - lastPulseReset).asSeconds(), 1.5f));
+        lastFrameWasYellow = true;
+      }
+      else {
+        if (lastFrameWasYellow) {
+          auto d = ByteToFloat(brightBrightness);
+          auto b = ByteToFloat(brightBrightness + 8);
+          brightness = Lerp(d, b, Pulse((now - lastPulseReset).asSeconds(), 1.5f));
+          if (brightness <= ByteToFloat(brightBrightness + 1)) {
+            lastFrameWasYellow = false;
+          }
+        }
+        else {
+          brightness = ByteToFloat(brightBrightness);
+        }
+      }
     }
     else {
       brightness = ByteToFloat(dimBrightness);
@@ -72,29 +98,37 @@ auto RpmDisplay::draw() -> void {
 
     Color color;
     if (colorMode == RpmColorMode::SEGMENTED) {
-      if (levelValue < yellowLineStart) {
-        color = Color::GREEN(brightness);
+      if (level < yellowLevel) {
+        color = greenColor * brightness;
       }
-      else if (levelValue < redLineStart) {
-        color = Color::YELLOW(brightness);
+      else if (level < redLevel) {
+        color = yellowColor * brightness;
       }
       else {
-        color = Color::RED(brightness);
+        color = redColor * brightness;
+      }
+    }
+    else if (colorMode == RpmColorMode::SMOOTH) {
+      if (minRpmToAchieveLevel <= yellowLineStart) {
+        color = greenColor.lerpClamp(yellowColor, static_cast<float>(minRpmToAchieveLevel) / static_cast<float>(yellowLineStart)) * brightness;
+      }
+      else {
+        color = yellowColor.lerpClamp(redColor, static_cast<float>(minRpmToAchieveLevel) / static_cast<float>(redLineStart)) * brightness;
       }
     }
     else {
-      if (rpm < yellowLineStart) {
-        color = Color::GREEN(brightness);
+      if (rpmLevelAchieved < yellowLevel) {
+        color = greenColor * brightness;
       }
-      else if (rpm < redLineStart) {
-        color = Color::YELLOW(brightness);
+      else if (rpmLevelAchieved < redLevel) {
+        color = yellowColor * brightness;
       }
       else {
-        color = Color::RED(brightness);
+        color = redColor * brightness;
       }
     }
 
 
-    ring[mapToPixelPosition(i, ledCount, offset)] = color;
+    ring[mapToPixelPosition(level, ledCount, offset)] = color;
   }
 }
