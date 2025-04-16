@@ -2,8 +2,8 @@
 // Created by Brandon on 3/20/25.
 //
 
-#include "Clock.h"
-#include "Stopwatch.h"
+#include "time/Clock.h"
+#include "time/Stopwatch.h"
 #include "Log.h"
 
 namespace rgb {

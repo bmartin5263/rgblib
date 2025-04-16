@@ -21,7 +21,6 @@ public:
   static auto Delta() -> Duration;
   static auto Milli() -> milliseconds_t;
   static auto Frames() -> frames_t;
-  static auto Time() -> ClockTime;
   static auto Fps() -> frames_t;
 
 private:
@@ -35,7 +34,6 @@ private:
 
   [[nodiscard]] auto milli() const -> milliseconds_t ;
   [[nodiscard]] auto frames() const -> frames_t;
-  [[nodiscard]] auto time() const -> ClockTime;
   [[nodiscard]] auto delta() const -> Duration;
   [[nodiscard]] auto fps() const -> frames_t;
 

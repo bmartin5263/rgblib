@@ -27,15 +27,29 @@ auto AppBuilder::EnableOTA() -> self {
   return *this;
 }
 
-auto AppBuilder::Start() -> void {
-  App::Configure(*this);
-  App::Start();
-}
-
 auto AppBuilder::SetSensorManager(ISensorManager* sensorManager) -> AppBuilder& {
   mSensorManager = sensorManager;
   return *this;
 }
 
+auto AppBuilder::PreDraw(const VoidFunction& action) -> self {
+  mPreDrawAction = action;
+  return *this;
+}
+
+auto AppBuilder::PostDraw(const VoidFunction& action) -> self {
+  mPostDrawAction = action;
+  return *this;
+}
+
+auto AppBuilder::PreUpdate(const VoidFunction& action) -> self {
+  mPreUpdateAction = action;
+  return *this;
+}
+
+auto AppBuilder::Start() -> void {
+  App::Configure(*this);
+  App::Start();
+}
 
 }

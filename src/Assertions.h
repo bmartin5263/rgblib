@@ -8,7 +8,7 @@
 //#ifndef NDEBUG
 #include "Debug.h"
 #include "Log.h"
-#include "screen/DebugScreen.h"
+#include "debug/DebugScreen.h"
 #define ASSERT(condition, message) \
         do { \
             if (!(condition)) {    \

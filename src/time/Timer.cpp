@@ -4,7 +4,7 @@
 
 #include "Timer.h"
 #include "Assertions.h"
-#include "Clock.h"
+#include "time/Clock.h"
 
 namespace rgb {
 
@@ -53,8 +53,9 @@ auto Timer::Cancel(TimerNode* node) -> void {
 }
 
 auto Timer::cancel(TimerNode* node) -> void {
-  ASSERT(node != nullptr, "TimerNode is null");
-  node->tombstone = true;
+  if (node != nullptr) {
+    node->tombstone = true;
+  }
 }
 
 auto Timer::enqueueForAdding(TimerNode* node) -> void {

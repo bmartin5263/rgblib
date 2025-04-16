@@ -11,12 +11,10 @@
 namespace rgb {
 
 auto LEDChain::fill(const Color& color) -> void {
-  auto h = head();
-  auto s = size();
-  auto r = getShift();
-  for (int i = 0; i < size(); ++i) {
-    auto led = mapPixelToLED(i, r, s);
-    h[led] = color;
+  auto head = getHead();
+  auto size = getSize();
+  for (int i = 0; i < size; ++i) {
+    head[i] = color;
   }
 }
 
@@ -25,30 +23,36 @@ auto LEDChain::clear() -> void {
 }
 
 auto LEDChain::get(u16 pixel) -> Color* {
-  auto s = size();
-  auto r = getShift();
-  ASSERT(pixel >= 0 && pixel < s, "Pixel is out of bounds");
-  auto led = mapPixelToLED(pixel, r, s);
-  return head() + led;
+  auto size = getSize();
+  auto offset = getOffset();
+  auto led = mapPixelToLED(pixel, offset, size);
+  if (isReversed()) {
+    led = size - 1 - led;
+  }
+  ASSERT(pixel >= 0, "Pixel is negative");
+  ASSERT(pixel < getSize(), "Pixel is out of bounds");
+  return getHead() + led;
 }
 
 auto LEDChain::get(Point point) -> Color* {
-  u16 pixel = (size() * point.x) + point.y;
-  auto s = size();
-  auto r = getShift();
-  ASSERT(pixel >= 0 && pixel < s, "Pixel is out of bounds");
-  auto led = mapPixelToLED(pixel, r, s);
-  return head() + led;
+  u16 pixel = (getSize() * point.x) + point.y;
+  auto size = getSize();
+  auto offset = getOffset();
+  auto led = mapPixelToLED(pixel, offset, size);
+  if (isReversed()) {
+    led = size - 1 - led;
+  }
+  ASSERT(pixel >= 0, "Pixel is negative");
+  ASSERT(pixel < getSize(), "Pixel is out of bounds");
+  return getHead() + led;
 }
 
 auto LEDChain::set(u16 pixel, const Color& color) -> void {
-  ASSERT(pixel >= 0, "Pixel is negative");
-  ASSERT(pixel < size(), "Pixel is out of bounds");
   *get(pixel) = color;
 }
 
 auto LEDChain::set(Point point, const Color& color) -> void {
-  this->operator[](point) = color;
+  *get(point) = color;
 }
 
 auto LEDChain::operator[](u16 pixel) -> Color& {
@@ -64,19 +68,41 @@ auto LEDChain::slice(u16 length) -> LEDSlice {
 }
 
 auto LEDChain::slice(u16 start, u16 length) -> LEDSlice {
-  auto N = size();
-  auto data = head();
+  auto N = getSize();
+  auto data = getHead();
 
   ASSERT(start < N, "Slice start is beyond length of chain");
-  u16 end = start + length;
+  auto end = start + length;
   ASSERT(end < N, "Slice end is beyond length of chain");
 
   Color* head = data + start;
   return {head, length};
 }
 
-auto LEDChain::mapPixelToLED(u16 pixel, u16 rotation, u16 size) -> u16 {
-  return (pixel + rotation) % size;
+auto LEDChain::mapPixelToLED(u16 pixel, u16 offset, u16 size) -> u16 {
+  return (pixel + offset) % size;
+}
+
+auto LEDChain::begin() -> Color* {
+  return getHead();
+}
+
+auto LEDChain::begin() const -> const Color* {
+  return getHead();
+}
+
+auto LEDChain::end() -> Color* {
+  return getHead() + getSize();
+}
+
+auto LEDChain::end() const -> const Color* {
+  return getHead() + getSize();
+}
+
+auto LEDChain::toggleReversed() -> bool {
+  auto reversed = isReversed();
+  setReversed(!reversed);
+  return reversed;
 }
 
 }

@@ -14,10 +14,15 @@ struct Point;
 class LEDSlice;
 class LEDChain {
 public:
-  virtual auto head() -> Color* = 0;
-  virtual auto size() -> u16 = 0;
-  virtual auto setShift(u16 amount) -> void = 0;
-  virtual auto getShift() -> u16 = 0;
+  virtual auto getHead() -> Color* = 0;
+  virtual auto getHead() const -> const Color* = 0;
+  virtual auto getSize() const -> u16 = 0;
+
+  virtual auto setOffset(int amount) -> void = 0;
+  virtual auto getOffset() const -> u16 = 0;
+  virtual auto setReversed(bool value) -> void = 0;
+  virtual auto isReversed() const -> bool = 0;
+  auto toggleReversed() -> bool;
 
   auto get(u16 pixel) -> Color*;
   auto operator[](u16 pixel) -> Color&;
@@ -31,6 +36,11 @@ public:
 
   auto slice(u16 length) -> LEDSlice;
   auto slice(u16 start, u16 length) -> LEDSlice;
+
+  auto begin() -> Color*;
+  auto begin() const -> const Color*;
+  auto end() -> Color*;
+  auto end() const -> const Color*;
 
   virtual ~LEDChain() = default;
 

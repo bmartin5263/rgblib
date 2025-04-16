@@ -4,7 +4,7 @@
 
 #include "RpmDisplay.h"
 #include "sensor/PushButton.h"
-#include "Clock.h"
+#include "time/Clock.h"
 
 using namespace rgb;
 
@@ -54,7 +54,7 @@ constexpr u16 calculateLevels(u16 ringSize, RpmLayout layout) {
 }
 
 auto RpmDisplay::draw() -> void {
-  auto ledCount = ring.size();
+  auto ledCount = ring.getSize();
   auto levels = calculateLevels(ledCount, layout);
   auto rpmLevelRate = limit / levels;
   auto rpmLevel = rpm / rpmLevelRate;

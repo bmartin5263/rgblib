@@ -10,7 +10,6 @@ namespace rgb {
 class Scene;
 class ISceneManager {
 public:
-  virtual auto update() -> void = 0;
   virtual auto start() -> Scene& = 0;
   virtual ~ISceneManager() = default;
 

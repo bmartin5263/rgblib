@@ -17,8 +17,8 @@ namespace rgb {
 template <u16 N>
 class LEDCircuit : public LEDChain {
 public:
-  explicit LEDCircuit(pin_num pin, u16 rotation = 0, neoPixelType type = NEO_GRBW + NEO_KHZ800):
-    data{}, impl(N, pin, type), mRotation(rotation), reversed(false)
+  explicit LEDCircuit(pin_num pin, u16 offset = 0, neoPixelType type = NEO_GRBW + NEO_KHZ800):
+    data{}, impl(N, pin, type), mOffset(offset), mReversed(false)
   {
 
   }
@@ -27,50 +27,60 @@ public:
     impl.begin();
   }
 
-  auto setBrightness(u8 brightness) -> LEDChain& {
+  auto setBrightness(u8 brightness) -> LEDCircuit& {
     impl.setBrightness(brightness);
     return *this;
   }
 
-  auto head() -> Color* override {
+  auto getHead() -> Color* override {
     return data;
   }
 
-  auto size() -> u16 override {
+  auto getHead() const -> const Color* override {
+    return data;
+  }
+
+  auto getSize() const -> u16 override {
     return N;
   }
 
-  auto getShift() -> u16 override {
-    return mRotation;
+  auto getOffset() const -> u16 override {
+    return mOffset;
   }
 
   auto display() -> void {
-    for (u16 i = 0; i < N; ++i) {
-      if (reversed) {
-        Color& c = data[N - 1 - i];
+    if (mReversed) {
+      for (u16 i = 0; i < N; ++i) {
+        auto& c = data[N - 1 - i];
         impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
       }
-      else {
-        Color& c = data[i];
+    }
+    else {
+      for (u16 i = 0; i < N; ++i) {
+        auto& c = data[i];
         impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
       }
     }
     impl.show();
   }
 
-  auto setShift(u16 amount) -> void override {
-    mRotation = amount;
+  auto setOffset(int amount) -> void override {
+    mOffset = amount;
   }
 
-  auto reverse() -> void {
-    reversed = !reversed;
+  auto setReversed(bool value) -> void override {
+    mReversed = value;
+  }
+
+  auto isReversed() const -> bool override {
+    return mReversed;
   }
 
 private:
   Color data[N];
   Adafruit_NeoPixel impl;
-  u16 mRotation;
-  bool reversed;
+  u16 mOffset;
+  bool mReversed;
 };
 
 }

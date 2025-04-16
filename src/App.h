@@ -27,7 +27,7 @@ public:
   static auto SwitchScene(Scene& scene) -> void;
 
 private:
-  App();
+  App() = default;
   ~App() = default;
 
   static auto Instance() -> App&;
@@ -43,7 +43,7 @@ private:
   Scene* nextScene;
   ISceneManager* sceneManager;
   ILEDManager* ledManager;
-  ISensorManager* sensorManager;
+  ISensorManager* sensorManager{};
   bool started;
   bool otaEnabled;
 };

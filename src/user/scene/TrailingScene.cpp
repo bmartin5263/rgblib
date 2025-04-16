@@ -4,7 +4,7 @@
 
 #include "Assertions.h"
 #include "TrailingScene.h"
-#include "Clock.h"
+#include "time/Clock.h"
 
 TrailingScene::TrailingScene(TrailingSceneParameters params): params(std::move(params)) {
   ASSERT(params.leds != nullptr, "TrailingScene: LEDs is null");
@@ -25,7 +25,7 @@ auto TrailingScene::update() -> void {
 
 auto TrailingScene::draw() -> void {
   auto& leds = params.LEDs();
-  auto ledSize = leds.size();
+  auto ledSize = leds.getSize();
   auto length = params.length;
   auto now = rgb::Clock::Now();
 
@@ -57,7 +57,7 @@ auto TrailingScene::draw() -> void {
 
 auto TrailingScene::move() -> void {
   auto& leds = params.LEDs();
-  auto ledSize = leds.size();
+  auto ledSize = leds.getSize();
   pixel += 1;
   if (pixel >= ledSize + (params.continuous ? 0 : params.length + params.endBuffer)) {
     pixel = 0;

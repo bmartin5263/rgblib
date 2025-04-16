@@ -33,7 +33,7 @@ public:
 
   auto rpm() const -> revs_per_minute;
   auto speed() const -> kph;
-  auto coolantTemp() const -> celsius;
+  auto coolantTemp() const -> fahrenheit;
   auto inLowPowerMode() const -> bool;
   auto isConnected() const -> bool;
 

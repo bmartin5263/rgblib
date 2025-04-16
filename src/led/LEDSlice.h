@@ -14,15 +14,19 @@ class LEDSlice final : public LEDChain {
 public:
   LEDSlice(Color* head, u16 size, u16 rotation = 0);
 
-  auto head() -> Color* override;
-  auto size() -> u16 override;
-  auto getShift() -> u16 override;
-  auto setShift(u16 amount) -> void override;
+  auto getHead() -> Color* override;
+  auto getHead() const -> const Color* override;
+  auto getSize() const -> u16 override;
+  auto getOffset() const -> u16 override;
+  auto setOffset(int amount) -> void override;
+  auto isReversed() const -> bool override;
+  auto setReversed(bool value) -> void override;
 
 private:
   Color* mHead;
   u16 mSize;
-  u16 mRotation;
+  int mOffset;
+  bool mReversed;
 
 };
 

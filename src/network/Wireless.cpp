@@ -4,7 +4,7 @@
 
 #include "Wireless.h"
 #include "Log.h"
-#include "Stopwatch.h"
+#include "time/Stopwatch.h"
 #include <WiFi.h>
 
 namespace rgb {

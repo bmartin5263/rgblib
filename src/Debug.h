@@ -5,12 +5,9 @@
 #ifndef RGBLIB_DEBUG_H
 #define RGBLIB_DEBUG_H
 
-#include "Assertions.h"
-
 namespace rgb {
 
 class LEDChain;
-class Driver;
 class Debug {
 public:
   auto trigger(bool value) -> void;
@@ -28,10 +25,5 @@ private:
 };
 
 }
-
-#define DEBUG_ERROR(message) (void)
-#define DEBUG_SET_LED(n, color) do { Debug::LEDs()[n] = color; } while(false)
-
-
 
 #endif //RGBLIB_DEBUG_H

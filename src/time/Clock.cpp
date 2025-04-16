@@ -2,7 +2,7 @@
 // Created by Brandon on 1/5/25.
 //
 
-#include "Clock.h"
+#include "time/Clock.h"
 #include "Arduino.h"
 #include "Log.h"
 
@@ -50,11 +50,6 @@ auto Clock::milli() const -> milliseconds_t {
   return millis();
 }
 
-auto Clock::time() const -> ClockTime {
-  return {micros(), millis(), mFrames};
-}
-
-
 auto Clock::stopTick() -> void {
   auto stop = micros();
   auto duration = stop - mTickStart;
@@ -89,10 +84,6 @@ auto Clock::Now() -> Timestamp {
 
 auto Clock::Delta() -> Duration {
   return Instance().delta();
-}
-
-auto Clock::Time() -> ClockTime {
-  return Instance().time();
 }
 
 auto Clock::Fps() -> frames_t {

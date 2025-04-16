@@ -9,8 +9,8 @@
 #include "led/LEDCircuit.h"
 #include "network/WebServerFwd.h"
 #include "sensor/Vehicle.h"
-#include "RpmLayout.h"
-#include "RpmColorMode.h"
+#include "user/effect/RpmLayout.h"
+#include "user/effect/RpmColorMode.h"
 
 namespace rgb {
   class PushButton;

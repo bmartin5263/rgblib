@@ -10,6 +10,18 @@
 
 namespace rgb {
 
+constexpr auto StaticAssertions() -> void {
+  static_assert(sizeof(i32) > sizeof(u16));
+  static_assert(sizeof(i64) > sizeof(u32));
+  static_assert(sizeof(int) == 4);
+  static_assert(sizeof(int) == sizeof(float));
+  static_assert(sizeof(int*) == 4);
+  static_assert(sizeof(long) == 4);
+  static_assert(sizeof(long long) == 8);
+  static_assert(sizeof(float) == 4);
+  static_assert(sizeof(double) == 8);
+}
+
 constexpr float pi = PI;
 
 constexpr auto ExtractBytes(u32 input, u8& byte0, u8& byte1, u8& byte2, u8& byte3) {
@@ -82,8 +94,8 @@ constexpr auto LerpClamp(T a, T b, R time, R range) -> float {
   return a + (b - a) * t;
 }
 
-constexpr auto SinWave(float t) -> float {
-  return 1.0f * sinf(2.f * pi * .1f * t);
+constexpr auto SinWave(float t, float frequency = .1f) -> float {
+  return 1.0f * sinf(2.f * pi * frequency * t);
 }
 
 constexpr auto Pulse(float time, float frequency = .1f) -> float {

@@ -7,24 +7,36 @@
 namespace rgb {
 
 LEDSlice::LEDSlice(Color* head, u16 size, u16 rotation) :
-  mHead(head), mSize(size), mRotation(rotation)
+  mHead(head), mSize(size), mOffset(rotation)
 {
 }
 
-auto LEDSlice::size() -> u16 {
+auto LEDSlice::getSize() const -> u16 {
   return mSize;
 }
 
-auto LEDSlice::head() -> Color* {
+auto LEDSlice::getHead() -> Color* {
   return mHead;
 }
 
-auto LEDSlice::getShift() -> u16 {
-  return mRotation;
+auto LEDSlice::getHead() const -> const Color* {
+  return mHead;
 }
 
-auto LEDSlice::setShift(u16 amount) -> void {
-  mRotation = amount;
+auto LEDSlice::getOffset() const -> u16 {
+  return mOffset;
+}
+
+auto LEDSlice::setOffset(int amount) -> void {
+  mOffset = amount;
+}
+
+auto LEDSlice::isReversed() const -> bool {
+  return mReversed;
+}
+
+auto LEDSlice::setReversed(bool value) -> void {
+  mReversed = value;
 }
 
 }

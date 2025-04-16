@@ -7,22 +7,17 @@
 #include "App.h"
 #include "AppBuilder.h"
 #include "Scene.h"
-#include "Clock.h"
+#include "time/Clock.h"
 #include "Assertions.h"
 #include "ISceneManager.h"
 #include "ILEDManager.h"
 #include "ISensorManager.h"
 #include "network/OTASupport.h"
 #include "network/WebServer.h"
-#include "effect/Timer.h"
-#include "StartOTACommand.h"
+#include "time/Timer.h"
 #include "network/Wireless.h"
 
 namespace rgb {
-
-App::App(): scene(nullptr), nextScene(nullptr), sceneManager(nullptr), ledManager(nullptr), started(false) {
-
-}
 
 auto App::Configure(const AppBuilder& appBuilder) -> void {
   Instance().configure(appBuilder);
@@ -57,12 +52,11 @@ auto App::start() -> void {
 auto App::loop() -> void {
   Clock::StartTick();
   sensorManager->update();
-  OTASupport::Update(); // todo - race condition
+  OTASupport::Update();
   Wifi::Update();
 
   Timer::ProcessTimers();
 
-  sceneManager->update();
   checkForSceneSwitch();
   scene->update();
 
@@ -110,7 +104,6 @@ auto App::configure(const AppBuilder& appBuilder) -> void {
   ledManager = appBuilder.mLedManager;
   sensorManager = appBuilder.mSensorManager;
   otaEnabled = appBuilder.mEnabledOTA;
-
   Debug::Instance().setDebugChain(appBuilder.mDebugOutputLED);
 }
 

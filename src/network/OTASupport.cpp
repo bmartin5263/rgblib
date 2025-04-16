@@ -4,11 +4,8 @@
 
 #include "OTASupport.h"
 
-#include <WiFi.h>
 #include <ArduinoOTA.h>
-#include <ESPAsyncWebServer.h>
-#include "Wireless.h"
-#include "Stopwatch.h"
+#include "time/Stopwatch.h"
 #include "Log.h"
 #include "Config.h"
 
