@@ -50,7 +50,7 @@ constexpr auto Lerp(T a, T b, float t) -> T {
 }
 
 template<typename T, typename R>
-constexpr auto Lerp(T a, T b, R time, R range) -> float {
+constexpr auto Lerp(T a, T b, R time, R range) -> T {
   return a + (b - a) * (static_cast<float>(time) / static_cast<float>(range));
 }
 
@@ -63,7 +63,7 @@ constexpr auto LerpWrap(T a, T b, float t) -> T {
 }
 
 template<typename T, typename R>
-constexpr auto LerpWrap(T a, T b, R time, R range) -> float {
+constexpr auto LerpWrap(T a, T b, R time, R range) -> T {
   auto t = static_cast<float>(time) / static_cast<float>(range);
   if (t < 0.0f || t > 1.0f) {
     t = t - std::floor(t); // Wrap using the fractional part
@@ -83,7 +83,7 @@ constexpr auto LerpClamp(T a, T b, float t) -> T {
 }
 
 template<typename T, typename R>
-constexpr auto LerpClamp(T a, T b, R time, R range) -> float {
+constexpr auto LerpClamp(T a, T b, R time, R range) -> T {
   auto t = static_cast<float>(time) / static_cast<float>(range);
   if (t <= 0.f) {
     return a;

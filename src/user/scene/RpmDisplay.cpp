@@ -56,11 +56,14 @@ constexpr u16 calculateLevels(u16 ringSize, RpmLayout layout) {
 }
 
 auto RpmDisplay::draw() -> void {
+  auto effectiveYellowLineStart = static_cast<u16>(yellowLineStart * LerpClamp(.6f, 1.0f, vehicle.coolantTemp(), 417.0f));
+  auto effectiveRedLineStart = static_cast<u16>(redLineStart * LerpClamp(.7f, 1.0f, vehicle.coolantTemp(), 417.0f));
+
   auto ledCount = ring.getSize();
   auto levelCount = calculateLevels(ledCount, layout);
   auto rpmPerLevel = limit / levelCount;
-  auto yellowLevel = (yellowLineStart / rpmPerLevel);
-  auto redLevel = (redLineStart / rpmPerLevel);
+  auto yellowLevel = (effectiveYellowLineStart / rpmPerLevel);
+  auto redLevel = (effectiveRedLineStart / rpmPerLevel);
   auto rpmLevelAchieved = rpm / rpmPerLevel;
   auto offset = calculateOffset(ledCount, layout);
   auto now = Clock::Now();
@@ -74,14 +77,14 @@ auto RpmDisplay::draw() -> void {
           lastPulseReset = now - Duration::Milliseconds(500);
         }
         auto d = ByteToFloat(brightBrightness);
-        auto b = ByteToFloat(brightBrightness + 8);
+        auto b = ByteToFloat(brightBrightness + 6);
         brightness = Lerp(d, b, Pulse((now - lastPulseReset).asSeconds(), 1.5f));
         lastFrameWasYellow = true;
       }
       else {
         if (lastFrameWasYellow) {
           auto d = ByteToFloat(brightBrightness);
-          auto b = ByteToFloat(brightBrightness + 8);
+          auto b = ByteToFloat(brightBrightness + 6);
           brightness = Lerp(d, b, Pulse((now - lastPulseReset).asSeconds(), 1.5f));
           if (brightness <= ByteToFloat(brightBrightness + 1)) {
             lastFrameWasYellow = false;
@@ -109,11 +112,11 @@ auto RpmDisplay::draw() -> void {
       }
     }
     else if (colorMode == RpmColorMode::SMOOTH) {
-      if (minRpmToAchieveLevel <= yellowLineStart) {
-        color = greenColor.lerpClamp(yellowColor, static_cast<float>(minRpmToAchieveLevel) / static_cast<float>(yellowLineStart)) * brightness;
+      if (minRpmToAchieveLevel <= effectiveYellowLineStart) {
+        color = greenColor.lerpClamp(yellowColor, static_cast<float>(minRpmToAchieveLevel) / static_cast<float>(effectiveYellowLineStart)) * brightness;
       }
       else {
-        color = yellowColor.lerpClamp(redColor, static_cast<float>(minRpmToAchieveLevel) / static_cast<float>(redLineStart)) * brightness;
+        color = yellowColor.lerpClamp(redColor, static_cast<float>(minRpmToAchieveLevel) / static_cast<float>(effectiveRedLineStart)) * brightness;
       }
     }
     else {

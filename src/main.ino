@@ -135,7 +135,6 @@ auto updateDisplay() -> void {
   DebugScreen::PrintLine(0, fpsStr);
   DebugScreen::PrintLine(1, rpmStr);
   DebugScreen::PrintLine(2, fuelStr);
-  DebugScreen::PrintLine(3, std::to_string(static_cast<int>(vehicle.fuelLevel())));
 }
 
 auto loop() -> void {
