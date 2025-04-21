@@ -45,7 +45,7 @@ constexpr auto Sigmoid(u32 t) -> float {
 }
 
 template<typename T>
-constexpr auto Lerp(T a, T b, float t) -> T {
+constexpr auto Lerp(T a, T b, normal t) -> T {
   return a + (b - a) * t;
 }
 
@@ -55,7 +55,7 @@ constexpr auto Lerp(T a, T b, R time, R range) -> T {
 }
 
 template<typename T>
-constexpr auto LerpWrap(T a, T b, float t) -> T {
+constexpr auto LerpWrap(T a, T b, normal t) -> T {
   if (t < 0.0f || t > 1.0f) {
     t = t - std::floor(t); // Wrap using the fractional part
   }
@@ -72,11 +72,10 @@ constexpr auto LerpWrap(T a, T b, R time, R range) -> T {
 }
 
 template<typename T>
-constexpr auto LerpClamp(T a, T b, float t) -> T {
+constexpr auto LerpClamp(T a, T b, normal t) -> T {
   if (t <= 0.f) {
     return a;
-  }
-  else if (t >= 1.f) {
+  } else if (t >= 1.f) {
     return b;
   }
   return a + (b - a) * t;
@@ -87,8 +86,7 @@ constexpr auto LerpClamp(T a, T b, R time, R range) -> T {
   auto t = static_cast<float>(time) / static_cast<float>(range);
   if (t <= 0.f) {
     return a;
-  }
-  else if (t >= 1.f) {
+  } else if (t >= 1.f) {
     return b;
   }
   return a + (b - a) * t;
@@ -102,22 +100,22 @@ constexpr auto Pulse(float time, float frequency = .1f) -> float {
   return 0.5f * (1 + sinf(2.f * pi * frequency * time));
 }
 
-constexpr auto FloatToByte(float f, u8 range = 255) {
-  return static_cast<u8>(((u8)(f * static_cast<float>(range))) % (range + 1));
+constexpr auto FloatToByte(normal f) -> u8 {
+  const u8 range = 255;
+  return static_cast<u8>((static_cast<u8>(f * static_cast<float>(range))) % (range + 1));
 }
 
-constexpr auto ByteToFloat(u8 byte) {
+constexpr auto ByteToFloat(u8 byte) -> normal {
   return static_cast<float>(byte) / 255.0f;
 }
 
-template <typename T>
+template<typename T>
 constexpr auto easeInOutElastic(T x) -> T {
-auto c5 = (2 * PI) / 4.5f;
-
-return x == 0 ? 0
-    : x == 1 ? 1
-    : x < 0.5f ? -(pow(2, 20 * x - 10) * sinf((20 * x - 11.125f) * c5)) / 2
-    : (pow(2, -20 * x + 10) * sinf((20 * x - 11.125f) * c5)) / 2 + 1;
+  auto c5 = (2 * PI) / 4.5f;
+  return x == 0 ? 0
+      : x == 1 ? 1
+      : x < 0.5f ? -(pow(2, 20 * x - 10) * sinf((20 * x - 11.125f) * c5)) / 2
+      : (pow(2, -20 * x + 10) * sinf((20 * x - 11.125f) * c5)) / 2 + 1;
 }
 
 constexpr auto KphToMph(kph value) -> mph {
@@ -128,7 +126,7 @@ constexpr auto CToF(celsius value) -> fahrenheit {
   return (value * 9.0f / 5.0f) + 32.0f;
 }
 
-constexpr auto EaseOutBounce(float t) -> float {
+constexpr auto EaseOutBounce(normal t) -> normal {
   auto n1 = 7.5625f;
   auto d1 = 2.75f;
 
@@ -146,20 +144,28 @@ constexpr auto EaseOutBounce(float t) -> float {
   }
 }
 
-constexpr auto EaseInOutBounce(float t) -> float {
+constexpr auto EaseInOutBounce(normal t) -> normal {
   return t < 0.5
          ? (1 - EaseOutBounce(1.f - 2.f * t)) / 2.f
          : (1 + EaseOutBounce(2.f * t - 1.f)) / 2.f;
 }
 
-constexpr auto EaseOutCirc(float t) -> float {
+constexpr auto EaseOutCirc(normal t) -> normal {
   return sqrt(1.0f - pow(t - 1.0f, 2.0f));
 }
 
-constexpr auto EaseOutCubic(float t) -> float {
+constexpr auto EaseOutCubic(normal t) -> normal {
   return 1 - pow(1.0f - t, 3.0f);
 }
 
+template<typename T>
+constexpr auto RemapPercent(T min, T max, T actual) -> normal {
+  auto diff = max - min;
+  if (diff == 0.0f) {
+    return 1.0f;
+  }
+  return (actual - min) / diff;
+}
 }
 
 #endif //RGBLIB_UTIL_H

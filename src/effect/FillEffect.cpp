@@ -17,7 +17,7 @@ auto FillEffect::draw(LEDChain& chain) -> void {
   };
   for (auto [i, led] : enumerate(chain)) {
     params.position = i;
-    led = shader(params);
+    shader(led, params);
   }
 }
 

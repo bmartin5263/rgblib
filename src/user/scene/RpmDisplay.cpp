@@ -19,7 +19,7 @@ auto RpmDisplay::setup() -> void {
 }
 
 auto RpmDisplay::update() -> void {
-  rpm = vehicle.rpm();
+
 }
 
 constexpr u16 mapToPixelPosition(int level, int ledCount, int offset = 0) {
@@ -56,15 +56,22 @@ constexpr u16 calculateLevels(u16 ringSize, RpmLayout layout) {
 }
 
 auto RpmDisplay::draw() -> void {
-  auto effectiveYellowLineStart = static_cast<u16>(yellowLineStart * LerpClamp(.6f, 1.0f, vehicle.coolantTemp(), 417.0f));
-  auto effectiveRedLineStart = static_cast<u16>(redLineStart * LerpClamp(.7f, 1.0f, vehicle.coolantTemp(), 417.0f));
+  auto coolantTemp = vehicle.coolantTemp();
+  auto coolantPercent = RemapPercent(minCoolantLevel, maxCoolantLevel, coolantTemp);
+  auto effectiveYellowLineStart = static_cast<u16>(yellowLineStart * LerpClamp(.6f, 1.0f, coolantPercent));
+  auto effectiveRedLineStart = static_cast<u16>(redLineStart * LerpClamp(.8f, 1.0f, coolantPercent));
+  auto effectiveBrightBrightness = bright ? brightBrightness * 3 : brightBrightness;
+  auto effectiveDimBrightness = bright ? dimBrightness * 3 : dimBrightness;
 
   auto ledCount = ring.getSize();
   auto levelCount = calculateLevels(ledCount, layout);
   auto rpmPerLevel = limit / levelCount;
   auto yellowLevel = (effectiveYellowLineStart / rpmPerLevel);
   auto redLevel = (effectiveRedLineStart / rpmPerLevel);
-  auto rpmLevelAchieved = rpm / rpmPerLevel;
+  auto rpmLevelAchieved = static_cast<uint>(vehicle.rpm() / rpmPerLevel);
+  if (rpmLevelAchieved == 0 && vehicle.rpm() > 0) {
+    ++rpmLevelAchieved;
+  }
   auto offset = calculateOffset(ledCount, layout);
   auto now = Clock::Now();
 
@@ -76,27 +83,27 @@ auto RpmDisplay::draw() -> void {
         if (!lastFrameWasYellow) {
           lastPulseReset = now - Duration::Milliseconds(500);
         }
-        auto d = ByteToFloat(brightBrightness);
-        auto b = ByteToFloat(brightBrightness + 6);
+        auto d = ByteToFloat(effectiveBrightBrightness);
+        auto b = ByteToFloat(effectiveBrightBrightness + 6);
         brightness = Lerp(d, b, Pulse((now - lastPulseReset).asSeconds(), 1.5f));
         lastFrameWasYellow = true;
       }
       else {
         if (lastFrameWasYellow) {
-          auto d = ByteToFloat(brightBrightness);
-          auto b = ByteToFloat(brightBrightness + 6);
+          auto d = ByteToFloat(effectiveBrightBrightness);
+          auto b = ByteToFloat(effectiveBrightBrightness + 6);
           brightness = Lerp(d, b, Pulse((now - lastPulseReset).asSeconds(), 1.5f));
-          if (brightness <= ByteToFloat(brightBrightness + 1)) {
+          if (brightness <= ByteToFloat(effectiveBrightBrightness + 1)) {
             lastFrameWasYellow = false;
           }
         }
         else {
-          brightness = ByteToFloat(brightBrightness);
+          brightness = ByteToFloat(effectiveBrightBrightness);
         }
       }
     }
     else {
-      brightness = ByteToFloat(dimBrightness);
+      brightness = ByteToFloat(effectiveDimBrightness);
     }
 
     Color color;

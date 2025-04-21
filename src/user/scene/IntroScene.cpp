@@ -10,22 +10,22 @@ IntroScene::IntroScene(rgb::LEDRing& ring) : ring(ring) {
 }
 
 auto IntroScene::setup() -> void {
-  fillEffect.shader = [](auto& params){
+  fillEffect.shader = [](auto& led, auto& params){
     auto t = (rgb::Clock::Now() % rgb::Duration::Seconds(4)).value;
     auto p = rgb::LerpWrap(0.0f, 1.0f, (static_cast<float>(t) / rgb::Duration::Seconds(4).value));
     auto c  = rgb::Color::HslToRgb(p);
-    return rgb::Color::GREEN(.01f);
+    led = rgb::Color::GREEN(.01f);
   };
   trailingEffect.init();
   trailingEffect.offset = 4;
   trailingEffect.speed = rgb::Duration::Milliseconds(30);
   trailingEffect.continuous = true;
-  trailingEffect.endBuffer = 20;
+//  trailingEffect.endBuffer = 20;
   trailingEffect.shader = [](auto& led, auto& params) {
-    auto t = (rgb::Clock::Now() % rgb::Duration::Seconds(7)).value;
-    auto p = rgb::LerpWrap(0.0f, 1.0f, (static_cast<float>(t) / rgb::Duration::Seconds(7).value));
+    auto t = (rgb::Clock::Now() % rgb::Duration::Seconds(1)).value;
+    auto p = rgb::LerpWrap(0.0f, 1.0f, (static_cast<float>(t) / rgb::Duration::Seconds(1).value));
     auto c  = rgb::Color::HslToRgb(p);
-    led = c * .05f;
+    led = c * .03f;
   };
 }
 

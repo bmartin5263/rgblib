@@ -12,6 +12,7 @@
 #include "threading/VehicleThread.h"
 #include "debug/DebugScreen.h"
 #include "user/scene/IntroScene.h"
+#include "user/scene/DebugScene.h"
 
 using namespace rgb;
 
@@ -19,7 +20,7 @@ constexpr u16 LED_COUNT = 12;
 
 // Output
 auto ring = LEDCircuit<LED_COUNT>{D5};
-auto slice = ring.slice(1);
+auto slice = ring.slice(4);
 auto ledManager = LEDManager<LED_COUNT>{ring};
 
 // Scenes
@@ -27,6 +28,7 @@ auto vehicle = Vehicle{};
 auto rpmDisplay = RpmDisplay{ring, vehicle};
 auto solidScene = SolidScene{slice};
 auto introScene = IntroScene{ring};
+auto debugScene = DebugScene{ring, vehicle};
 auto trailingScene = TrailingScene{ TrailingSceneParameters {
   .leds = &ring,
   .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
@@ -61,9 +63,9 @@ auto trailingScene = TrailingScene{ TrailingSceneParameters {
 auto scenes = std::array {
   static_cast<Scene*>(&rpmDisplay),
   static_cast<Scene*>(&trailingScene),
-//  static_cast<Scene*>(&solidScene)
+  static_cast<Scene*>(&debugScene)
 };
-auto sceneManager = SceneManager {scenes, &introScene, Duration::Seconds(20)};
+auto sceneManager = SceneManager {scenes, &introScene, Duration::Minutes(60)};
 
 // Input
 auto nextSceneButton = PushButton{D3, [](){
@@ -80,13 +82,7 @@ auto actionButton = PushButton{D4, [](){
   }
 }};
 auto toggleLowPower = PushButton{D5, [](){
-  INFO("Toggle Low Power");
-  if (rpmDisplay.dimBrightness != 0) {
-    rpmDisplay.dimBrightness = 0;
-  }
-  else {
-    rpmDisplay.dimBrightness = 1;
-  }
+  rpmDisplay.bright = !rpmDisplay.bright;
 }};
 
 auto sensors = std::array {
@@ -100,8 +96,8 @@ auto setup() -> void {
   DebugScreen::Start();
   if (LED_COUNT == 12) {
     ring.setOffset(1);
-    rpmDisplay.yellowLineStart = 3500;
-    rpmDisplay.redLineStart = 4500;
+    rpmDisplay.yellowLineStart = 3000;
+    rpmDisplay.redLineStart = 4000;
     rpmDisplay.limit = 5000;
     rpmDisplay.colorMode = RpmColorMode::SEGMENTED;
     rpmDisplay.glow = true;

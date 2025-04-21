@@ -10,9 +10,9 @@
 namespace rgb {
 class Scene {
 public:
-  virtual auto setup() -> void {};
   virtual auto update() -> void = 0;
   virtual auto draw() -> void = 0;
+  virtual auto setup() -> void {};
   virtual auto cleanup() -> void {};
 
   virtual ~Scene() = default;

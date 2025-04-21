@@ -15,10 +15,10 @@ struct FillEffectShaderParameters {
   u16 position;
 };
 
-using FillEffectShader = std::function<Color(FillEffectShaderParameters&)>;
+using FillEffectShader = std::function<void(Color&, const FillEffectShaderParameters&)>;
 
-constexpr auto defaultShader(FillEffectShaderParameters&) -> Color {
-  return Color::CYAN(.01);
+constexpr auto defaultShader(Color& pixel, const FillEffectShaderParameters&) -> void {
+  pixel = Color::CYAN(.01);
 }
 
 class LEDChain;

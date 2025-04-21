@@ -33,7 +33,8 @@ public:
   rgb::Color greenColor{rgb::Color::GREEN()};
   rgb::Color yellowColor{rgb::Color::YELLOW()};
   rgb::Color redColor{rgb::Color::RED()};
-  int rpm{0};
+  rgb::fahrenheit minCoolantLevel{70.f};
+  rgb::fahrenheit maxCoolantLevel{150.f};
   RpmLayout layout{RpmLayout::TRADITIONAL};
   RpmColorMode colorMode{RpmColorMode::SEGMENTED};
   uint yellowLineStart{5500};
@@ -42,6 +43,7 @@ public:
   rgb::u8 dimBrightness{1};
   rgb::u8 brightBrightness{4};
   bool glow{true};
+  bool bright{false};
 
 private:
   bool lastFrameWasYellow{false};

@@ -32,6 +32,7 @@ using kph = float;
 using mph = float;
 using revs_per_minute = float;
 using cstring = const char*;
+using normal = float;
 
 template<typename V, class Self>
 struct number_wrapper {
