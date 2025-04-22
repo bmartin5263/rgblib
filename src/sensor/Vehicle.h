@@ -25,11 +25,8 @@ public:
   using TypeRemapper = T(*)(int);
 
   using mutex = std::recursive_mutex;
-  using atomic_int = std::atomic_int;
-  using atomic_bool = std::atomic_bool;
-  using atomic_float = std::atomic<float>;
 
-  auto update() -> void;
+  auto update(Duration throttle = Duration::Milliseconds(50)) -> void;
   auto connect() -> bool;
   auto setLowPowerMode(bool value) -> void;
 
@@ -49,9 +46,10 @@ private:
   std::atomic<fahrenheit> mCoolantTemp{};
   std::atomic<percent> mFuelLevel{};
   std::atomic<percent> mThrottlePosition{};
-  atomic_bool mConnected{false};
+  std::atomic<bool> mConnected{false};
   Timestamp mLastResponse{0};
-  atomic_bool mLowPowerMode{false};
+  Timestamp mLastUpdate{0};
+  std::atomic<bool> mLowPowerMode{false};
 
   auto disconnect() -> void;
 //  auto readPID(byte pid, atomic_float& result, Timestamp now) -> void;
@@ -73,7 +71,8 @@ private:
       mLastResponse = Clock::Now();
     }
     else {
-      if (Clock::Now().TimeSince(mLastResponse) >= Duration::Seconds(1)) {
+      if (Clock::Now().timeSince(mLastResponse) >= Duration::Seconds(1)) {
+        ASSERT(false, "Disconnected");
         disconnect();
       }
     }

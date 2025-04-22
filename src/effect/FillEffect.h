@@ -13,6 +13,10 @@ struct FillEffectShaderParameters {
   Timestamp now;
   u16 length;
   u16 position;
+
+  normal relativePosition() const {
+    return position / static_cast<float>(length);
+  }
 };
 
 using FillEffectShader = std::function<void(Color&, const FillEffectShaderParameters&)>;

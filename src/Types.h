@@ -269,7 +269,7 @@ struct Timestamp : public number_wrapper<unsigned long, Timestamp> {
     return *this;
   }
 
-  constexpr auto TimeSince(const Timestamp& earlierTime) -> Duration {
+  constexpr auto timeSince(const Timestamp& earlierTime) -> Duration {
     return Duration { value - earlierTime.value };
   }
 };

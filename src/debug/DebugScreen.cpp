@@ -29,7 +29,7 @@ auto DebugScreen::display() -> void {
 
 auto DebugScreen::readyForUpdate() -> bool {
   auto now = Clock::Now();
-  return now.TimeSince(lastUpdate) >= config::DEBUG_SCREEN_REFRESH_RATE;
+  return now.timeSince(lastUpdate) >= config::DEBUG_SCREEN_REFRESH_RATE;
 }
 
 auto DebugScreen::printLine(int row, const std::string& msg) -> void {

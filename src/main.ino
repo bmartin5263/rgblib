@@ -85,10 +85,18 @@ auto toggleLowPower = PushButton{D5, [](){
   rpmDisplay.bright = !rpmDisplay.bright;
 }};
 
+
 auto sensors = std::array {
   SensorFunction { []() { nextSceneButton.update(); } },
   SensorFunction { []() { actionButton.update(); } },
   SensorFunction { []() { toggleLowPower.update(); } },
+  SensorFunction { []() {
+    static auto lastVehicleUpdate = Timestamp{};
+    if (Clock::Now().timeSince(lastVehicleUpdate) > Duration::Milliseconds(50)) {
+      vehicle.update();
+      lastVehicleUpdate = Clock::Now();
+    }
+  } },
 };
 auto sensorManager = SensorManager { sensors };
 
@@ -98,7 +106,7 @@ auto setup() -> void {
     ring.setOffset(1);
     rpmDisplay.yellowLineStart = 3000;
     rpmDisplay.redLineStart = 4000;
-    rpmDisplay.limit = 5000;
+    rpmDisplay.limit = 4200;
     rpmDisplay.colorMode = RpmColorMode::SEGMENTED;
     rpmDisplay.glow = true;
   }

@@ -54,19 +54,28 @@ auto Vehicle::disconnect() -> void {
   mConnected = false;
 }
 
-auto Vehicle::update() -> void {
-  if (!mConnected) {
-    return;
-  }
+auto Vehicle::update(Duration throttle) -> void {
+  if (!mConnected) { return; }
   auto lock = std::unique_lock { mu };
+//  auto now = Clock::Now();
+//
+//  if (now.timeSince(mLastUpdate) < throttle) {
+//    return;
+//  }
+//  mLastUpdate = now;
 
+  if (!mConnected) { return; }
   readPID(PID_RPM, mRpm, ToFloat);
+
   if (!mConnected) { return; }
   readPID(PID_COOLANT_TEMP, mCoolantTemp, ToFahrenheit);
+
   if (!mConnected) { return; }
   readPID(PID_SPEED, mSpeed, ToMph);
+
   if (!mConnected) { return; }
   readPID(PID_FUEL_LEVEL, mFuelLevel, ToPercent);
+
   if (!mConnected) { return; }
   readPID(PID_THROTTLE, mThrottlePosition, ToPercent);
 }
