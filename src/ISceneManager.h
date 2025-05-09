@@ -13,6 +13,12 @@ public:
   virtual auto start() -> Scene& = 0;
   virtual ~ISceneManager() = default;
 
+  ISceneManager() = default;
+  ISceneManager(const ISceneManager& rhs) = default;
+  ISceneManager(ISceneManager&& rhs) noexcept = default;
+  ISceneManager& operator=(const ISceneManager& rhs) = default;
+  ISceneManager& operator=(ISceneManager&& rhs) noexcept = default;
+
 };
 
 }

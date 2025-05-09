@@ -35,15 +35,14 @@ public:
 
   TrailingEffectShader shader{DefaultShader};
   Duration speed{Duration::Milliseconds(500)};
-  float trailRatio{.5f};
+  normal trailRatio{.5f};
   int offset{0};
   int endBuffer{0};
+  int startBuffer{0};
+  int cycles{100};
 private:
-  uint pixel{0};
+  int pixel{0};
   Timestamp nextMoveTime{0};
-public:
-  bool continuous;
-private:
 
   auto move() -> void;
 };

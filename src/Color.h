@@ -29,6 +29,10 @@ struct Color {
 
   }
 
+  constexpr auto operator*(float rhs) const -> Color {
+    return { r * rhs, g * rhs, b * rhs, w * rhs };
+  }
+
   constexpr auto operator*=(float rhs) -> Color& {
     r *= rhs;
     g *= rhs;
@@ -37,8 +41,52 @@ struct Color {
     return *this;
   }
 
-  constexpr auto operator*(float rhs) const -> Color {
-    return Color { r * rhs, g * rhs, b * rhs, w * rhs };
+  constexpr auto operator+(const Color& rhs) const -> Color {
+    return { r + rhs.r, g + rhs.g, b + rhs.b, w + rhs.w };
+  }
+
+  constexpr auto operator+=(const Color& rhs) -> Color& {
+    r += rhs.r;
+    g += rhs.g;
+    b += rhs.b;
+    w += rhs.w;
+    return *this;
+  }
+
+  constexpr auto operator-(const Color& rhs) const -> Color {
+    return { r - rhs.r, g - rhs.g, b - rhs.b, w - rhs.w };
+  }
+
+  constexpr auto operator-=(const Color& rhs) -> Color& {
+    r -= rhs.r;
+    g -= rhs.g;
+    b -= rhs.b;
+    w -= rhs.w;
+    return *this;
+  }
+
+  constexpr auto operator*(const Color& rhs) const -> Color {
+    return { r * rhs.r, g * rhs.g, b * rhs.b, w * rhs.w };
+  }
+
+  constexpr auto operator*=(const Color& rhs) -> Color& {
+    r *= rhs.r;
+    g *= rhs.g;
+    b *= rhs.b;
+    w *= rhs.w;
+    return *this;
+  }
+
+  constexpr auto operator/(const Color& rhs) const -> Color {
+    return { r / rhs.r, g / rhs.g, b / rhs.b, w / rhs.w };
+  }
+
+  constexpr auto operator/=(const Color& rhs) -> Color& {
+    r /= rhs.r;
+    g /= rhs.g;
+    b /= rhs.b;
+    w /= rhs.w;
+    return *this;
   }
 
   constexpr auto lerp(const Color& to, float time) -> Color {
@@ -61,70 +109,70 @@ struct Color {
     return {intensity, 0, 0, 0};
   }
 
-  static constexpr auto ORANGE() -> Color {
-    return {1.0f, 0.2509803922f, 0, 0};
+  static constexpr auto ORANGE(float intensity = 1.0f) -> Color {
+    return Color {1.0f, 0.2509803922f, 0, 0} * intensity;
   }
 
-  static constexpr auto SALMON() -> Color {
-    return {250, 0.5019607843f, 0.4470588235f, 0};
+  static constexpr auto SALMON(float intensity = 1.0f) -> Color {
+    return Color {250, 0.5019607843f, 0.4470588235f, 0} * intensity;
   }
 
-  static constexpr auto GOLD() -> Color {
-    return {1.0f, 0.5019607843f, 0, 0};
+  static constexpr auto GOLD(float intensity = 1.0f) -> Color {
+    return Color {1.0f, 0.5019607843f, 0, 0} * intensity;
   }
 
-  static constexpr auto MAROON() -> Color {
-    return {1.0f, 0.8431372549f, 0, 0};
+  static constexpr auto MAROON(float intensity = 1.0f) -> Color {
+    return Color {1.0f, 0.8431372549f, 0, 0} * intensity;
   }
 
   static constexpr auto YELLOW(float intensity = 1.0f) -> Color {
-    return {intensity, intensity, 0, 0};
+    return Color {intensity, intensity, 0, 0};
   }
 
-  static constexpr auto LIME() -> Color {
-    return {0.7490196078, 1.0f, 0, 0};
+  static constexpr auto LIME(float intensity = 1.0f) -> Color {
+    return Color {0.7490196078, 1.0f, 0, 0} * intensity;
   }
 
-  static constexpr auto SPRING_GREEN() -> Color {
-    return {0, 1.0f, 0.4980392157f, 0};
+  static constexpr auto SPRING_GREEN(float intensity = 1.0f) -> Color {
+    return Color {0, 1.0f, 0.4980392157f, 0} * intensity;
   }
 
   static constexpr auto GREEN(int intensity) = delete;
 
   static constexpr auto GREEN(float intensity = 1.0f) -> Color {
-    return {0, intensity, 0, 0};
+    return Color {0, intensity, 0, 0};
   }
 
-  static constexpr auto AQUAMARINE() -> Color {
-    return {0.4980392157f, 1.0f, 0.831372549, 0};
+  static constexpr auto AQUAMARINE(float intensity = 1.0f) -> Color {
+    return Color {0.4980392157f, 1.0f, 0.831372549, 0} * intensity;
   }
 
   static constexpr auto CYAN(float intensity = 1.0f) -> Color {
-    return {0, intensity, intensity, 0};
+    return Color {0, intensity, intensity, 0};
   }
 
   static constexpr auto BLUE(float intensity = 1.0f) -> Color {
-    return {0, 0, intensity, 0};
+    return Color {0, 0, intensity, 0};
   }
 
-  static constexpr auto PURPLE() -> Color {
-    return {0.4156862745f, 0.05098039216f, 0.6784313725f, 0};
+  static constexpr auto PURPLE(float intensity = 1.0f) -> Color {
+    return Color {0.4156862745f, 0.05098039216f, 0.6784313725f, 0} * intensity;
   }
 
-  static constexpr auto VIOLET() -> Color {
-    return {0.5019607843f, 0, 1.0f, 0};
+  static constexpr auto VIOLET(float intensity = 1.0f) -> Color {
+    return Color {0.5019607843f, 0, 1.0f, 0} * intensity;
   }
 
-  static constexpr auto INDIGO() -> Color {
-    return {0.2941176471f, 0, 0.5098039216f, 0};
+  static constexpr auto INDIGO(float intensity = 1.0f) -> Color {
+    return Color {0.2941176471f, 0, 0.5098039216f, 0} * intensity;
   }
 
   static constexpr auto MAGENTA(float intensity = 1.0f) -> Color {
-    return {intensity, 0, intensity, 0};
+    return Color {intensity, 0, intensity, 0};
   }
 
   static constexpr auto WHITE(float intensity = 1.0) -> Color {
-    return {0, 0, 0, intensity};
+    return Color {0, 0, 0, intensity};
   }
 
   static constexpr auto OFF() -> Color {

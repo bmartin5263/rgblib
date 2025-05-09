@@ -1,4 +1,5 @@
 #include <thread>
+#include <bitset>
 #include "App.h"
 #include "AppBuilder.h"
 #include "sensor/PushButton.h"
@@ -92,7 +93,7 @@ auto sensors = std::array {
   SensorFunction { []() { toggleLowPower.update(); } },
   SensorFunction { []() {
     static auto lastVehicleUpdate = Timestamp{};
-    if (Clock::Now().timeSince(lastVehicleUpdate) > Duration::Milliseconds(50)) {
+    if (Clock::Now().timeSince(lastVehicleUpdate) > rgb::config::VEHICLE_REFRESH_RATE) {
       vehicle.update();
       lastVehicleUpdate = Clock::Now();
     }
@@ -102,20 +103,18 @@ auto sensorManager = SensorManager { sensors };
 
 auto setup() -> void {
   DebugScreen::Start();
+  rpmDisplay.yellowLineStart = 3000;
+  rpmDisplay.redLineStart = 4000;
+  rpmDisplay.limit = 4200;
   if (LED_COUNT == 12) {
     ring.setOffset(1);
-    rpmDisplay.yellowLineStart = 3000;
-    rpmDisplay.redLineStart = 4000;
-    rpmDisplay.limit = 4200;
     rpmDisplay.colorMode = RpmColorMode::SEGMENTED;
     rpmDisplay.glow = true;
   }
   else if (LED_COUNT == 16) {
-    ring.setOffset(10);
-    ring.toggleReversed();
-    rpmDisplay.yellowLineStart = 5500;
-    rpmDisplay.redLineStart = 6500;
-    rpmDisplay.limit = 7000;
+    ring.setOffset(9);
+    ring.setReversed(true);
+    rpmDisplay.colorMode = RpmColorMode::SEGMENTED;
   }
   log::init();
   AppBuilder::Create()
@@ -139,6 +138,9 @@ auto updateDisplay() -> void {
   DebugScreen::PrintLine(0, fpsStr);
   DebugScreen::PrintLine(1, rpmStr);
   DebugScreen::PrintLine(2, fuelStr);
+
+  auto r = "Reversed: " + std::to_string(ring.isReversed());
+  DebugScreen::PrintLine(3, r);
 }
 
 auto loop() -> void {

@@ -11,6 +11,11 @@ class ILEDManager {
 public:
   virtual auto clear() -> void = 0;
   virtual auto display() -> void = 0;
+  ILEDManager() = default;
+  ILEDManager(const ILEDManager& rhs) = default;
+  ILEDManager(ILEDManager&& rhs) noexcept = default;
+  ILEDManager& operator=(const ILEDManager& rhs) = default;
+  ILEDManager& operator=(ILEDManager&& rhs) noexcept = default;
   virtual ~ILEDManager() = default;
 
 };

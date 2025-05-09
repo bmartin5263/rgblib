@@ -26,9 +26,6 @@ auto LEDChain::get(u16 pixel) -> Color* {
   auto size = getSize();
   auto offset = getOffset();
   auto led = mapPixelToLED(pixel, offset, size);
-  if (isReversed()) {
-    led = size - 1 - led;
-  }
   ASSERT(pixel >= 0, "Pixel is negative");
   ASSERT(pixel < getSize(), "Pixel is out of bounds");
   return getHead() + led;
@@ -39,9 +36,6 @@ auto LEDChain::get(Point point) -> Color* {
   auto size = getSize();
   auto offset = getOffset();
   auto led = mapPixelToLED(pixel, offset, size);
-  if (isReversed()) {
-    led = size - 1 - led;
-  }
   ASSERT(pixel >= 0, "Pixel is negative");
   ASSERT(pixel < getSize(), "Pixel is out of bounds");
   return getHead() + led;

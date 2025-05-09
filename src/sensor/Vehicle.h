@@ -8,6 +8,7 @@
 #include <OBD.h>
 #include <atomic>
 #include <mutex>
+#include <bitset>
 #include "Handle.h"
 #include "Assertions.h"
 #include "time/Clock.h"
@@ -59,6 +60,7 @@ private:
   constexpr static auto ToFloat(int value) -> float { return static_cast<float>(value); }
   constexpr static auto ToFahrenheit(int value) -> float { return CToF(static_cast<float>(value)); }
   constexpr static auto ToMph(int value) -> float { return KphToMph(static_cast<float>(value)); }
+  constexpr static auto ToBitset(int value) -> std::bitset<32> { return std::bitset<32>(value); }
 
   template<typename T>
   auto readPID(byte pid, std::atomic<T>& result, TypeRemapper<T> remapper = NoRemapping) -> void {

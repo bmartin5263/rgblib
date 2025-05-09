@@ -9,8 +9,8 @@
 using namespace rgb;
 
 auto TrailingEffect::init() -> void {
-  pixel = 0;
-  nextMoveTime = Timestamp(0);
+  pixel = -startBuffer;
+  nextMoveTime = Clock::Now() + speed;
 }
 
 auto TrailingEffect::update() -> void {
@@ -31,27 +31,22 @@ auto TrailingEffect::draw(LEDChain& chain) -> void {
     .speed = speed,
     .trailLength = trailLength
   };
-  if (continuous) {
-    for (int i = 0; i < trailLength; ++i) {
-      auto led = (pixel + i) % (chainLength + endBuffer);
-      if (led < chainLength + 1) {
-        led = (led + offset) % chainLength;
-        params.relativePosition = i;
-        params.positionRatio = i / static_cast<float>(trailLength);
-        params.absolutePosition = led;
-        shader(chain[led], params);
-      }
+
+  for (int i = 0; i < trailLength; ++i) {
+    auto p = pixel - i;
+    if (p < 0) {
+      break;
     }
-  }
-  else {
-    for (int i = 0; i < trailLength; ++i) {
-      auto led = (pixel + i + 1) - ((i32) trailLength);
-      if (led < chainLength + 1) {
-        led = (led + offset) % chainLength;
-        params.relativePosition = i;
-        params.absolutePosition = led;
-        shader(chain[led], params);
-      }
+    if (p > chainLength * cycles) {
+      continue;
+    }
+    auto led = p % (chainLength + endBuffer);
+    if (led < chainLength + 1) {
+      led = (led + offset) % chainLength;
+      params.relativePosition = i;
+      params.positionRatio = i / static_cast<float>(trailLength);
+      params.absolutePosition = led;
+      shader(chain[led], params);
     }
   }
 }

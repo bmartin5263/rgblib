@@ -49,21 +49,19 @@ public:
   }
 
   auto display() -> void {
-    if (impl.canShow()) {
-      if (mReversed) {
-        for (u16 i = 0; i < N; ++i) {
-          auto& c = data[N - 1 - i];
-          impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
-        }
+    if (mReversed) {
+      for (u16 i = 0; i < N; ++i) {
+        auto& c = data[N - 1 - i];
+        impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
       }
-      else {
-        for (u16 i = 0; i < N; ++i) {
-          auto& c = data[i];
-          impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
-        }
-      }
-      impl.show();
     }
+    else {
+      for (u16 i = 0; i < N; ++i) {
+        auto& c = data[i];
+        impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
+      }
+    }
+    impl.show();
   }
 
   auto setOffset(int amount) -> void override {

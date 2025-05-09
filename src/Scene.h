@@ -14,8 +14,13 @@ public:
   virtual auto draw() -> void = 0;
   virtual auto setup() -> void {};
   virtual auto cleanup() -> void {};
-
   virtual ~Scene() = default;
+
+  Scene() = default;
+  Scene(const Scene& rhs) = default;
+  Scene(Scene&& rhs) noexcept = default;
+  Scene& operator=(const Scene& rhs) = default;
+  Scene& operator=(Scene&& rhs) noexcept = default;
 
 private:
 

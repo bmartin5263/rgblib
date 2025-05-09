@@ -78,6 +78,9 @@ auto Vehicle::update(Duration throttle) -> void {
 
   if (!mConnected) { return; }
   readPID(PID_THROTTLE, mThrottlePosition, ToPercent);
+
+  if (!mConnected) { return; }
+  readPID(PID_AMBIENT_TEMP, mThrottlePosition, ToPercent);
 }
 
 auto Vehicle::rpm() const -> revs_per_minute {
