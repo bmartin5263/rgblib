@@ -112,53 +112,91 @@ typedef enum {
 	OBD_FAILED = 3
 } OBD_STATES;
 
-uint16_t hex2uint16(const char *p);
-uint8_t hex2uint8(const char *p);
+constexpr uint16_t hex2uint16(const char *p)
+{
+  char c = *p;
+  uint16_t i = 0;
+  for (char n = 0; c && n < 4; c = *(++p)) {
+    if (c >= 'A' && c <= 'F') {
+      c -= 7;
+    } else if (c>='a' && c<='f') {
+      c -= 39;
+    } else if (c == ' ') {
+      continue;
+    } else if (c < '0' || c > '9') {
+      break;
+    }
+    i = (i << 4) | (c & 0xF);
+    n++;
+  }
+  return i;
+}
+
+constexpr byte hex2uint8(const char *p)
+{
+  byte c1 = *p;
+  byte c2 = *(p + 1);
+  if (c1 >= 'A' && c1 <= 'F')
+    c1 -= 7;
+  else if (c1 >='a' && c1 <= 'f')
+    c1 -= 39;
+  else if (c1 < '0' || c1 > '9')
+    return 0;
+
+  if (c2 >= 'A' && c2 <= 'F')
+    c2 -= 7;
+  else if (c2 >= 'a' && c2 <= 'f')
+    c2 -= 39;
+  else if (c2 < '0' || c2 > '9')
+    return 0;
+
+  return c1 << 4 | (c2 & 0xf);
+}
 
 class COBD
 {
 public:
 	COBD():dataMode(1),errors(0),m_state(OBD_DISCONNECTED) {}
 	// begin serial UART, return the version number on success and 0 on failure
-	virtual byte begin();
+	byte begin();
 	// initialize OBD-II connection
-	virtual bool init(OBD_PROTOCOLS protocol = PROTO_AUTO);
+	bool init(OBD_PROTOCOLS protocol = PROTO_AUTO);
 	// un-initialize OBD-II connection
-	virtual void end();
+	void end();
 	// set serial baud rate
-	virtual bool setBaudRate(unsigned long baudrate);
+	bool setBaudRate(unsigned long baudrate);
 	// get connection state
-	virtual OBD_STATES getState() { return m_state; }
+	OBD_STATES getState() { return m_state; }
 	// read specified OBD-II PID value
-	virtual bool readPID(byte pid, int& result);
+	bool readPID(byte pid, int& result);
 	// read multiple (up to 8) OBD-II PID values, return number of values obtained
-	virtual byte readPID(const byte pid[], byte count, int result[]);
+	byte readPID(const byte pid[], byte count, int result[]);
 	// set device into low power mode
-	virtual void enterLowPowerMode();
+	void enterLowPowerMode();
 	// wake up device from low power mode
-	virtual void leaveLowPowerMode();
+	void leaveLowPowerMode();
 	// send AT command and receive response
-	virtual byte sendCommand(const char* cmd, char* buf, byte bufsize, int timeout = OBD_TIMEOUT_LONG);
+	byte sendCommand(const char* cmd, char* buf, byte bufsize, int timeout = OBD_TIMEOUT_LONG);
 	// read diagnostic trouble codes (return number of DTCs read)
-	virtual byte readDTC(uint16_t codes[], byte maxCodes = 1);
+	byte readDTC(uint16_t codes[], byte maxCodes = 1);
 	// clear diagnostic trouble code
-	virtual void clearDTC();
+	void clearDTC();
 	// get battery voltage (works without ECU)
-	virtual float getVoltage();
+	float getVoltage();
 	// get VIN as a string, buffer length should be >= OBD_RECV_BUF_SIZE
-	virtual bool getVIN(char* buffer, byte bufsize);
+	bool getVIN(char* buffer, byte bufsize);
 	// initialize MEMS sensor
-	virtual bool memsInit();
+	bool memsInit();
 	// read out MEMS data (acc for accelerometer, gyr for gyroscope, temp in 0.1 celcius degree)
-	virtual bool memsRead(int16_t* acc, int16_t* gyr = 0, int16_t* mag = 0, int16_t* temp = 0);
+	bool memsRead(int16_t* acc, int16_t* gyr = 0, int16_t* mag = 0, int16_t* temp = 0);
 	// send query for specified PID
-	virtual void sendQuery(byte pid);
+	void sendQuery(byte pid);
 	// retrive and parse the response of specifie PID
-	virtual bool getResult(byte& pid, int& result);
+	bool getResult(byte& pid, int& result);
 	// determine if the PID is supported
-	virtual bool isValidPID(byte pid);
+	bool isValidPID(byte pid);
 	// get adapter firmware version
-	virtual byte getVersion();
+	byte getVersion();
 	// set current PID mode
 	byte dataMode;
 	// number of subsequent errors
@@ -166,78 +204,30 @@ public:
 	// bit map of supported PIDs
 	byte pidmap[4 * 4];
 protected:
-	virtual char* getResponse(byte& pid, char* buffer, byte bufsize);
-	virtual byte receive(char* buffer, byte bufsize, int timeout = OBD_TIMEOUT_SHORT);
-	virtual void write(const char* s);
-	virtual void dataIdleLoop() {}
+	char* getResponse(byte& pid, char* buffer, byte bufsize);
+	byte receive(char* buffer, byte bufsize, int timeout = OBD_TIMEOUT_SHORT);
+	void write(const char* s);
+	void dataIdleLoop() {}
 	void recover();
 	void debugOutput(const char* s);
 	int normalizeData(byte pid, char* data);
 	OBD_STATES m_state;
 private:
-	virtual uint8_t getPercentageValue(char* data)
+	static constexpr uint8_t getPercentageValue(char* data)
 	{
 		return (uint16_t)hex2uint8(data) * 100 / 255;
 	}
-	virtual uint16_t getLargeValue(char* data)
+  static constexpr uint16_t getLargeValue(char* data)
 	{
 		return hex2uint16(data);
 	}
-	virtual uint8_t getSmallValue(char* data)
+  static constexpr uint8_t getSmallValue(char* data)
 	{
 		return hex2uint8(data);
 	}
-	virtual int16_t getTemperatureValue(char* data)
+  static constexpr int16_t getTemperatureValue(char* data)
 	{
 		return (int)hex2uint8(data) - 40;
 	}
 	char* getResultValue(char* buf);
-};
-
-#define I2C_ADDR 0x62
-
-#define MAX_PAYLOAD_SIZE 32
-#define MAX_PIDS 8
-
-#define CMD_QUERY_STATUS 0x10
-#define CMD_SEND_AT_COMMAND 0x11
-#define CMD_APPLY_OBD_PIDS 0x12
-#define CMD_LOAD_OBD_DATA 0x13
-#define CMD_GPS_SETUP 0x14
-#define CMD_GPS_QUERY 0x15
-
-typedef struct {
-    uint16_t age;
-    uint16_t value;
-} PID_INFO;
-
-typedef struct {
-    uint16_t time;
-    uint8_t message;
-    uint8_t data;
-} COMMAND_BLOCK;
-
-class COBDI2C : public COBD {
-public:
-	byte begin();
-	void end();
-	void write(const char* s);
-	// API not applicable
-	bool setBaudRate(unsigned long baudrate) { return false; }
-	// Asynchronized access API
-	void setQueryPID(byte pid, byte obdPid[]);
-	void applyQueryPIDs(byte obdPid[]);
-	void loadQueryData(PID_INFO obdInfo[]);
-	// initialize MEMS sensor
-	bool memsInit();
-	// read out MEMS sensor data (acc for accelerometer, gyr for gyroscope, temp in 0.1 celcius degree)
-	bool memsRead(int* acc, int* gyr = 0, int* mag = 0, int* temp = 0);
-protected:
-	byte receive(char* buffer, byte bufsize, int timeout = OBD_TIMEOUT_SHORT);
-	bool sendCommandBlock(byte cmd, uint8_t data = 0, byte* payload = 0, byte payloadBytes = 0);
-private:
-	bool MPU6050_read(int start, uint8_t* buffer, int size);
-	bool MPU6050_write(int start, const uint8_t* pData, int size);
-	bool MPU6050_write_reg(int reg, uint8_t data);
-	void MPU6050_store(int* pData, uint8_t data_l, uint8_t data_h);
 };

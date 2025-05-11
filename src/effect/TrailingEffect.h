@@ -6,6 +6,7 @@
 #define RGBLIB_TRAILINGEFFECT_H
 
 #include <functional>
+#include <limits>
 #include "Types.h"
 #include "Color.h"
 
@@ -39,7 +40,7 @@ public:
   int offset{0};
   int endBuffer{0};
   int startBuffer{0};
-  int cycles{100};
+  uint cycles{std::numeric_limits<uint>::max()};
 private:
   int pixel{0};
   Timestamp nextMoveTime{0};

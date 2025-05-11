@@ -17,7 +17,7 @@
 
 using namespace rgb;
 
-constexpr u16 LED_COUNT = 12;
+constexpr u16 LED_COUNT = 16;
 
 // Output
 auto ring = LEDCircuit<LED_COUNT>{D5};
@@ -32,28 +32,28 @@ auto introScene = IntroScene{ring};
 auto debugScene = DebugScene{ring, vehicle};
 auto trailingScene = TrailingScene{ TrailingSceneParameters {
   .leds = &ring,
-  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
-    auto rpm = vehicle.rpm();
-    auto r = LerpClamp(0.0f, 1.0f, rpm, 4000.0f);
-    auto g = LerpClamp(1.0f, 0.0f, rpm, 4000.0f);
-    auto b = 0.0f;
-    auto brightness = LerpClamp(.02f, .03f, rpm, 4000.0f);
-    auto x = Pulse(params.now.asSeconds(), 1.f);
-    brightness += LerpClamp(0.f, .05f, x);
-
-    return Color {1.0f - x, 1.0f, 1.0f - x} * brightness;
-  },
+//  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
+//    auto rpm = vehicle.rpm();
+//    auto r = LerpClamp(0.0f, 1.0f, rpm, 4000.0f);
+//    auto g = LerpClamp(1.0f, 0.0f, rpm, 4000.0f);
+//    auto b = 0.0f;
+//    auto brightness = LerpClamp(.02f, .03f, rpm, 4000.0f);
+//    auto x = Pulse(params.now.asSeconds(), 1.f);
+//    brightness += LerpClamp(0.f, .05f, x);
+//
+//    return Color {1.0f - x, 1.0f, 1.0f - x} * brightness;
+//  },
 //  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
 //    auto r = LerpClamp(1.0f, .75f, vehicle.rpm() - 600, 3500.0f);
 //    auto g = 0.0f;
 //    auto b = LerpClamp(0.0f, .25f, vehicle.rpm() - 600, 3500.0f);
 //    return Color { r, g, b } * .05f;
 //  },
-//  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
-//    auto x = Pulse(params.now.asSeconds(), .5f);
-//    auto rgb = Color::HslToRgb(x) * .02f;
-//    return rgb;
-//  },
+  .colorGenerator = [](TrailingSceneColorGeneratorParameters params){
+    auto x = Pulse(params.now.asSeconds(), .5f);
+    auto rgb = Color::HslToRgb(x) * .02f;
+    return rgb;
+  },
   .speed = Duration::Milliseconds(500),
   .shift = 6,
   .length = 6,
