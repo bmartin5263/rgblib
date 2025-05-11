@@ -1,1 +1,0 @@
-These files are meant to be created by users of rgblib and live outside the library itself. Keeping them here now for simplicity during early development. Ideally the library and client-app would be split out into separate projects.
