@@ -12,7 +12,7 @@ namespace rgb {
 
 class Clock {
 public:
-  static auto Init(frames_t fps) -> void;
+  static auto Start(frames_t fps) -> void;
 
   static auto StartTick() -> void;
   static auto StopTick() -> void;
@@ -25,7 +25,7 @@ public:
 
 private:
   Clock() = default;
-  auto init(frames_t targetFps) -> void;
+  auto start(frames_t targetFps) -> void;
 
   static auto Instance() -> Clock&;
 

@@ -74,7 +74,7 @@ private:
     }
     else {
       if (Clock::Now().timeSince(mLastResponse) >= Duration::Seconds(1)) {
-        ASSERT(false, "Disconnected");
+        ASSERT(false, "Disconnected OBD2");
         disconnect();
       }
     }

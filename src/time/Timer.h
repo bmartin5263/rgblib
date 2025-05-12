@@ -13,22 +13,22 @@
 namespace rgb {
 
 class Timer {
+  static constexpr auto TIMER_COUNT = 10;
+
 public:
   static auto SetTimeout(Duration duration, const rgb::TimerFunction& function) -> TimerHandle;
   static auto SetInterval(Duration duration, uint times, const rgb::TimerFunction& function) -> TimerHandle;
   static auto ProcessTimers() -> void;
   static auto Cancel(TimerNode* node) -> void;
-  static auto Count() -> decltype(config::TIMERS);
+  static auto Count() -> decltype(TIMER_COUNT);
   static auto Instance() -> Timer&;
 
 private:
-  TimerNode nodes[rgb::config::TIMERS] {};
+  TimerNode nodes[TIMER_COUNT]{};
   TimerNode* unusedHead{};
   TimerNode* toAddHead{nullptr};
   TimerNode* activeHead{nullptr};
 
-
-  Timer();
   auto setTimeout(Duration duration, uint intervals, const rgb::TimerFunction& function) -> TimerHandle;
   auto cancel(TimerNode* node) -> void;
   auto processTimers() -> void;
@@ -37,7 +37,14 @@ private:
   auto enqueueForAdding(TimerNode* node) -> void;
   auto processAdditions() -> void;
   auto reclaimNodes() -> void;
-  auto count() -> decltype(config::TIMERS);
+  auto count() -> decltype(TIMER_COUNT);
+
+  Timer();
+  Timer(const Timer& rhs) = default;
+  Timer(Timer&& rhs) noexcept = default;
+  Timer& operator=(const Timer& rhs) = default;
+  Timer& operator=(Timer&& rhs) noexcept = default;
+  ~Timer() = default;
 };
 
 }

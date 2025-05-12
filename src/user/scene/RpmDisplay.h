@@ -11,6 +11,7 @@
 #include "sensor/Vehicle.h"
 #include "user/effect/RpmLayout.h"
 #include "user/effect/RpmColorMode.h"
+#include "user/effect/RpmShape.h"
 
 namespace rgb {
   class PushButton;
@@ -37,6 +38,7 @@ public:
   rgb::fahrenheit maxCoolantLevel{150.f};
   RpmLayout layout{RpmLayout::TRADITIONAL};
   RpmColorMode colorMode{RpmColorMode::SEGMENTED};
+  RpmShape shape{RpmShape::CIRCLE};
   uint yellowLineStart{5500};
   uint redLineStart{6500};
   uint limit{7000};

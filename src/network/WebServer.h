@@ -24,7 +24,7 @@ public:
   }
 
 private:
-  AsyncWebServer server{config::WEB_SERVER_PORT};
+  AsyncWebServer server{80};
   bool started{false};
 
   static auto Instance() -> WebServer&;

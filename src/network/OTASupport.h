@@ -2,14 +2,20 @@
 // Created by Brandon on 2/16/25.
 //
 
-#ifndef RGBLIB_WIFI_H
-#define RGBLIB_WIFI_H
+#ifndef RGBLIB_OTA_SUPPORT_H
+#define RGBLIB_OTA_SUPPORT_H
 
+#include <esp_wifi_types.h>
+#include "Wireless.h"
 
 namespace rgb {
 
 class OTASupport {
 public:
+  static constexpr auto Enabled() -> bool {
+    return Wifi::Enabled();
+  }
+
   static auto Start() -> bool;
   static auto Update() -> void;
 
@@ -25,4 +31,4 @@ private:
 
 }
 
-#endif //RGBLIB_WIFI_H
+#endif //RGBLIB_OTA_SUPPORT_H

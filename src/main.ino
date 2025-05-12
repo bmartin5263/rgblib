@@ -106,15 +106,20 @@ auto setup() -> void {
   rpmDisplay.yellowLineStart = 3000;
   rpmDisplay.redLineStart = 4000;
   rpmDisplay.limit = 4200;
+  rpmDisplay.colorMode = RpmColorMode::SEGMENTED;
+  rpmDisplay.glow = true;
+  if (LED_COUNT == 8) {
+    rpmDisplay.shape = RpmShape::LINE;
+  }
   if (LED_COUNT == 12) {
     ring.setOffset(1);
-    rpmDisplay.colorMode = RpmColorMode::SEGMENTED;
-    rpmDisplay.glow = true;
   }
   else if (LED_COUNT == 16) {
-    ring.setOffset(9);
+    rpmDisplay.yellowLineStart = 5500;
+    rpmDisplay.redLineStart = 6500;
+    rpmDisplay.limit = 7200;
+    ring.setOffset(3);
     ring.setReversed(true);
-    rpmDisplay.colorMode = RpmColorMode::SEGMENTED;
   }
   log::init();
   AppBuilder::Create()

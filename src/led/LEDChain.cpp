@@ -23,22 +23,16 @@ auto LEDChain::clear() -> void {
 }
 
 auto LEDChain::get(u16 pixel) -> Color* {
-  auto size = getSize();
-  auto offset = getOffset();
-  auto led = mapPixelToLED(pixel, offset, size);
   ASSERT(pixel >= 0, "Pixel is negative");
   ASSERT(pixel < getSize(), "Pixel is out of bounds");
-  return getHead() + led;
+  return getHead() + pixel;
 }
 
 auto LEDChain::get(Point point) -> Color* {
   u16 pixel = (getSize() * point.x) + point.y;
-  auto size = getSize();
-  auto offset = getOffset();
-  auto led = mapPixelToLED(pixel, offset, size);
   ASSERT(pixel >= 0, "Pixel is negative");
   ASSERT(pixel < getSize(), "Pixel is out of bounds");
-  return getHead() + led;
+  return getHead() + pixel;
 }
 
 auto LEDChain::set(u16 pixel, const Color& color) -> void {
@@ -73,10 +67,6 @@ auto LEDChain::slice(u16 start, u16 length) -> LEDSlice {
   return {head, length};
 }
 
-auto LEDChain::mapPixelToLED(u16 pixel, u16 offset, u16 size) -> u16 {
-  return (pixel + offset) % size;
-}
-
 auto LEDChain::begin() -> Color* {
   return getHead();
 }
@@ -91,12 +81,6 @@ auto LEDChain::end() -> Color* {
 
 auto LEDChain::end() const -> const Color* {
   return getHead() + getSize();
-}
-
-auto LEDChain::toggleReversed() -> bool {
-  auto reversed = isReversed();
-  setReversed(!reversed);
-  return reversed;
 }
 
 }

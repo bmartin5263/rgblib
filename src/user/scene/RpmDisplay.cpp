@@ -26,18 +26,27 @@ constexpr u16 mapToPixelPosition(int level, int ledCount, int offset = 0) {
   return (level + offset) % ledCount;
 }
 
-constexpr u16 calculateOffset(u16 ringSize, RpmLayout layout) {
-  if (ringSize == 12) {
+constexpr u16 calculateOffset(u16 ledSize, RpmLayout layout, RpmShape shape) {
+  if (shape == RpmShape::LINE) {
+    return 0;
+  }
+  else if (ledSize == 12) {
     return layout == RpmLayout::TRADITIONAL ? 0 : 10;
   }
-  else {
+  else if (ledSize == 16) {
     return layout == RpmLayout::TRADITIONAL ? 5 : 3;
+  }
+  else {
+    return 0;
   }
 }
 
 
-constexpr u16 calculateLevels(u16 ringSize, RpmLayout layout) {
-  if (ringSize == 12) {
+constexpr u16 calculateLevels(u16 ledSize, RpmLayout layout, RpmShape shape) {
+  if (shape == RpmShape::LINE) {
+    return ledSize;
+  }
+  else if (ledSize == 12) {
     if (layout == RpmLayout::SPORT) {
       return 10;
     }
@@ -45,13 +54,16 @@ constexpr u16 calculateLevels(u16 ringSize, RpmLayout layout) {
       return 9;
     }
   }
-  else {
+  else if (ledSize == 16) {
     if (layout == RpmLayout::SPORT) {
       return 13;
     }
     else {
       return 13;
     }
+  }
+  else {
+    return ledSize;
   }
 }
 
@@ -64,15 +76,15 @@ auto RpmDisplay::draw() -> void {
   auto effectiveDimBrightness = bright ? dimBrightness * 3 : dimBrightness;
 
   auto ledCount = ring.getSize();
-  auto levelCount = calculateLevels(ledCount, layout);
+  auto levelCount = calculateLevels(ledCount, layout, shape);
   auto rpmPerLevel = limit / levelCount;
-  auto yellowLevel = (effectiveYellowLineStart / rpmPerLevel);
-  auto redLevel = (effectiveRedLineStart / rpmPerLevel);
+  auto yellowLevel = effectiveYellowLineStart / rpmPerLevel;
+  auto redLevel = effectiveRedLineStart / rpmPerLevel;
   auto rpmLevelAchieved = static_cast<uint>(vehicle.rpm() / rpmPerLevel);
-  if (rpmLevelAchieved == 0 && vehicle.rpm() > 0) {
+  if (rpmLevelAchieved == 0 && vehicle.rpm() > 100) {
     ++rpmLevelAchieved;
   }
-  auto offset = calculateOffset(ledCount, layout);
+  auto offset = calculateOffset(ledCount, layout, shape);
   auto now = Clock::Now();
 
   for (int level = 0; level < levelCount; ++level) {
