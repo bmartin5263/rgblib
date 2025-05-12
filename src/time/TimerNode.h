@@ -29,6 +29,7 @@ struct TimerNode {
   auto repeat(Timestamp now) -> void {
     ASSERT(repeatsRemaining > 0, "No repeats remaining");
     --repeatsRemaining;
+    tombstone = false; // User code could have set this to `true` while executing the timer function
     executeAt = now + timeBetweenExecutions;
   }
 

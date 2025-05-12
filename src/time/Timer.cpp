@@ -10,16 +10,17 @@ namespace rgb {
 
 Timer::Timer() {
   INFO("Initializing Timers");
-  for (int i = 0; i < config::TIMERS; ++i) {
+  for (int i = 0; i < TIMER_COUNT; ++i) {
     auto& current = nodes[i];
     if (i > 0) {
       current.prev = &nodes[i - 1];
     }
-    if (i < config::TIMERS - 1) {
+    if (i < TIMER_COUNT - 1) {
       current.prev = &nodes[i + 1];
     }
   }
   unusedHead = &nodes[0];
+  ASSERT(unusedHead != nullptr, "Failed to initialize Timers");
 }
 
 auto Timer::SetTimeout(Duration duration, const rgb::TimerFunction& function) -> TimerHandle {
@@ -139,12 +140,12 @@ auto Timer::Instance() -> Timer& {
   return timer;
 }
 
-auto Timer::Count() -> decltype(config::TIMERS) {
+auto Timer::Count() -> decltype(TIMER_COUNT) {
   return Instance().count();
 }
 
-auto Timer::count() -> decltype(config::TIMERS) {
-  auto num = static_cast<decltype(config::TIMERS)>(0);
+auto Timer::count() -> decltype(TIMER_COUNT) {
+  auto num = static_cast<decltype(TIMER_COUNT)>(0);
   auto current = activeHead;
   while (current != nullptr) {
     if (!current->tombstone) {

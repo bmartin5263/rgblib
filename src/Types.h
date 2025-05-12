@@ -93,26 +93,6 @@ struct number_wrapper {
     return *this;
   }
 
-//  constexpr auto operator+=(V rhs) -> Self& {
-//    value += rhs;
-//    return *this;
-//  }
-//
-//  constexpr auto operator-=(V rhs) -> Self& {
-//    value -= rhs;
-//    return *this;
-//  }
-//
-//  constexpr auto operator*=(V rhs) -> Self& {
-//    value *= rhs;
-//    return *this;
-//  }
-//
-//  constexpr auto operator/=(V rhs) -> Self& {
-//    value /= rhs;
-//    return *this;
-//  }
-
   constexpr friend auto operator==(self_type lhs, self_type rhs) -> bool {
     return lhs.value == rhs.value;
   }
@@ -137,30 +117,6 @@ struct number_wrapper {
     return !(lhs < rhs);
   }
 
-//  constexpr friend auto operator==(self_type lhs, V rhs) -> bool {
-//    return lhs.value == rhs;
-//  }
-//
-//  constexpr friend auto operator!=(self_type lhs, V rhs) -> bool {
-//    return !(lhs == rhs);
-//  }
-//
-//  constexpr friend auto operator<(self_type lhs, V rhs) -> bool {
-//    return lhs.value < rhs;
-//  }
-//
-//  constexpr friend auto operator>(self_type lhs, V rhs) -> bool {
-//    return rhs < lhs;
-//  }
-//
-//  constexpr friend auto operator<=(self_type lhs, V rhs) -> bool {
-//    return !(rhs < lhs);
-//  }
-//
-//  constexpr friend auto operator>=(self_type lhs, V rhs) -> bool {
-//    return !(lhs < rhs);
-//  }
-
   constexpr auto operator++() -> Self& {
     ++value;
     return static_cast<Self&>(*this);
@@ -173,34 +129,6 @@ struct number_wrapper {
     return tmp;
   }
 };
-
-//template <typename T = int>
-//struct microseconds_t : public number_wrapper<T, microseconds_t<T>> {
-//};
-//
-//template <typename T = int>
-//struct milliseconds_t : public number_wrapper<T, milliseconds_t<T>> {
-//  constexpr explicit milliseconds_t(int value = 0) : number_wrapper<int, milliseconds_t<T>>(value) {}
-//  constexpr auto toMicroseconds() -> microseconds_t<long> {
-//    return microseconds_t<long> { this->value * 1000 };
-//  }
-//};
-//
-//template <typename T = int>
-//struct seconds_t : public number_wrapper<T, seconds_t<T>> {
-//  constexpr explicit seconds_t(int value = 0) : number_wrapper<int, seconds_t<T>>(value) {}
-//  constexpr auto toMicroseconds() -> microseconds_t<long> {
-//    return microseconds_t<long> { this->value * 1000000 };
-//  }
-//};
-//
-//template <typename T = int>
-//struct minutes_t : public number_wrapper<T, minutes_t<T>> {
-//  constexpr explicit minutes_t(int value = 0) : number_wrapper<int, minutes_t<T>>(value) {}
-//  constexpr auto toMicroseconds() -> microseconds_t<long> {
-//    return microseconds_t<long> { this->value * 60000000 };
-//  }
-//};
 
 struct Duration : public number_wrapper<unsigned long, Duration> {
   constexpr explicit Duration() : number_wrapper<unsigned long, Duration>(0) {}

@@ -18,12 +18,6 @@ public:
   [[nodiscard]] virtual auto getHead() const -> const Color* = 0;
   [[nodiscard]] virtual auto getSize() const -> u16 = 0;
 
-  virtual auto setOffset(int amount) -> void = 0;
-  [[nodiscard]] virtual auto getOffset() const -> u16 = 0;
-  virtual auto setReversed(bool value) -> void = 0;
-  [[nodiscard]] virtual auto isReversed() const -> bool = 0;
-  auto toggleReversed() -> bool;
-
   [[nodiscard]] auto get(u16 pixel) -> Color*;
   [[nodiscard]] auto operator[](u16 pixel) -> Color&;
   [[nodiscard]] auto get(Point pixel) -> Color*;

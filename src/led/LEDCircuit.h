@@ -44,42 +44,52 @@ public:
     return N;
   }
 
-  auto getOffset() const -> u16 override {
+  auto getOffset() const -> u16 {
     return mOffset;
   }
 
   auto display() -> void {
     if (mReversed) {
       for (u16 i = 0; i < N; ++i) {
-        auto& c = data[N - 1 - i];
+        auto& c = data[mapPixelToLED(N - 1 - i)];
         impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
       }
     }
     else {
       for (u16 i = 0; i < N; ++i) {
-        auto& c = data[i];
+        auto& c = data[mapPixelToLED(i)];
         impl.setPixelColor(i, FloatToByte(c.r), FloatToByte(c.g), FloatToByte(c.b), FloatToByte(c.w));
       }
     }
     impl.show();
   }
 
-  auto setOffset(int amount) -> void override {
+  auto setOffset(int amount) -> void {
     mOffset = amount;
   }
 
-  auto setReversed(bool value) -> void override {
+  auto setReversed(bool value) -> void {
     mReversed = value;
   }
 
-  auto isReversed() const -> bool override {
+  auto isReversed() const -> bool {
     return mReversed;
+  }
+
+  auto toggleReversed() -> bool {
+    auto reversed = isReversed();
+    setReversed(!reversed);
+    return reversed;
+  }
+
+  auto mapPixelToLED(u16 pixel) -> u16 {
+    return (pixel + mOffset) % N;
   }
 
 private:
   Color data[N];
   Adafruit_NeoPixel impl;
-  u16 mOffset;
+  int mOffset;
   bool mReversed;
 };
 

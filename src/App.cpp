@@ -15,7 +15,6 @@
 #include "network/OTASupport.h"
 #include "network/WebServer.h"
 #include "time/Timer.h"
-#include "network/Wireless.h"
 
 namespace rgb {
 
@@ -33,16 +32,12 @@ auto App::start() -> void {
   digitalWrite(LED_GREEN, HIGH);
   digitalWrite(LED_RED, HIGH);
 
-//  ThreadPool::Start();
-  Wifi::SetMode(WIFI_STA); // Wifi.mode() must be called on the main thread, else program crashes
-  Wifi::Start();
-  OTASupport::Start();
-//  if (otaEnabled) {
-//    ThreadPool::SubmitTask(StartOTACommand::Instance());
-//  }
-
-//  WebServer::Start();
-  Clock::Init(config::FPS);
+  Clock::Start(config::FPS);
+  if constexpr (Wifi::Enabled()) {
+    Wifi::SetMode(WIFI_STA); // Wifi.mode() must be called on the main thread, else program crashes
+    Wifi::Start();
+    OTASupport::Start();
+  }
 
   this->scene = &sceneManager->start();
   this->scene->setup();
@@ -52,8 +47,12 @@ auto App::start() -> void {
 auto App::loop() -> void {
   Clock::StartTick();
   sensorManager->update();
-  OTASupport::Update();
-  Wifi::Update();
+  if constexpr (Wifi::Enabled()) {
+    Wifi::Update();
+  }
+  if constexpr (OTASupport::Enabled()) {
+    OTASupport::Update();
+  }
 
   Timer::ProcessTimers();
 

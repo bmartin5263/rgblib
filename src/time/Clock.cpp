@@ -5,6 +5,7 @@
 #include "time/Clock.h"
 #include "Arduino.h"
 #include "Log.h"
+#include "Config.h"
 
 namespace rgb {
 
@@ -13,7 +14,7 @@ auto Clock::Instance() -> Clock& {
   return instance;
 }
 
-auto Clock::init(frames_t targetFps) -> void {
+auto Clock::start(frames_t targetFps) -> void {
   this->mTargetFps = targetFps;
   this->mMaxMicrosPerFrame = 1000000 / targetFps;
 }
@@ -26,10 +27,10 @@ auto Clock::startTick() -> void {
     INFO("FPS: %lu", mFpsCounter);
 
     if (mFpsCounter < (mTargetFps / 2)) {
-      digitalWrite(LED_RED, LOW);
+      digitalWrite(config::LED_DROPPING_FRAMES, LOW);
     }
     else {
-      digitalWrite(LED_RED, HIGH);
+      digitalWrite(config::LED_DROPPING_FRAMES, HIGH);
     }
 
     mLastFps = mFpsCounter;
@@ -62,8 +63,8 @@ auto Clock::stopTick() -> void {
   delayMicroseconds(sleep);
 }
 
-auto Clock::Init(frames_t fps) -> void {
-  Instance().init(fps);
+auto Clock::Start(frames_t fps) -> void {
+  Instance().start(fps);
 }
 
 auto Clock::StartTick() -> void {
