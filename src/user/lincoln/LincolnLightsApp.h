@@ -69,12 +69,12 @@ private:
     .continuous = true
   }};
 
-  std::array<rgb::Scene*, LED_COUNT> scenes{
+  std::array<rgb::Scene*, 3> scenes{
     static_cast<rgb::Scene*>(&rpmDisplay),
     static_cast<rgb::Scene*>(&trailingScene),
     static_cast<rgb::Scene*>(&debugScene)
   };
-  SceneManager<LED_COUNT> sceneManager{scenes, &introScene, rgb::Duration::Seconds(2)};
+  SceneManager<3> sceneManager{scenes, &introScene, rgb::Duration::Seconds(2)};
 
 // Input
   rgb::PushButton nextSceneButton{D3, [this](){

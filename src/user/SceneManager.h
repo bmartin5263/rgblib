@@ -50,6 +50,7 @@ public:
     INFO("---> Next Scene --->");
     introSceneTimer.reset();
     currentScene = (currentScene + 1) % N;
+    ASSERT(scenes[currentScene] != nullptr, "Null scene detected");
     rgb::App::SwitchScene(*scenes[currentScene]);
   }
 
