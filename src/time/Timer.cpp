@@ -4,7 +4,7 @@
 
 #include "Timer.h"
 #include "Assertions.h"
-#include "time/Clock.h"
+#include "Clock.h"
 
 namespace rgb {
 
@@ -24,7 +24,7 @@ Timer::Timer() {
 }
 
 auto Timer::SetTimeout(Duration duration, const rgb::TimerFunction& function) -> TimerHandle {
-  return Instance().setTimeout(duration, 1, function);
+  return Instance().setTimeout(duration, 0, function);
 }
 
 auto Timer::SetInterval(rgb::Duration duration, uint times, const rgb::TimerFunction& function) -> TimerHandle {
@@ -35,6 +35,7 @@ auto Timer::SetInterval(rgb::Duration duration, uint times, const rgb::TimerFunc
 }
 
 auto Timer::setTimeout(Duration duration, uint repeatCount, const rgb::TimerFunction& function) -> TimerHandle {
+  INFO("SetTimeout()");
   auto time = Clock::Now();
   auto timer = nextTimerNode();
 
@@ -55,6 +56,7 @@ auto Timer::Cancel(TimerNode* node) -> void {
 
 auto Timer::cancel(TimerNode* node) -> void {
   if (node != nullptr) {
+    INFO("Cancelling Timer");
     node->tombstone = true;
   }
 }
@@ -82,12 +84,16 @@ auto Timer::processTimers() -> void {
 }
 
 auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
+  INFO("Start Executing Timer");
   timer->timerFunction();
+  INFO("Finish Executing Timer");
   if (timer->repeatsRemaining > 0) {
+    INFO("Repeating Timer");
     timer->repeat(now);
     enqueueForAdding(timer);
   }
   else {
+    INFO("Trashing Timer");
     TimerNode::InsertFront(unusedHead, timer);
   }
 }

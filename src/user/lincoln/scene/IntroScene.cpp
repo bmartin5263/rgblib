@@ -3,7 +3,7 @@
 //
 
 #include "IntroScene.h"
-#include "time/Clock.h"
+#include "Clock.h"
 
 IntroScene::IntroScene(rgb::LEDRing& ring) : ring(ring) {
 

@@ -7,11 +7,11 @@
 
 #include <array>
 #include "ISceneManager.h"
-#include "time/Clock.h"
-#include "time/Timer.h"
+#include "Clock.h"
+#include "Timer.h"
 #include "Types.h"
 #include "NullScene.h"
-#include "sensor/PushButton.h"
+#include "PushButton.h"
 #include "App.h"
 
 template <uint N>
@@ -31,6 +31,7 @@ public:
   auto start() -> rgb::Scene& override {
     if (introScene != nullptr) {
       currentScene = -1;
+      INFO("Starting");
       introSceneTimer = rgb::Timer::SetTimeout(runIntroSceneFor, [&](){
         INFO("Ending Intro Scene");
         nextScene();
@@ -46,6 +47,7 @@ public:
   }
 
   auto nextScene() -> void {
+    INFO("---> Next Scene --->");
     introSceneTimer.reset();
     currentScene = (currentScene + 1) % N;
     rgb::App::SwitchScene(*scenes[currentScene]);

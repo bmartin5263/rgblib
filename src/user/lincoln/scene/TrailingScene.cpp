@@ -4,7 +4,7 @@
 
 #include "Assertions.h"
 #include "TrailingScene.h"
-#include "time/Clock.h"
+#include "Clock.h"
 
 TrailingScene::TrailingScene(TrailingSceneParameters params): params(std::move(params)) {
   ASSERT(params.leds != nullptr, "TrailingScene: LEDs is null");

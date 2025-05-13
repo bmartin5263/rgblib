@@ -7,7 +7,7 @@
 
 #include <array>
 #include "ILEDManager.h"
-#include "led/LEDCircuit.h"
+#include "LEDCircuit.h"
 
 template <uint N>
 class LEDManager : public rgb::ILEDManager {

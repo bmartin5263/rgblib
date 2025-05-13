@@ -1,2 +1,3 @@
 .pio
-/src/user/do_not_commit.cpp
+.libsrc
+.libbuild

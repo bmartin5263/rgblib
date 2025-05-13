@@ -6,9 +6,9 @@
 #define RGBLIB_INTROSCENE_H
 
 #include "Scene.h"
-#include "led/LEDCircuit.h"
-#include "effect/FillEffect.h"
-#include "effect/TrailingEffect.h"
+#include "LEDCircuit.h"
+#include "FillEffect.h"
+#include "TrailingEffect.h"
 
 class IntroScene : public rgb::Scene {
 public:

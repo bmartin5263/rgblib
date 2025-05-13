@@ -11,7 +11,7 @@
 #include <bitset>
 #include "Handle.h"
 #include "Assertions.h"
-#include "time/Clock.h"
+#include "Clock.h"
 #include "Util.h"
 
 namespace rgb {

@@ -3,8 +3,8 @@
 //
 
 #include "FillEffect.h"
-#include "led/LEDChain.h"
-#include "time/Clock.h"
+#include "LEDChain.h"
+#include "Clock.h"
 #include "Enumerate.h"
 
 namespace rgb {

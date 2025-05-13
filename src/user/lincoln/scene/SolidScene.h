@@ -6,8 +6,8 @@
 #define RGBLIB_SOLIDSCENE_H
 
 #include "Scene.h"
-#include "sensor/Vehicle.h"
-#include "led/LEDChain.h"
+#include "Vehicle.h"
+#include "LEDChain.h"
 
 
 class SolidScene : public rgb::Scene {

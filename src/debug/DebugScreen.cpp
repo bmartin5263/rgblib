@@ -3,7 +3,7 @@
 //
 
 #include "DebugScreen.h"
-#include "time/Clock.h"
+#include "Clock.h"
 #include "Config.h"
 
 namespace rgb {

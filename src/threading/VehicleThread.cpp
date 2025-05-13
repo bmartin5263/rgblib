@@ -5,7 +5,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include "VehicleThread.h"
-#include "sensor/Vehicle.h"
+#include "Vehicle.h"
 #include "Config.h"
 
 namespace rgb {

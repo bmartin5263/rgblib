@@ -6,8 +6,8 @@
 #define RGBLIB_DEBUGSCENE_H
 
 #include "Scene.h"
-#include "effect/FillEffect.h"
-#include "sensor/Vehicle.h"
+#include "FillEffect.h"
+#include "Vehicle.h"
 
 class DebugScene : public rgb::Scene {
 public:

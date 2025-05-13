@@ -3,9 +3,9 @@
 //
 
 #include "RpmDisplay.h"
-#include "sensor/PushButton.h"
-#include "time/Clock.h"
-#include "debug/DebugScreen.h"
+#include "PushButton.h"
+#include "Clock.h"
+#include "DebugScreen.h"
 
 using namespace rgb;
 

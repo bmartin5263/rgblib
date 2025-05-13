@@ -3,8 +3,8 @@
 //
 
 #include "TrailingEffect.h"
-#include "time/Clock.h"
-#include "led/LEDChain.h"
+#include "Clock.h"
+#include "LEDChain.h"
 
 using namespace rgb;
 

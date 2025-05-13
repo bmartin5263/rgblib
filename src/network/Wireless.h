@@ -6,7 +6,7 @@
 #define RGBLIB_WIRELESS_H
 
 #include <esp_wifi_types.h>
-#include "time/TimerHandle.h"
+#include "TimerHandle.h"
 
 namespace rgb {
 

@@ -6,12 +6,12 @@
 #define RGBLIB_RPMDISPLAY_H
 
 #include "Scene.h"
-#include "led/LEDCircuit.h"
-#include "network/WebServerFwd.h"
-#include "sensor/Vehicle.h"
-#include "user/effect/RpmLayout.h"
-#include "user/effect/RpmColorMode.h"
-#include "user/effect/RpmShape.h"
+#include "LEDCircuit.h"
+#include "WebServerFwd.h"
+#include "Vehicle.h"
+#include "user/lincoln/effect/RpmLayout.h"
+#include "user/lincoln/effect/RpmColorMode.h"
+#include "user/lincoln/effect/RpmShape.h"
 
 namespace rgb {
   class PushButton;

@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# Exit on any error
+set -e
+
+# Check arguments
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 <input_directory>"
+  exit 1
+fi
+
+pio run -e debug
+pio run -e release
+
+INPUT_DIR="$1"
+OUTPUT_DIR=".libsrc"
+OUTPUT_BUILD_DIR=".libbuild"
+INCLUDE_DIR="$OUTPUT_DIR/include"
+SRC_DIR="$OUTPUT_DIR/src"
+
+# Validate input directory
+if [ ! -d "$INPUT_DIR" ]; then
+  echo "Error: Input directory does not exist: $INPUT_DIR"
+  exit 1
+fi
+
+# Remove and recreate output directory
+rm -rf "$OUTPUT_DIR"
+rm -rf "$OUTPUT_BUILD_DIR"
+mkdir -p "$INCLUDE_DIR"
+mkdir -p "$SRC_DIR"
+
+# Function to determine if file is a C++ header
+is_header() {
+  case "$1" in
+    *.h|*.hpp) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+# Find and copy files, skipping "user" directories
+find "$INPUT_DIR" -type d -name "user" -prune -o -type f ! -name "main.ino" -print | while read -r file; do
+  base_name=$(basename "$file")
+
+  if is_header "$base_name"; then
+    dest="$INCLUDE_DIR/$base_name"
+  else
+    dest="$SRC_DIR/$base_name"
+  fi
+
+  if [ -e "$dest" ]; then
+    echo "Error: Duplicate file name '$base_name' in destination: $dest"
+    echo "Aborting Operation"
+    rm -rf "$OUTPUT_DIR"
+    exit 1
+  fi
+
+  cp "$file" "$dest"
+done
+
+cp "library.json" "$OUTPUT_DIR"
+mkdir -p "$OUTPUT_BUILD_DIR"
+pio pkg pack "$OUTPUT_DIR" -o "$OUTPUT_BUILD_DIR"
+
+PACKAGE=$(find "$SEARCH_DIR" -type f -regextype posix-extended -regex '.*/rgblib-[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz' | head -n 1)
+if [ -n "$PACKAGE" ]; then
+    echo "Found package: $PACKAGE"
+else
+    echo "No matching package found."
+fi
+#pio pkg publish "$OUTPUT_BUILD_DIR/rgblib-0.0.1.tar.gz" --type library

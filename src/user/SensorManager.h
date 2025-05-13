@@ -10,7 +10,7 @@
 #include <array>
 #include "Log.h"
 
-using SensorFunction = void (*)();
+using SensorFunction = std::function<void()>;
 
 template <uint N>
 class SensorManager : public rgb::ISensorManager {

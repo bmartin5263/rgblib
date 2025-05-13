@@ -8,8 +8,8 @@
 #include <optional>
 #include "Types.h"
 #include "Scene.h"
-#include "sensor/Vehicle.h"
-#include "led/LEDChain.h"
+#include "Vehicle.h"
+#include "LEDChain.h"
 
 struct TrailingSceneColorGeneratorParameters {
   rgb::Timestamp now;

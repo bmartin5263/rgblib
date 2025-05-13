@@ -4,7 +4,7 @@
 
 #include "Debug.h"
 #include "Color.h"
-#include "led/LEDChain.h"
+#include "LEDChain.h"
 
 namespace rgb {
 

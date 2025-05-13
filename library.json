@@ -1,0 +1,28 @@
+{
+  "name": "rgblib",
+  "version": "0.0.2",
+  "description": "LED effects library",
+  "keywords": "LED, neopixels",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/bmartin5263/rgblib.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Brandon Martin",
+      "email": "bsm2112@yahoo.com",
+      "url": "https://bdon.dev",
+      "maintainer": true
+    }
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "ESP32Async/ESPAsyncWebServer": "^3.7.4",
+    "olikraus/U8g2": "^2.36.5",
+    "adafruit/Adafruit NeoPixel": "^1.13.0"
+  },
+  "frameworks": "arduino",
+  "platforms": "*"
+}

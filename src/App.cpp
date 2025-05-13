@@ -7,14 +7,14 @@
 #include "App.h"
 #include "AppBuilder.h"
 #include "Scene.h"
-#include "time/Clock.h"
+#include "Clock.h"
 #include "Assertions.h"
 #include "ISceneManager.h"
 #include "ILEDManager.h"
 #include "ISensorManager.h"
-#include "network/OTASupport.h"
-#include "network/WebServer.h"
-#include "time/Timer.h"
+#include "OTASupport.h"
+#include "WebServer.h"
+#include "Timer.h"
 
 namespace rgb {
 

@@ -2,13 +2,14 @@
 
 ## TODO
 - [X] Vehicle Thread to eliminate blocking main thread when accessing vehicle data
-- [ ] Update sensors on every frame in main thread
-- [ ] Debug LEDS on top layer
+- [X] Update sensors on every frame in main thread
+- [X] Debug LEDS on top layer
+- [X] OTA led turns on even when its not active
+- [X] Scene Manager timer for intro
 - [ ] Resiliency - able to automatically recover subsystems if connection issues
-- [ ] OTA led turns on even when its not active
 - [ ] Check if vehicle supports PID
 - [ ] Git submodules for libs
-- [ ] Scene Manager timer for intro
+- [ ] Library build + import into _another_ project w/o copying and pasting this project into it
 
 ## Terminology
 

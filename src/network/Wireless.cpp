@@ -6,10 +6,10 @@
 
 #include "Wireless.h"
 #include "Log.h"
-#include "time/Stopwatch.h"
+#include "Stopwatch.h"
 #include "Config.h"
-#include "time/Timer.h"
-#include "time/Clock.h"
+#include "Timer.h"
+#include "Clock.h"
 
 namespace rgb {
 
