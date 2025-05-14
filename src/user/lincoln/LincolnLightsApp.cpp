@@ -29,6 +29,26 @@ auto LincolnLightsApp::setup() -> void {
     ring.setOffset(3);
     ring.setReversed(true);
   }
+
+  irReceiver.on0 = [](){ INFO("0"); };
+  irReceiver.on1 = [](){ INFO("1"); };
+  irReceiver.on2 = [](){ INFO("2"); };
+  irReceiver.on3 = [](){ INFO("3"); };
+  irReceiver.on4 = [](){ INFO("4"); };
+  irReceiver.on5 = [](){ INFO("5"); };
+  irReceiver.on6 = [](){ INFO("6"); };
+  irReceiver.on7 = [](){ INFO("7"); };
+  irReceiver.on8 = [](){ INFO("8"); };
+  irReceiver.on9 = [](){ INFO("9"); };
+  irReceiver.onUp = [](){ INFO("up"); };
+  irReceiver.onRight = [](){ INFO("right"); };
+  irReceiver.onDown = [](){ INFO("down"); };
+  irReceiver.onLeft = [](){ INFO("left"); };
+  irReceiver.onStar = [](){ INFO("*"); };
+  irReceiver.onHash = [](){ INFO("#"); };
+  irReceiver.onOk = [](){ INFO("ok"); };
+  irReceiver.start(D3);
+
   log::init();
   AppBuilder::Create()
     .EnableOTA()
@@ -38,7 +58,7 @@ auto LincolnLightsApp::setup() -> void {
     .SetSensorManager(&sensorManager)
     .Start();
 
-  VehicleThread::Start(vehicle);
+//  VehicleThread::Start(vehicle);
 }
 
 auto LincolnLightsApp::updateDisplay() -> void {

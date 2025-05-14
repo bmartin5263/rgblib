@@ -61,11 +61,3 @@ done
 cp "library.json" "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_BUILD_DIR"
 pio pkg pack "$OUTPUT_DIR" -o "$OUTPUT_BUILD_DIR"
-
-PACKAGE=$(find "$SEARCH_DIR" -type f -regextype posix-extended -regex '.*/rgblib-[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz' | head -n 1)
-if [ -n "$PACKAGE" ]; then
-    echo "Found package: $PACKAGE"
-else
-    echo "No matching package found."
-fi
-#pio pkg publish "$OUTPUT_BUILD_DIR/rgblib-0.0.1.tar.gz" --type library

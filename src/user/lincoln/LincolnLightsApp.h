@@ -17,6 +17,7 @@
 #include "DebugScreen.h"
 #include "user/lincoln/scene/IntroScene.h"
 #include "user/lincoln/scene/DebugScene.h"
+#include "IRReceiver.h"
 
 class LincolnLightsApp {
 public:
@@ -93,21 +94,22 @@ private:
   rgb::PushButton toggleLowPower{D5, [this](){
     rpmDisplay.bright = !rpmDisplay.bright;
   }};
+  rgb::IRReceiver irReceiver;
 
 
-  std::array<SensorFunction, 4> sensors = std::array {
-    SensorFunction { [this]() { nextSceneButton.update(); } },
-    SensorFunction { [this]() { actionButton.update(); } },
-    SensorFunction { [this]() { toggleLowPower.update(); } },
+  std::array<SensorFunction, 2> sensors = std::array {
     SensorFunction { [this]() {
       static auto lastVehicleUpdate = rgb::Timestamp{};
       if (rgb::Clock::Now().timeSince(lastVehicleUpdate) > rgb::config::VEHICLE_REFRESH_RATE) {
         vehicle.update();
         lastVehicleUpdate = rgb::Clock::Now();
       }
-    } },
+    }},
+    SensorFunction { [this]() {
+      irReceiver.update();
+    }}
   };
-  SensorManager<4> sensorManager{ sensors };
+  SensorManager<2> sensorManager{ sensors };
 };
 
 
