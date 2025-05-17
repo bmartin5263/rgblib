@@ -30,7 +30,7 @@ private:
 
 // Output
   rgb::LEDCircuit<LED_COUNT> ring{D5};
-  rgb::LEDSlice slice{ring.slice(4)};
+  rgb::LEDSlice slice{ring.slice(LED_COUNT)};
   LEDManager<LED_COUNT> ledManager{ring};
 
 // Scenes

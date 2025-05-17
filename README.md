@@ -11,16 +11,12 @@
   - [X] Vehicle
   - [ ] Wi-Fi
 - [ ] Check if vehicle supports PID
-- [ ] Git submodules for libs
 - [ ] CICD pipeline
 
 ## Terminology
 
 ### LED vs Pixel vs RGBW
-**LED** is the physical component that lights up
-
-**Pixel** is an abstract handle to some LED
-
-**RGB/W** represent the 3/4 possible color channels for an LED. Not all LEDs have W.
-May be represented as a `float` value between `[0-1]`, or as a `unsigned char` value (which has a range `[0-255]`)
-`float` permits math operations, while physical devices expect `unsinged char`
+- **LED** is the physical component that lights up
+- **Pixel** is an abstract representation to usually 1 LED
+- **RGB/W** represent the 3/4 possible color channels for an LED. Not all LEDs have W.
+  - App represents them as `float` value between `[0-1]`, but device expects `unsigned char` value (`[0-255]`)

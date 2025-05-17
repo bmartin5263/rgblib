@@ -1,6 +1,6 @@
 {
   "name": "rgblib",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "LED effects library",
   "keywords": "LED, neopixels",
   "repository":
@@ -21,7 +21,8 @@
   "dependencies": {
     "ESP32Async/ESPAsyncWebServer": "^3.7.4",
     "olikraus/U8g2": "^2.36.5",
-    "adafruit/Adafruit NeoPixel": "^1.13.0"
+    "adafruit/Adafruit NeoPixel": "^1.13.0",
+    "z3t0/IRremote": "^14.4.2"
   },
   "frameworks": "arduino",
   "platforms": "*"
