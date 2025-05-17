@@ -9,8 +9,7 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
-pio run -e debug
-pio run -e release
+pio run -e ci
 
 INPUT_DIR="$1"
 OUTPUT_DIR=".libsrc"
