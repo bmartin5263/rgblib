@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-docker compose -f Docker/docker-compose-concourse-ec2.yml up -d
+docker compose -f cicd/docker-compose-concourse-ec2.yml up -d
 echo "Waiting for Concourse to startup..."
 
 sleep 10 # wait for concourse to spin up
