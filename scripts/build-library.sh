@@ -1,7 +1,4 @@
-#!/bin/bash
-
-# Exit on any error
-set -e
+#!/bin/sh -e
 
 pio run -e ci
 
