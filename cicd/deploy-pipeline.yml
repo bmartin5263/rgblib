@@ -23,4 +23,4 @@ jobs:
             - name: repo
           run:
             path: ls
-            args: [ "repo -al" ]
+            args: [ "repo" ]
