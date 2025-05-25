@@ -3,15 +3,9 @@
 # Exit on any error
 set -e
 
-# Check arguments
-if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 <input_directory>"
-  exit 1
-fi
-
 pio run -e ci
 
-INPUT_DIR="$1"
+INPUT_DIR="src"
 OUTPUT_DIR=".libsrc"
 OUTPUT_BUILD_DIR=".libbuild"
 INCLUDE_DIR="$OUTPUT_DIR/include"
@@ -60,3 +54,5 @@ done
 cp "library.json" "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_BUILD_DIR"
 pio pkg pack "$OUTPUT_DIR" -o "$OUTPUT_BUILD_DIR"
+
+# pio pkg publish ".libbuild/rgblib-x.x.x.tar.gz" --type library

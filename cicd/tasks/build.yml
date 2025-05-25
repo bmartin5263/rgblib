@@ -1,0 +1,11 @@
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: alpine
+inputs:
+  - name: repo
+outputs:
+  - name: repo
+run:
+  path: repo/cicd/tasks/build.sh
