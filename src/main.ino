@@ -79,6 +79,8 @@ auto setup() -> void {
     .SetLEDManager(&ledManager)
     .SetSensorManager(&sensorManager)
     .Start();
+
+  VehicleThread::Start(vehicle);
 }
 
 auto loop() -> void {

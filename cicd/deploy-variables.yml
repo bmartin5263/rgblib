@@ -1,6 +1,6 @@
 git:
   uri: git@github.com:bmartin5263/rgblib.git
-  private-key: ${GIT_PRIVATE_KEY}
+#  private-key: ${GIT_PRIVATE_KEY}
 #  private-key: | # Generated on EC2 instance
 #    -----BEGIN OPENSSH PRIVATE KEY-----
 #    -----END OPENSSH PRIVATE KEY-----

@@ -6,4 +6,4 @@ export PATH=$PATH:$HOME/.local/bin
 
 cd repo
 
-pio
+./scripts/build-library.sh
