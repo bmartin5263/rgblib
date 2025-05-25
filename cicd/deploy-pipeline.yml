@@ -22,5 +22,5 @@ jobs:
           inputs:
             - name: repo
           run:
-            path: ls
-            args: [ "repo/cicd/tasks" ]
+            path: repo/cicd/tasks/build.sh
+#            args: [ "repo/cicd/tasks/build.sh" ]
