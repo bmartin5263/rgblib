@@ -20,7 +20,7 @@ public:
   explicit LEDCircuit(pin_num pin, u16 offset = 0, neoPixelType type = NEO_GRBW + NEO_KHZ800):
     data{}, impl(N, pin, type), mOffset(offset), mReversed(false)
   {
-
+    start();
   }
 
   auto start() -> void {

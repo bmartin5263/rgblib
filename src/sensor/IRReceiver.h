@@ -7,6 +7,8 @@
 
 #include <functional>
 #include "Types.h"
+#include "PushButton.h"
+#include "IRButton.h"
 
 namespace rgb {
 
@@ -18,45 +20,23 @@ public:
   auto update() -> void;
   auto stop() -> void;
 
-  std::function<void()> on0{doNothing};
-  std::function<void()> on1{doNothing};
-  std::function<void()> on2{doNothing};
-  std::function<void()> on3{doNothing};
-  std::function<void()> on4{doNothing};
-  std::function<void()> on5{doNothing};
-  std::function<void()> on6{doNothing};
-  std::function<void()> on7{doNothing};
-  std::function<void()> on8{doNothing};
-  std::function<void()> on9{doNothing};
-  std::function<void()> onUp{doNothing};
-  std::function<void()> onRight{doNothing};
-  std::function<void()> onDown{doNothing};
-  std::function<void()> onLeft{doNothing};
-  std::function<void()> onStar{doNothing};
-  std::function<void()> onHash{doNothing};
-  std::function<void()> onOk{doNothing};
-
-  constexpr static auto BUTTON_1 = 0xBA45FF00;
-  constexpr static auto BUTTON_2 = 0xB946FF00;
-  constexpr static auto BUTTON_3 = 0xB847FF00;
-  constexpr static auto BUTTON_4 = 0xBB44FF00;
-  constexpr static auto BUTTON_5 = 0xBF40FF00;
-  constexpr static auto BUTTON_6 = 0xBC43FF00;
-  constexpr static auto BUTTON_7 = 0xF807FF00;
-  constexpr static auto BUTTON_8 = 0xEA15FF00;
-  constexpr static auto BUTTON_9 = 0xF609FF00;
-  constexpr static auto BUTTON_0 = 0xE619FF00;
-  constexpr static auto BUTTON_UP = 0xE718FF00;
-  constexpr static auto BUTTON_RIGHT = 0xA55AFF00;
-  constexpr static auto BUTTON_DOWN = 0xAD52FF00;
-  constexpr static auto BUTTON_LEFT = 0xF708FF00;
-  constexpr static auto BUTTON_STAR = 0xE916FF00;
-  constexpr static auto BUTTON_HASH = 0xF20DFF00;
-  constexpr static auto BUTTON_OK = 0xE31CFF00;
-
-private:
-  auto dispatchEvent(uint64_t data) -> void;
-
+  IRButton button0{IRButtonType::BUTTON_0};
+  IRButton button1{IRButtonType::BUTTON_1};
+  IRButton button2{IRButtonType::BUTTON_2};
+  IRButton button3{IRButtonType::BUTTON_3};
+  IRButton button4{IRButtonType::BUTTON_4};
+  IRButton button5{IRButtonType::BUTTON_5};
+  IRButton button6{IRButtonType::BUTTON_6};
+  IRButton button7{IRButtonType::BUTTON_7};
+  IRButton button8{IRButtonType::BUTTON_8};
+  IRButton button9{IRButtonType::BUTTON_9};
+  IRButton buttonUp{IRButtonType::BUTTON_UP};
+  IRButton buttonRight{IRButtonType::BUTTON_RIGHT};
+  IRButton buttonDown{IRButtonType::BUTTON_DOWN};
+  IRButton buttonLeft{IRButtonType::BUTTON_LEFT};
+  IRButton buttonStar{IRButtonType::BUTTON_STAR};
+  IRButton buttonHash{IRButtonType::BUTTON_HASH};
+  IRButton buttonOk{IRButtonType::BUTTON_OK};
 };
 
 }

@@ -20,6 +20,7 @@ private:
   rgb::LEDChain& ring;
   rgb::Vehicle& vehicle;
   rgb::FillEffect fillEffect{};
+  rgb::Color color{rgb::Color::BLUE(.1f)};
 
 };
 
