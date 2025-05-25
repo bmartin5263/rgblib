@@ -7,6 +7,11 @@ curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/pla
 python3 get-platformio.py
 export PATH=$PATH:$HOME/.local/bin
 
+mkdir -p /usr/local/bin
+ln -s ~/.platformio/penv/bin/platformio /usr/local/bin/platformio
+ln -s ~/.platformio/penv/bin/pio /usr/local/bin/pio
+ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
+
 cd repo
 
 ./scripts/build-library.sh
