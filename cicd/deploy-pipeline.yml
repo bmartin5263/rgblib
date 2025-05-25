@@ -18,7 +18,7 @@ jobs:
           image_resource:
             type: registry-image
             source:
-              repository: alpine
+              repository: busybox
           inputs:
             - name: repo
           run:
