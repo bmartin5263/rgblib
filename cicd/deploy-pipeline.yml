@@ -22,4 +22,5 @@ jobs:
           inputs:
             - name: repo
           run:
-            path: repo/cicd/tasks/build.sh
+            path: echo
+            args: [ "Hello, world!" ]
