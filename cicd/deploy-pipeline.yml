@@ -22,5 +22,5 @@ jobs:
           inputs:
             - name: repo
           run:
-            path: echo
-            args: [ "Hello, world!" ]
+            path: ls
+            args: [ "-al" ]
