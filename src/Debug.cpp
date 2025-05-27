@@ -8,19 +8,25 @@
 
 namespace rgb {
 
-auto Debug::trigger(bool value) -> void {
-  triggered = value;
+auto Debug::trigger() -> void {
+  triggered = true;
+}
+
+auto Debug::trigger(Color color) -> void {
+  triggerColor = color;
+  trigger();
+}
+
+auto Debug::recover() -> void {
+  triggered = false;
 }
 
 auto Debug::update() -> void {
-  if (debugChain != nullptr && triggered) {
-    debugChain->fill(Color::CYAN());
-  }
 }
 
 auto Debug::draw() -> void {
   if (debugChain != nullptr && triggered) {
-    debugChain->fill(Color::CYAN(.01));
+    debugChain->fill(triggerColor);
   }
 }
 

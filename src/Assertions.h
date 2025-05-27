@@ -9,12 +9,30 @@
 #include "Debug.h"
 #include "Log.h"
 #include "DebugScreen.h"
+#define FAIL(message, color) \
+        do { \
+          Serial.printf("Failure Detected\n");      \
+          Serial.printf("File: %s, Function: %s, Line: %i, Message: %s\n", __FILE__, __FUNCTION__, __LINE__, message);                   \
+          rgb::Debug::Trigger(color);                                    \
+          rgb::DebugScreen::PrintLine(4, message);                   \
+        } while (false)
+
 #define ASSERT(condition, message) \
         do { \
             if (!(condition)) {    \
                 Serial.printf("Assertion failed: (%s)\n", #condition);                   \
                 Serial.printf("File: %s, Function: %s, Line: %i, Message: %s\n", __FILE__, __FUNCTION__, __LINE__, message);                   \
-                rgb::Debug::Instance().trigger(true);                                    \
+                rgb::Debug::Trigger();                                    \
+                rgb::DebugScreen::PrintLine(4, message);                   \
+            } \
+        } while (false)
+
+#define ASSERT_C(condition, message, color) \
+        do { \
+            if (!(condition)) {    \
+                Serial.printf("Assertion failed: (%s)\n", #condition);                   \
+                Serial.printf("File: %s, Function: %s, Line: %i, Message: %s\n", __FILE__, __FUNCTION__, __LINE__, message);                   \
+                rgb::Debug::Trigger(color);                                    \
                 rgb::DebugScreen::PrintLine(4, message);                   \
             } \
         } while (false)

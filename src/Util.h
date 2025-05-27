@@ -5,8 +5,8 @@
 #ifndef RGBLIB_UTIL_H
 #define RGBLIB_UTIL_H
 
+#include "Arduino.h"
 #include "Types.h"
-#include "Assertions.h"
 
 namespace rgb {
 

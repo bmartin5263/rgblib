@@ -61,7 +61,7 @@ auto App::loop() -> void {
 
   ledManager->clear();
   scene->draw();
-  Debug::Instance().draw();
+  Debug::Draw();
   ledManager->display();
 
   Clock::StopTick();
@@ -103,7 +103,7 @@ auto App::configure(const AppBuilder& appBuilder) -> void {
   ledManager = appBuilder.mLedManager;
   sensorManager = appBuilder.mSensorManager;
   otaEnabled = appBuilder.mEnabledOTA;
-  Debug::Instance().setDebugChain(appBuilder.mDebugOutputLED);
+  Debug::SetDebugChain(appBuilder.mDebugOutputLED);
 }
 
 }

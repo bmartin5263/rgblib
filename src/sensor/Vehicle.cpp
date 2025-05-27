@@ -29,13 +29,13 @@ auto Vehicle::connect() -> bool {
 
   if (!obdHandle->begin()) {
     ERROR("Vehicle begin() failed");
-//    ASSERT(false, "false");
+    FAIL("Vehicle begin() failed", Color::MAGENTA(.01f));
     return false;
   }
 
   if (!obdHandle->init()) {
     ERROR("Vehicle init() failed");
-//    ASSERT(false, "false");
+    FAIL("Vehicle init() failed", Color::MAGENTA(.01f));
     return false;
   }
 

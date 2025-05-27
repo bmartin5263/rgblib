@@ -74,7 +74,7 @@ private:
     }
     else {
       if (Clock::Now().timeSince(mLastResponse) >= Duration::Seconds(1)) {
-        ASSERT(false, "Disconnected OBD2");
+        FAIL("Disconnected OBD2", Color::ORANGE(.01f));
         disconnect();
       }
     }
