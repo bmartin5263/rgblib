@@ -12,6 +12,29 @@
   - [ ] Wi-Fi
 - [ ] Check if vehicle supports PID
 - [ ] CICD pipeline
+- [ ] Smoothing vehicle value changes
+
+## Debugging Tools
+
+`RGB_DEBUG_ENABLE_DEBUG_SCREEN`
+`RGB_DEBUG_ENABLE_ASSERTIONS`
+`RGB_DEBUG_ENABLE_LOGGING`
+`RGB_DEBUG_ENABLE_LOGGING`
+
+|                     |                                                    |
+|---------------------|----------------------------------------------------|
+| `INFO(msg, ...)`    | Print a log message with level _Info_              |
+| `ERROR(msg, ...)`   | Print a log message with level _Error_             |
+| `ASSERT(cond, msg)` | WiFi network password. Required if SSID is defined |
+| `RGB_DEBUG`         |                                                    |
+
+## Compilation Flags
+
+|                     |                                                                 |
+|---------------------|-----------------------------------------------------------------|
+| `RGB_WIFI_SSID`     | SSID of WiFi network to connect to. If defined, WiFi is enabled |
+| `RGB_WIFI_PASSWORD` | WiFi network password. Required if SSID is defined              |
+| `RGB_DEBUG`         |                                                                 |
 
 ## Terminology
 

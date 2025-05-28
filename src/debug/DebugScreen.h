@@ -7,6 +7,7 @@
 
 #include "U8g2lib.h"
 #include "Types.h"
+#include "CircularLog.h"
 
 namespace rgb {
 
@@ -15,17 +16,14 @@ public:
   using DrawFunction = std::function<void(U8G2&)>;
 
   static auto Start() -> void { Instance().start(); }
+  static auto PrintLine(const std::string& msg) -> void { Instance().printLine(msg); }
   static auto PrintLine(int row, const std::string& msg) -> void { Instance().printLine(row, msg); }
   static auto Display() -> void { Instance().display(); }
   static auto ReadyForUpdate() -> bool { return Instance().readyForUpdate(); }
 
 private:
   U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2{U8G2_R0, /* cs=*/ D10, /* dc=*/ D9, /* reset=*/ D8};
-  std::string line0{};
-  std::string line1{};
-  std::string line2{};
-  std::string line3{};
-  std::string line4{};
+  CircularLog<std::array<std::string, 5>> list{};
   Timestamp lastUpdate{};
   bool started{false};
 
@@ -37,6 +35,7 @@ private:
   auto start() -> void;
   auto display() -> void;
   auto readyForUpdate() -> bool;
+  auto printLine(const std::string& msg) -> void;
   auto printLine(int row, const std::string& msg) -> void;
 
 };

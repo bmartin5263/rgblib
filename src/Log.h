@@ -10,10 +10,6 @@
 
 namespace rgb::log {
 
-constexpr auto MS_PER_HOUR = 1000 * 60 * 60;
-constexpr auto MS_PER_MINUTE = 1000 * 60;
-constexpr auto MS_PER_SECOND = 1000;
-
 auto init(u32 baud = 9600) -> void;
 auto printHeader(const char* level, const char* function) -> void;
 
@@ -32,7 +28,7 @@ auto printHeader(const char* level, const char* function) -> void;
 
 #define INFO(format, ...) do { \
   rgb::log::printHeader("INFO", __PRETTY_FUNCTION__);  \
-  Serial.printf(format, ##__VA_ARGS__); \
+  Serial.printf(format, ##__VA_ARGS__);                \
   Serial.println();            \
 } while(false)
 

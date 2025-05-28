@@ -1,7 +1,5 @@
 #include <bitset>
 #include "Timer.h"
-#include "SceneManager.h"
-#include "SensorManager.h"
 #include "DebugScreen.h"
 #include "user/IntroScene.h"
 #include "user/DebugScene.h"
@@ -26,7 +24,6 @@ auto scenes = std::array {
   static_cast<Scene*>(&debugScene),
   static_cast<Scene*>(&introScene)
 };
-auto sceneManager = SceneManager {scenes, &introScene, Duration::Seconds(2)};
 
 auto irReceiver = IRReceiver{};
 auto sensors = std::array {
@@ -41,7 +38,6 @@ auto sensors = std::array {
     irReceiver.update();
   }}
 };
-auto sensorManager = SensorManager<2>{ sensors };
 
 auto updateDisplay() -> void {
   auto fpsStr = "FPS: " + std::to_string(Clock::Fps())
@@ -62,18 +58,16 @@ auto leds = std::array {
 };
 
 auto setup() -> void {
-  irReceiver.button0.onPress([](){ sceneManager.nextScene(); });
+  srand(Clock::Milli());
+  irReceiver.button0.onPress([](){ App::NextScene(); });
   irReceiver.start(D3);
 
   log::init();
   DebugScreen::Start();
   AppBuilder::Create()
     .DebugOutputLED(&slice)
-    .SetSceneManager(&sceneManager)
-//    .EnableIntroScene(introScene, Duration::Seconds(1))
-//    .SetScenes(std::array {
-//      static_cast<Scene*>(&debugScene)
-//    })
+    .EnableIntroScene(introScene, Duration::Seconds(1))
+    .SetScenes(scenes)
     .SetLEDs(leds)
     .SetSensors(sensors)
     .Start();
@@ -83,7 +77,7 @@ auto setup() -> void {
 
 auto loop() -> void {
   if (DebugScreen::ReadyForUpdate()) {
-    updateDisplay();
+//    updateDisplay();
     DebugScreen::Display();
   }
   App::Loop();

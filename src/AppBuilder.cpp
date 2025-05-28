@@ -32,4 +32,15 @@ auto AppBuilder::SetSensors(Iterable<Runnable> sensors) -> AppBuilder& {
   return *this;
 }
 
+auto AppBuilder::SetScenes(Iterable<rgb::Scene*> scenes) -> self {
+  mScenes = scenes;
+  return *this;
+}
+
+auto AppBuilder::EnableIntroScene(rgb::Scene& introScene, rgb::Duration expirationTime) -> self {
+  mIntroScene = &introScene;
+  mRunIntroSceneFor = expirationTime;
+  return *this;
+}
+
 }

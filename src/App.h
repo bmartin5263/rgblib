@@ -7,6 +7,7 @@
 
 #include "Iterable.h"
 #include "Func.h"
+#include "TimerHandle.h"
 
 namespace rgb {
 
@@ -22,6 +23,8 @@ public:
   static auto Configure(const AppBuilder& appBuilder) -> void;
   static auto Loop() -> void;
 
+  static auto NextScene() -> void { Instance().nextScene(); }
+  static auto PrevScene() -> void { Instance().prevScene(); }
   static auto SwitchScene(Scene& scene) -> void;
 
 private:
@@ -36,16 +39,22 @@ private:
 
   auto start() -> void;
   auto configure(const AppBuilder& appBuilder) -> void;
-
   auto loop() -> void;
   auto switchScene(Scene& scene) -> void;
+  auto nextScene() -> void;
+  auto prevScene() -> void;
   auto checkForSceneSwitch() -> void;
 
   Scene* scene;
-  Scene* nextScene;
+  Scene* mNextScene;
   ISceneManager* sceneManager;
+  Scene* introScene{};
+  Iterable<Scene*> scenes{};
   Iterable<Drawable*> leds{};
   Iterable<Runnable> sensors{};
+  TimerHandle introSceneTimer{};
+  int currentScene{-1};
+  Duration runIntroSceneFor;
   bool started;
 };
 

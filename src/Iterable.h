@@ -12,20 +12,21 @@ namespace rgb {
 template <typename T>
 struct Iterable {
 
-  constexpr Iterable(): mBegin(nullptr), mEnd(nullptr) {}
-
-  constexpr Iterable(T* begin, T* end): mBegin(begin), mEnd(end) {}
+  constexpr Iterable(): mBegin(nullptr), mSize(0) {}
 
   template<size_t N>
-  constexpr Iterable(std::array<T, N>& array): mBegin(array.begin()), mEnd(array.end()) {}
+  constexpr Iterable(std::array<T, N>& array): mBegin(array.begin()), mSize(array.size()) {}
+
+  constexpr auto operator[](size_t index) -> T& { return *(begin() + index); }
 
   constexpr auto begin() -> T* { return mBegin; };
-  constexpr auto end() -> T* { return mEnd; };
+  constexpr auto end() -> T* { return mBegin + mSize; };
   constexpr auto begin() const -> const T* { return mBegin; };
-  constexpr auto end() const -> const T* { return mEnd; };
+  constexpr auto end() const -> const T* { return mBegin + mSize; };
+  constexpr auto size() const -> size_t { return mSize; };
 
   T* mBegin;
-  T* mEnd;
+  size_t mSize;
 };
 
 }

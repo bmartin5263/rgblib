@@ -30,7 +30,7 @@ public:
   auto SetSensors(Iterable<Runnable> sensors) -> self;
   auto SetScenes(Iterable<Scene*> scenes) -> self;
   auto SetLEDs(Iterable<Drawable*> scenes) -> self;
-  auto EnableIntroScene(const Scene& scene, Duration expirationTime) -> self;
+  auto EnableIntroScene(Scene& scene, Duration expirationTime) -> self;
 
   auto Start() -> void;
   static auto Create() -> AppBuilder { return {}; }
@@ -42,6 +42,9 @@ private:
   ISceneManager* mSceneManager{nullptr};
   ILEDManager* mLedManager{nullptr};
   Iterable<Drawable*> mLeds{};
+  Iterable<Scene*> mScenes{};
+  Scene* mIntroScene{nullptr};
+  Duration mRunIntroSceneFor{Duration::Seconds(1)};
   Iterable<Runnable> mSensors{};
 };
 

@@ -9,9 +9,6 @@
 #include "Scene.h"
 #include "Clock.h"
 #include "Assertions.h"
-#include "ISceneManager.h"
-#include "ILEDManager.h"
-#include "ISensorManager.h"
 #include "OTASupport.h"
 #include "WebServer.h"
 #include "Timer.h"
@@ -40,7 +37,17 @@ auto App::start() -> void {
     OTASupport::Start();
   }
 
-  this->scene = &sceneManager->start();
+  if (introScene != nullptr) {
+    this->scene = introScene;
+    this->introSceneTimer = rgb::Timer::SetTimeout(runIntroSceneFor, [&](){
+      INFO("Ending Intro Scene");
+      nextScene();
+    });
+  }
+  else {
+    this->scene = scenes[0];
+  }
+
   this->scene->setup();
   this->started = true;
 }
@@ -78,15 +85,15 @@ auto App::loop() -> void {
 }
 
 auto App::switchScene(Scene& scene) -> void {
-  this->nextScene = &scene;
+  this->mNextScene = &scene;
 }
 
 auto App::checkForSceneSwitch() -> void {
-  if (nextScene != nullptr) {
+  if (mNextScene != nullptr) {
     scene->cleanup();
-    scene = nextScene;
+    scene = mNextScene;
     scene->setup();
-    nextScene = nullptr;
+    mNextScene = nullptr;
   }
 }
 
@@ -112,7 +119,27 @@ auto App::configure(const AppBuilder& appBuilder) -> void {
   sceneManager = appBuilder.mSceneManager;
   leds = appBuilder.mLeds;
   sensors = appBuilder.mSensors;
+  scenes = appBuilder.mScenes;
+  runIntroSceneFor = appBuilder.mRunIntroSceneFor;
+  introScene = appBuilder.mIntroScene;
   Debug::SetDebugChain(appBuilder.mDebugOutputLED);
+}
+
+
+auto App::nextScene() -> void {
+  INFO("---> Next Scene --->");
+  introSceneTimer.reset();
+  currentScene = (currentScene + 1) % scenes.size();
+  ASSERT(scenes[currentScene] != nullptr, "Null scene detected");
+  switchScene(*scenes[currentScene]);
+}
+
+auto App::prevScene() -> void {
+  INFO("<--- Previous Scene <---");
+  introSceneTimer.reset();
+  currentScene = (currentScene > 0 ? currentScene : scenes.size()) - 1;
+  ASSERT(scenes[currentScene] != nullptr, "Null scene detected");
+  switchScene(*scenes[currentScene]);
 }
 
 }

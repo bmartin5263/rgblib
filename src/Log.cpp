@@ -4,12 +4,17 @@
 
 #include "Log.h"
 #include "Arduino.h"
+#include "DebugScreen.h"
 
 namespace rgb::log {
 
 auto init(u32 baud) -> void {
   Serial.begin(baud);
 }
+
+constexpr static auto MS_PER_HOUR = 1000 * 60 * 60;
+constexpr static auto MS_PER_MINUTE = 1000 * 60;
+constexpr static auto MS_PER_SECOND = 1000;
 
 auto printHeader(const char* level, const char* function) -> void {
   auto milliseconds = millis();
@@ -20,6 +25,7 @@ auto printHeader(const char* level, const char* function) -> void {
   auto seconds = milliseconds / MS_PER_SECOND;
   milliseconds %= MS_PER_SECOND;
   Serial.printf("%02lu:%02lu:%02lu.%03lu [%-5s] [%-60s] : ", hours, minutes, seconds, milliseconds, level, function);
+  rgb::DebugScreen::PrintLine(function); \
 }
 
 }
