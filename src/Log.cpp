@@ -7,9 +7,12 @@
 #include "DebugScreen.h"
 
 namespace rgb::log {
+bool initialized = false;
 
 auto init(u32 baud) -> void {
-  Serial.begin(baud);
+  if (!initialized) {
+    Serial.begin(baud);
+  }
 }
 
 constexpr static auto MS_PER_HOUR = 1000 * 60 * 60;

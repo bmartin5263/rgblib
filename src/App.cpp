@@ -30,6 +30,7 @@ auto App::start() -> void {
   digitalWrite(LED_GREEN, HIGH);
   digitalWrite(LED_RED, HIGH);
 
+  log::init();
   Clock::Start(config::FPS);
   if constexpr (Wifi::Enabled()) {
     Wifi::SetMode(WIFI_STA); // Wifi.mode() must be called on the main thread, else program crashes

@@ -22,7 +22,11 @@ public:
   static auto ReadyForUpdate() -> bool { return Instance().readyForUpdate(); }
 
 private:
-  U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2{U8G2_R0, /* cs=*/ D10, /* dc=*/ D9, /* reset=*/ D8};
+  constexpr static CS = D10;
+  constexpr static DC = D9;
+  constexpr static RESET = D8;
+
+  U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI u8g2{U8G2_R0, CS, DC, RESET};
   CircularLog<std::array<std::string, 5>> list{};
   Timestamp lastUpdate{};
   bool started{false};

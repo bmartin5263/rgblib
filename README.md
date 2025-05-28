@@ -16,25 +16,17 @@
 
 ## Debugging Tools
 
-`RGB_DEBUG_ENABLE_DEBUG_SCREEN`
-`RGB_DEBUG_ENABLE_ASSERTIONS`
-`RGB_DEBUG_ENABLE_LOGGING`
-`RGB_DEBUG_ENABLE_LOGGING`
+### Logs
+Macros such as `INFO()` and `ERROR()` can be used to print logs to the Serial output. The library makes
+use of these macros for reporting issues at runtime
 
-|                     |                                                    |
-|---------------------|----------------------------------------------------|
-| `INFO(msg, ...)`    | Print a log message with level _Info_              |
-| `ERROR(msg, ...)`   | Print a log message with level _Error_             |
-| `ASSERT(cond, msg)` | WiFi network password. Required if SSID is defined |
-| `RGB_DEBUG`         |                                                    |
+| Macro             | Description                            |
+|-------------------|----------------------------------------|
+| `TRACE(msg, ...)` | Print a log message with level _Trace_ |
+| `INFO(msg, ...)`  | Print a log message with level _Info_  |
+| `ERROR(msg, ...)` | Print a log message with level _Error_ |
 
-## Compilation Flags
-
-|                     |                                                                 |
-|---------------------|-----------------------------------------------------------------|
-| `RGB_WIFI_SSID`     | SSID of WiFi network to connect to. If defined, WiFi is enabled |
-| `RGB_WIFI_PASSWORD` | WiFi network password. Required if SSID is defined              |
-| `RGB_DEBUG`         |                                                                 |
+`TODO - disable per-level basis`
 
 ## Terminology
 

@@ -58,11 +58,11 @@ auto leds = std::array {
 };
 
 auto setup() -> void {
-  srand(Clock::Milli());
+  log::init();
+
   irReceiver.button0.onPress([](){ App::NextScene(); });
   irReceiver.start(D3);
 
-  log::init();
   DebugScreen::Start();
   AppBuilder::Create()
     .DebugOutputLED(&slice)
