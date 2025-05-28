@@ -16,13 +16,13 @@ PushButton::PushButton(pin_num pin)
   pinMode(pin, INPUT);
 }
 
-PushButton::PushButton(pin_num pin, PressCallback callback)
+PushButton::PushButton(pin_num pin, Runnable callback)
   : state(ButtonState::UNPRESSED), pin(pin), onPressCallback(std::move(callback))
 {
   pinMode(pin, INPUT);
 }
 
-auto PushButton::onPress(PressCallback callback) noexcept -> PushButton& {
+auto PushButton::onPress(Runnable callback) noexcept -> PushButton& {
   onPressCallback = std::move(callback);
   return *this;
 }

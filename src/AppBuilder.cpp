@@ -17,39 +17,19 @@ auto AppBuilder::SetSceneManager(ISceneManager* sceneManager) -> self {
   return *this;
 }
 
-auto AppBuilder::SetLEDManager(ILEDManager* ledManager) -> self {
-  this->mLedManager = ledManager;
-  return *this;
-}
-
-auto AppBuilder::EnableOTA() -> self {
-  mEnabledOTA = true;
-  return *this;
-}
-
-auto AppBuilder::SetSensorManager(ISensorManager* sensorManager) -> AppBuilder& {
-  mSensorManager = sensorManager;
-  return *this;
-}
-
-auto AppBuilder::PreDraw(const VoidFunction& action) -> self {
-  mPreDrawAction = action;
-  return *this;
-}
-
-auto AppBuilder::PostDraw(const VoidFunction& action) -> self {
-  mPostDrawAction = action;
-  return *this;
-}
-
-auto AppBuilder::PreUpdate(const VoidFunction& action) -> self {
-  mPreUpdateAction = action;
-  return *this;
-}
-
 auto AppBuilder::Start() -> void {
   App::Configure(*this);
   App::Start();
+}
+
+auto AppBuilder::SetLEDs(Iterable<Drawable*> leds) -> AppBuilder& {
+  mLeds = leds;
+  return *this;
+}
+
+auto AppBuilder::SetSensors(Iterable<Runnable> sensors) -> AppBuilder& {
+  mSensors = sensors;
+  return *this;
 }
 
 }

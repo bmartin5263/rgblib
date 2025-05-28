@@ -5,6 +5,9 @@
 #ifndef RGBLIB_APP_H
 #define RGBLIB_APP_H
 
+#include "Iterable.h"
+#include "Func.h"
+
 namespace rgb {
 
 class AppBuilder;
@@ -12,14 +15,9 @@ class Scene;
 class ISceneManager;
 class ILEDManager;
 class ISensorManager;
+class Drawable;
 class App {
 public:
-  App(const App&) = delete;
-  App(App&&) noexcept = delete;
-
-  auto operator=(const App& other) -> App& = delete;
-  auto operator=(App&& other) noexcept -> App& = delete;
-
   static auto Start() -> void;
   static auto Configure(const AppBuilder& appBuilder) -> void;
   static auto Loop() -> void;
@@ -28,6 +26,10 @@ public:
 
 private:
   App() = default;
+  App(const App& rhs) = delete;
+  App(App&& rhs) noexcept = delete;
+  App& operator=(const App& rhs) = delete;
+  App& operator=(App&& rhs) noexcept = delete;
   ~App() = default;
 
   static auto Instance() -> App&;
@@ -42,10 +44,9 @@ private:
   Scene* scene;
   Scene* nextScene;
   ISceneManager* sceneManager;
-  ILEDManager* ledManager;
-  ISensorManager* sensorManager{};
+  Iterable<Drawable*> leds{};
+  Iterable<Runnable> sensors{};
   bool started;
-  bool otaEnabled;
 };
 
 }

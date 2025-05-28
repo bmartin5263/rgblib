@@ -11,11 +11,12 @@
 #include "Color.h"
 #include "LEDChain.h"
 #include "LEDSlice.h"
+#include "Drawable.h"
 
 namespace rgb {
 
 template <u16 N>
-class LEDCircuit : public LEDChain {
+class LEDCircuit : public LEDChain, public Drawable {
 public:
   explicit LEDCircuit(pin_num pin, u16 offset = 0, neoPixelType type = NEO_GRBW + NEO_KHZ800):
     data{}, impl(N, pin, type), mOffset(offset), mReversed(false)
@@ -48,7 +49,11 @@ public:
     return mOffset;
   }
 
-  auto display() -> void {
+  auto reset() -> void override {
+    clear();
+  }
+
+  auto display() -> void override {
     if (mReversed) {
       for (u16 i = 0; i < N; ++i) {
         auto& c = data[mapPixelToLED(N - 1 - i)];

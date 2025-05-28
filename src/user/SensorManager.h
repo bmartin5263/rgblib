@@ -8,15 +8,14 @@
 #include "ISensorManager.h"
 
 #include <array>
+#include "Func.h"
 #include "Log.h"
-
-using SensorFunction = std::function<void()>;
 
 template <uint N>
 class SensorManager : public rgb::ISensorManager {
 public:
   SensorManager(
-    std::array<SensorFunction, N>& sensorMap
+    std::array<Runnable, N>& sensorMap
   ):
     sensorMap(sensorMap)
   {}
@@ -28,7 +27,7 @@ public:
   }
 
 private:
-  std::array<SensorFunction, N>& sensorMap;
+  std::array<Runnable, N>& sensorMap;
 };
 
 

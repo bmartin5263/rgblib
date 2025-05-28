@@ -27,7 +27,8 @@ public:
 
   using mutex = std::recursive_mutex;
 
-  auto update(Duration throttle = Duration::Milliseconds(50)) -> void;
+  auto setTimeout(Duration timeout) -> void;
+  auto update() -> void;
   auto connect() -> bool;
   auto setLowPowerMode(bool value) -> void;
 
@@ -50,6 +51,7 @@ private:
   std::atomic<bool> mConnected{false};
   Timestamp mLastResponse{0};
   Timestamp mLastUpdate{0};
+  int timeoutMs{25};
   std::atomic<bool> mLowPowerMode{false};
 
   auto disconnect() -> void;
@@ -68,13 +70,13 @@ private:
     ASSERT(obd.getState() == OBD_CONNECTED, "OBD not connected");
 
     int value;
-    if (obd.readPID(pid, value)) {
+    if (obd.readPID(pid, value, static_cast<int>(timeoutMs))) {
       result = remapper(value);
       mLastResponse = Clock::Now();
     }
     else {
-      if (Clock::Now().timeSince(mLastResponse) >= Duration::Seconds(1)) {
-        FAIL("Disconnected OBD2", Color::ORANGE(.01f));
+      if (Clock::Now().timeSince(mLastResponse) >= Duration::Seconds(5)) {
+        FAIL("Disconnected OBD2", Color::MAGENTA(.01f));
         disconnect();
       }
     }

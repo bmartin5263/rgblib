@@ -12,7 +12,7 @@ IRButton::IRButton(IRButtonType type)
 {
 }
 
-auto IRButton::onPress(PressCallback callback) noexcept -> IRButton& {
+auto IRButton::onPress(Runnable callback) noexcept -> IRButton& {
   onPressCallback = std::move(callback);
   return *this;
 }

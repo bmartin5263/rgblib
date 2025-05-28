@@ -23,18 +23,18 @@ Timer::Timer() {
   ASSERT(unusedHead != nullptr, "Failed to initialize Timers");
 }
 
-auto Timer::SetTimeout(Duration duration, const rgb::TimerFunction& function) -> TimerHandle {
+auto Timer::SetTimeout(Duration duration, const Runnable& function) -> TimerHandle {
   return Instance().setTimeout(duration, 0, function);
 }
 
-auto Timer::SetInterval(rgb::Duration duration, uint times, const rgb::TimerFunction& function) -> TimerHandle {
+auto Timer::SetInterval(rgb::Duration duration, uint times, const Runnable& function) -> TimerHandle {
   if (times == 0) {
     return TimerHandle {};
   }
   return Instance().setTimeout(duration, times - 1, function);
 }
 
-auto Timer::setTimeout(Duration duration, uint repeatCount, const rgb::TimerFunction& function) -> TimerHandle {
+auto Timer::setTimeout(Duration duration, uint repeatCount, const Runnable& function) -> TimerHandle {
   INFO("SetTimeout()");
   auto time = Clock::Now();
   auto timer = nextTimerNode();

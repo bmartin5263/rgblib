@@ -10,7 +10,7 @@ DebugScene::DebugScene(rgb::LEDChain& ring, rgb::Vehicle& vehicle): ring(ring), 
 
 auto DebugScene::setup() -> void {
   fillEffect.shader = [&](auto& led, auto& params) {
-    led = color;
+    led = rgb::Color::HslToRgb(params.relativePosition()) * .03f;
   };
 }
 

@@ -8,19 +8,19 @@
 
 #include <memory>
 #include "Types.h"
+#include "Func.h"
 #include "Pin.h"
 #include "ButtonState.h"
 
 namespace rgb {
 
 class PushButton {
-  using PressCallback = std::function<void()>;
   static constexpr auto doNothing() -> void {}
 
 public:
   explicit PushButton(pin_num pin);
-  PushButton(pin_num pin, PressCallback callback);
-  auto onPress(PressCallback callback) noexcept -> PushButton&;
+  PushButton(pin_num pin, Runnable callback);
+  auto onPress(Runnable callback) noexcept -> PushButton&;
 
   auto update() -> ButtonState;
   auto getState() const noexcept -> ButtonState;
@@ -28,7 +28,7 @@ public:
 private:
   ButtonState state;
   Pin pin;
-  PressCallback onPressCallback;
+  Runnable onPressCallback;
 };
 
 }

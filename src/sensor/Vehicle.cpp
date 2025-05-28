@@ -29,13 +29,13 @@ auto Vehicle::connect() -> bool {
 
   if (!obdHandle->begin()) {
     ERROR("Vehicle begin() failed");
-    FAIL("Vehicle begin() failed", Color::MAGENTA(.01f));
+//    FAIL("Vehicle begin() failed", Color::MAGENTA(.01f));
     return false;
   }
 
   if (!obdHandle->init()) {
     ERROR("Vehicle init() failed");
-    FAIL("Vehicle init() failed", Color::MAGENTA(.01f));
+//    FAIL("Vehicle init() failed", Color::MAGENTA(.01f));
     return false;
   }
 
@@ -54,15 +54,9 @@ auto Vehicle::disconnect() -> void {
   mConnected = false;
 }
 
-auto Vehicle::update(Duration throttle) -> void {
+auto Vehicle::update() -> void {
   if (!mConnected) { return; }
   auto lock = std::unique_lock { mu };
-//  auto now = Clock::Now();
-//
-//  if (now.timeSince(mLastUpdate) < throttle) {
-//    return;
-//  }
-//  mLastUpdate = now;
 
   if (!mConnected) { return; }
   readPID(PID_RPM, mRpm, ToFloat);
@@ -74,13 +68,7 @@ auto Vehicle::update(Duration throttle) -> void {
   readPID(PID_SPEED, mSpeed, ToMph);
 
   if (!mConnected) { return; }
-  readPID(PID_FUEL_LEVEL, mFuelLevel, ToPercent);
-
-  if (!mConnected) { return; }
   readPID(PID_THROTTLE, mThrottlePosition, ToPercent);
-
-  if (!mConnected) { return; }
-  readPID(PID_AMBIENT_TEMP, mThrottlePosition, ToPercent);
 }
 
 auto Vehicle::rpm() const -> revs_per_minute {
@@ -120,6 +108,11 @@ auto Vehicle::setLowPowerMode(bool value) -> void {
   else {
     digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, LOW);
   }
+}
+
+auto Vehicle::setTimeout(Duration timeout) -> void {
+  // Convert once to avoid needing to divide every frame
+  this->timeoutMs = static_cast<int>(timeout.asMilliseconds());
 }
 
 }

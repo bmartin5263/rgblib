@@ -168,9 +168,9 @@ public:
 	// get connection state
 	OBD_STATES getState() { return m_state; }
 	// read specified OBD-II PID value
-	bool readPID(byte pid, int& result);
+	bool readPID(byte pid, int& result, int timeout);
 	// read multiple (up to 8) OBD-II PID values, return number of values obtained
-	byte readPID(const byte pid[], byte count, int result[]);
+	byte readPID(const byte pid[], byte count, int result[], int timeout);
 	// set device into low power mode
 	void enterLowPowerMode();
 	// wake up device from low power mode
@@ -192,7 +192,7 @@ public:
 	// send query for specified PID
 	void sendQuery(byte pid);
 	// retrive and parse the response of specifie PID
-	bool getResult(byte& pid, int& result);
+	bool getResult(byte& pid, int& result, int timeout);
 	// determine if the PID is supported
 	bool isValidPID(byte pid);
 	// get adapter firmware version
@@ -204,7 +204,7 @@ public:
 	// bit map of supported PIDs
 	byte pidmap[4 * 4];
 protected:
-	char* getResponse(byte& pid, char* buffer, byte bufsize);
+	char* getResponse(byte& pid, char* buffer, byte bufsize, int timeout);
 	byte receive(char* buffer, byte bufsize, int timeout = OBD_TIMEOUT_SHORT);
 	void write(const char* s);
 	void dataIdleLoop() {}

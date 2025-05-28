@@ -1,7 +1,6 @@
 #include <bitset>
 #include "Timer.h"
 #include "SceneManager.h"
-#include "LEDManager.h"
 #include "SensorManager.h"
 #include "DebugScreen.h"
 #include "user/IntroScene.h"
@@ -11,6 +10,7 @@
 #include "AppBuilder.h"
 #include "VehicleThread.h"
 #include "AppBuilder.h"
+#include "Iterable.h"
 
 using namespace rgb;
 
@@ -18,26 +18,26 @@ constexpr auto LED_COUNT = 12;
 
 auto ring = LEDCircuit<LED_COUNT>{D5};
 auto slice = ring.slice(3);
-auto ledManager = LEDManager<LED_COUNT>{ring};
 
 auto vehicle = Vehicle{};
 auto introScene = IntroScene{ring};
 auto debugScene = DebugScene{ring, vehicle};
 auto scenes = std::array {
-  static_cast<Scene*>(&debugScene)
+  static_cast<Scene*>(&debugScene),
+  static_cast<Scene*>(&introScene)
 };
-auto sceneManager = SceneManager<1>{scenes, &introScene, Duration::Seconds(2)};
+auto sceneManager = SceneManager {scenes, &introScene, Duration::Seconds(2)};
 
 auto irReceiver = IRReceiver{};
 auto sensors = std::array {
-  SensorFunction { []() {
+  Runnable { []() {
     static auto lastVehicleUpdate = Timestamp{};
     if (Clock::Now().timeSince(lastVehicleUpdate) > config::VEHICLE_REFRESH_RATE) {
       vehicle.update();
       lastVehicleUpdate = Clock::Now();
     }
   }},
-  SensorFunction { []() {
+  Runnable { []() {
     irReceiver.update();
   }}
 };
@@ -57,27 +57,25 @@ auto updateDisplay() -> void {
   auto r = "Reversed: " + std::to_string(ring.isReversed());
   DebugScreen::PrintLine(3, r);
 }
+auto leds = std::array {
+  static_cast<Drawable*>(&ring)
+};
 
 auto setup() -> void {
-  irReceiver.button0.onPress([](){ INFO("button 0"); });
-  irReceiver.button1.onPress([](){ INFO("button 1"); });
-  irReceiver.button2.onPress([](){ INFO("button 2"); });
-  irReceiver.button3.onPress([](){ INFO("button 3"); });
-  irReceiver.button4.onPress([](){ INFO("button 4"); });
-  irReceiver.button5.onPress([](){ INFO("button 5"); });
-  irReceiver.button6.onPress([](){ INFO("button 6"); });
-  irReceiver.button7.onPress([](){ INFO("button 7"); });
-  irReceiver.button8.onPress([](){ INFO("button 8"); });
-  irReceiver.button9.onPress([](){ INFO("button 9"); });
+  irReceiver.button0.onPress([](){ sceneManager.nextScene(); });
   irReceiver.start(D3);
 
   log::init();
+  DebugScreen::Start();
   AppBuilder::Create()
-    .EnableOTA()
     .DebugOutputLED(&slice)
     .SetSceneManager(&sceneManager)
-    .SetLEDManager(&ledManager)
-    .SetSensorManager(&sensorManager)
+//    .EnableIntroScene(introScene, Duration::Seconds(1))
+//    .SetScenes(std::array {
+//      static_cast<Scene*>(&debugScene)
+//    })
+    .SetLEDs(leds)
+    .SetSensors(sensors)
     .Start();
 
   VehicleThread::Start(vehicle);

@@ -5,18 +5,16 @@
 #ifndef RGBLIB_TIMERNODE_H
 #define RGBLIB_TIMERNODE_H
 
-#include <functional>
+#include "Func.h"
 #include "Types.h"
 #include "Assertions.h"
 
 namespace rgb {
 
-using TimerFunction = std::function<void()>;
-
 struct TimerNode {
   TimerNode* prev{};
   TimerNode* next{};
-  TimerFunction timerFunction{};
+  Runnable timerFunction{};
   Timestamp executeAt{};
   Duration timeBetweenExecutions{};
   uint repeatsRemaining{};

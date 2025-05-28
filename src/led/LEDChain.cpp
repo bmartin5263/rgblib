@@ -61,7 +61,7 @@ auto LEDChain::slice(u16 start, u16 length) -> LEDSlice {
 
   ASSERT(start < N, "Slice start is beyond length of chain");
   auto end = start + length;
-  ASSERT(end < N, "Slice end is beyond length of chain");
+  ASSERT(end <= N, "Slice end is beyond length of chain");
 
   Color* head = data + start;
   return {head, length};

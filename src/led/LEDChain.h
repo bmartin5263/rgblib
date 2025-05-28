@@ -36,12 +36,12 @@ public:
   [[nodiscard]] auto end() -> Color*;
   [[nodiscard]] auto end() const -> const Color*;
 
+  LEDChain() = default;
+  LEDChain(const LEDChain& rhs) = default;
+  LEDChain(LEDChain&& rhs) noexcept = default;
+  LEDChain& operator=(const LEDChain& rhs) = default;
+  LEDChain& operator=(LEDChain&& rhs) noexcept = default;
   virtual ~LEDChain() = default;
-
-
-private:
-  static auto mapPixelToLED(u16 pixel, u16 rotation, u16 size) -> u16;
-
 };
 
 using LEDStrip = LEDChain;

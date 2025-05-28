@@ -15,6 +15,7 @@
 #include "OTASupport.h"
 #include "WebServer.h"
 #include "Timer.h"
+#include "Drawable.h"
 
 namespace rgb {
 
@@ -46,7 +47,10 @@ auto App::start() -> void {
 
 auto App::loop() -> void {
   Clock::StartTick();
-  sensorManager->update();
+  for (auto& sensor : sensors) {
+    sensor();
+  }
+
   if constexpr (Wifi::Enabled()) {
     Wifi::Update();
   }
@@ -59,10 +63,16 @@ auto App::loop() -> void {
   checkForSceneSwitch();
   scene->update();
 
-  ledManager->clear();
+  for (auto& led : leds) {
+    led->reset();
+  }
+
   scene->draw();
   Debug::Draw();
-  ledManager->display();
+
+  for (auto& led : leds) {
+    led->display();
+  }
 
   Clock::StopTick();
 }
@@ -100,9 +110,8 @@ auto App::SwitchScene(Scene& scene) -> void {
 auto App::configure(const AppBuilder& appBuilder) -> void {
   ASSERT(!started, "App has already started");
   sceneManager = appBuilder.mSceneManager;
-  ledManager = appBuilder.mLedManager;
-  sensorManager = appBuilder.mSensorManager;
-  otaEnabled = appBuilder.mEnabledOTA;
+  leds = appBuilder.mLeds;
+  sensors = appBuilder.mSensors;
   Debug::SetDebugChain(appBuilder.mDebugOutputLED);
 }
 

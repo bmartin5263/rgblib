@@ -7,7 +7,7 @@
 
 
 #include <memory>
-#include <functional>
+#include "Func.h"
 #include "Types.h"
 #include "ButtonState.h"
 #include "IRButtonType.h"
@@ -15,12 +15,11 @@
 namespace rgb {
 
 class IRButton {
-  using PressCallback = std::function<void()>;
   static constexpr auto doNothing() -> void {}
 
 public:
   explicit IRButton(IRButtonType type);
-  auto onPress(PressCallback callback) noexcept -> IRButton&;
+  auto onPress(Runnable callback) noexcept -> IRButton&;
 
   auto update(IRButtonType pressedType) -> ButtonState;
   auto getState() const noexcept -> ButtonState;
@@ -28,7 +27,7 @@ public:
 private:
   ButtonState state;
   IRButtonType type;
-  PressCallback onPressCallback;
+  Runnable onPressCallback;
 };
 
 }
