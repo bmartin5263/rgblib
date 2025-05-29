@@ -50,6 +50,6 @@ done
 
 cp "library.json" "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_BUILD_DIR"
-pio pkg pack "$OUTPUT_DIR" -o "$OUTPUT_BUILD_DIR"
+pio pkg pack "$OUTPUT_DIR" -o "$OUTPUT_BUILD_DIR/rgblib.tar.gz"
 
 # pio pkg publish ".libbuild/rgblib-x.x.x.tar.gz" --type library

@@ -6,7 +6,7 @@ resources:
       branch: master
       private_key: ((git.private-key))
       commit_filter:
-        include: [ "ci" ]
+        exclude: [ "\\[Version]\\" ]
 
 jobs:     
   - name: build-library
@@ -19,3 +19,6 @@ jobs:
           PIO_USERNAME: ((pio.username))
           PIO_PASSWORD: ((pio.password))
         file: repo/cicd/tasks/build.yml
+      - put: repo
+        params:
+          repository: repo
