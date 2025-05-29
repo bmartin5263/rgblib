@@ -1,8 +1,9 @@
 #!/bin/sh -e
 
-apk add --no-cache curl
-apk add --no-cache python3
-apk add --no-cache gcompat
+apk add curl
+apk add python3
+apk add gcompat
+apk add git
 
 curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
 python3 get-platformio.py
