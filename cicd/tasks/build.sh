@@ -20,7 +20,7 @@ pio account login -u "${PIO_USERNAME}" -p "${PIO_PASSWORD}"
 ./scripts/build-library.sh
 pio pkg publish ".libbuild/rgblib.tar.gz" --type library --no-interactive
 
-./scripts/increment-version.sh
+./scripts/increment-version.sh library.json
 
 git add ./library.json
 git commit -m "[Version]"
