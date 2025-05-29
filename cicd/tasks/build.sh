@@ -15,7 +15,8 @@ ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 
 cd repo
 
+pio account login -u "${PIO_USERNAME}" -p "${PIO_PASSWORD}"
+
 ./scripts/build-library.sh
 
-pio login -u "${PIO_USERNAME}" -p "${PIO_PASSWORD}"
 pio pkg publish ".libbuild/rgblib-0.0.13.tar.gz" --type library
