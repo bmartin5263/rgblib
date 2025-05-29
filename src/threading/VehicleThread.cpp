@@ -13,12 +13,13 @@ namespace rgb {
 auto run(void* param) -> void;
 
 auto VehicleThread::start(Vehicle& v) -> void {
+  this->vehicle = &v;
   if (!started) {
     xTaskCreatePinnedToCore(
       run,                /* Task function. */
       "Task1",            /* name of task. */
       10000,              /* Stack size of task */
-      &v,                 /* parameter of the task */
+      this,                 /* parameter of the task */
       1,                  /* priority of the task */
       &taskHandle,        /* Task handle to keep track of created task */
       1);                 /* pin task to core 1 */
@@ -27,7 +28,8 @@ auto VehicleThread::start(Vehicle& v) -> void {
 }
 
 auto run(void* param) -> void {
-  auto* vehicle = (Vehicle*) param;
+  auto* vehicleThread = (VehicleThread*) param;
+  auto* vehicle = vehicleThread->vehicle;
   vehicle->connect();
   auto lastConnectAttempt = Timestamp::OfMicroseconds(micros());
   while (true) {
@@ -39,9 +41,11 @@ auto run(void* param) -> void {
         lastConnectAttempt = now;
       }
     }
-//    else {
-//      vehicle->update();
-//    }
+    else {
+      if (vehicleThread->autoUpdate) {
+        vehicle->update();
+      }
+    }
     delay(10);
   }
 }

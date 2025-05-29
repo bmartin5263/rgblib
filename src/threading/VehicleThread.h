@@ -14,6 +14,8 @@ class VehicleThread {
 public:
   static auto Start(Vehicle& vehicle) -> void { Instance().start(vehicle); }
 
+  Vehicle* vehicle;
+  bool autoUpdate{false};
 private:
   TaskHandle_t taskHandle{};
   bool started{false};
