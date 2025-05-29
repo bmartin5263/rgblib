@@ -26,4 +26,4 @@ git config --global user.email "bsm2112@yahoo.com"
 git config --global user.name "Brandon Martin"
 
 git add ./library.json
-git commit -m "[Update Version]"
+git commit -m "UpdateVersion"

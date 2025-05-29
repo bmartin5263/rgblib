@@ -6,7 +6,7 @@ resources:
       branch: master
       private_key: ((git.private-key))
       commit_filter:
-        exclude: [ "\\[Update Version\\]" ]
+        exclude: [ "UpdateVersion" ]
 
 jobs:     
   - name: build-library
