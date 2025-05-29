@@ -72,6 +72,7 @@ auto setup() -> void {
     .SetSensors(sensors)
     .Start();
 
+  VehicleThread::Instance().autoUpdate = true;
   VehicleThread::Start(vehicle);
 }
 

@@ -31,7 +31,8 @@ auto run(void* param) -> void {
   auto* vehicleThread = (VehicleThread*) param;
   auto* vehicle = vehicleThread->vehicle;
   vehicle->connect();
-  auto lastConnectAttempt = Timestamp::OfMicroseconds(micros());
+  auto lastConnectAttempt = Timestamp{};
+  auto lastVehicleUpdate = Timestamp{};
   while (true) {
     auto now = Timestamp::OfMicroseconds(micros());
     TRACE("Vehicle Loop");
@@ -43,7 +44,10 @@ auto run(void* param) -> void {
     }
     else {
       if (vehicleThread->autoUpdate) {
-        vehicle->update();
+        if (Clock::Now().timeSince(lastVehicleUpdate) > config::VEHICLE_REFRESH_RATE) {
+          vehicle->update();
+          lastVehicleUpdate = now;
+        }
       }
     }
     delay(10);

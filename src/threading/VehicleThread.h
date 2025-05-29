@@ -16,16 +16,17 @@ public:
 
   Vehicle* vehicle;
   bool autoUpdate{false};
-private:
-  TaskHandle_t taskHandle{};
-  bool started{false};
-
-  auto start(Vehicle& vehicle) -> void;
 
   static auto Instance() -> VehicleThread& {
     static VehicleThread instance;
     return instance;
   }
+
+private:
+  TaskHandle_t taskHandle{};
+  bool started{false};
+
+  auto start(Vehicle& vehicle) -> void;
 };
 
 }
