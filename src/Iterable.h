@@ -6,6 +6,7 @@
 #define RGBLIB_ITERABLE_H
 
 #include <array>
+#include "Func.h"
 
 namespace rgb {
 
@@ -24,6 +25,12 @@ struct Iterable {
   constexpr auto begin() const -> const T* { return mBegin; };
   constexpr auto end() const -> const T* { return mBegin + mSize; };
   constexpr auto size() const -> size_t { return mSize; };
+
+  constexpr auto forEach(Consumer<T> function) {
+    for (auto& item : *this) {
+      function(item);
+    }
+  }
 
   T* mBegin;
   size_t mSize;

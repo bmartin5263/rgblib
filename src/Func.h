@@ -8,5 +8,7 @@
 #include <functional>
 
 using Runnable = std::function<void()>;
+template <typename T>
+using Consumer = std::function<void(T)>;
 
 #endif //RGBLIB_FUNC_H

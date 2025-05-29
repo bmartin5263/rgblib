@@ -85,6 +85,30 @@ auto App::loop() -> void {
   Clock::StopTick();
 }
 
+auto App::update() -> void {
+  for (auto& sensor : sensors) {
+    sensor();
+  }
+  if constexpr (Wifi::Enabled()) {
+    Wifi::Update();
+  }
+  if constexpr (OTASupport::Enabled()) {
+    OTASupport::Update();
+  }
+
+  Timer::ProcessTimers();
+  checkForSceneSwitch();
+  scene->update();
+}
+
+auto App::draw() -> void {
+  leds.forEach([](auto led){ led->reset();} );
+  scene->draw();
+  Debug::Draw();
+  leds.forEach([](auto led){ led->display();} );
+
+}
+
 auto App::switchScene(Scene& scene) -> void {
   this->mNextScene = &scene;
 }

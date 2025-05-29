@@ -45,6 +45,9 @@ private:
   auto prevScene() -> void;
   auto checkForSceneSwitch() -> void;
 
+  auto update() -> void;
+  auto draw() -> void;
+
   Scene* scene;
   Scene* mNextScene;
   ISceneManager* sceneManager;
