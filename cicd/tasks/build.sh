@@ -22,6 +22,8 @@ pio account login -u "${PIO_USERNAME}" -p "${PIO_PASSWORD}"
 pio pkg publish ".libbuild/rgblib.tar.gz" --type library --no-interactive
 
 ./scripts/increment-version.sh library.json
+git config --global user.email "bsm2112@yahoo.com"
+git config --global user.name "Brandon Martin"
 
 git add ./library.json
-git commit -m "[Version]"
+git commit -m "[Update Version]"
