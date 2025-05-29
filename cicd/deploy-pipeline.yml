@@ -13,4 +13,7 @@ jobs:
       - get: repo
         trigger: true
       - task: build-library
+        params:
+          PIO_USERNAME: ((pio.username))
+          PIO_PASSWORD: ((pio.password))
         file: repo/cicd/tasks/build.yml
