@@ -13,14 +13,4 @@ jobs:
       - get: repo
         trigger: true
       - task: build-library
-        config:
-          platform: linux
-          image_resource:
-            type: registry-image
-            source:
-              repository: alpine
-          inputs:
-            - name: repo
-          run:
-            path: repo/cicd/tasks/build.sh
-#            args: [ "repo/cicd/tasks/build.sh" ]
+        file: repo/cicd/tasks/build.yml
