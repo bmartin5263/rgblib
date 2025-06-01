@@ -12,6 +12,3 @@ ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
 echo "Cloning rgblib"
 yes yes | git clone git@github.com:bmartin5263/rgblib.git
-
-cd rgblib
-./Scripts/setup-concourse

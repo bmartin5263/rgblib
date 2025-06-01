@@ -7,10 +7,9 @@
 
 #include "Color.h"
 #include "Func.h"
+#include "Iterable.h"
 
 namespace rgb {
-
-constexpr auto doNothing() -> void {}
 
 template <typename T>
 struct Iterable;
