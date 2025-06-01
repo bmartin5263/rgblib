@@ -8,9 +8,10 @@
 - [X] Scene Manager timer for intro
 - [X] Library build + import into _another_ project w/o copying and pasting this project into it
 - [X] CICD pipeline
-- [ ] Resiliency - able to automatically recover subsystems if connection issues
+- [X] Resiliency - able to automatically recover subsystems if connection issues
   - [X] Vehicle
-  - [ ] Wi-Fi
+  - [X] Wi-Fi
+  - [ ] Debug Screen
 - [ ] Check if vehicle supports PID
 - [ ] Smoothing vehicle value changes
 
