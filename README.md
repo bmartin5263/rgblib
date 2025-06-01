@@ -7,11 +7,11 @@
 - [X] OTA led turns on even when its not active
 - [X] Scene Manager timer for intro
 - [X] Library build + import into _another_ project w/o copying and pasting this project into it
+- [X] CICD pipeline
 - [ ] Resiliency - able to automatically recover subsystems if connection issues
   - [X] Vehicle
   - [ ] Wi-Fi
 - [ ] Check if vehicle supports PID
-- [ ] CICD pipeline
 - [ ] Smoothing vehicle value changes
 
 ## Debugging Tools
