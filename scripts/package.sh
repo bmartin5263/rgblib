@@ -1,7 +1,5 @@
 #!/bin/sh -e
 
-pio run -e ci
-
 INPUT_DIR="src"
 OUTPUT_DIR=".libsrc"
 OUTPUT_BUILD_DIR=".libbuild"
@@ -51,5 +49,3 @@ done
 cp "library.json" "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_BUILD_DIR"
 pio pkg pack "$OUTPUT_DIR" -o "$OUTPUT_BUILD_DIR/rgblib.tar.gz"
-
-# pio pkg publish ".libbuild/rgblib-x.x.x.tar.gz" --type library

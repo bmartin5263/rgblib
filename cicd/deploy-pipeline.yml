@@ -23,3 +23,17 @@ jobs:
       - put: repo
         params:
           repository: repo
+  - name: deploy-library
+    public: true
+    plan:
+      - get: repo
+        trigger: true
+      - task: deploy-library
+        timeout: 10m
+        params:
+          PIO_USERNAME: ((pio.username))
+          PIO_PASSWORD: ((pio.password))
+        file: repo/cicd/tasks/build.yml
+      - put: repo
+        params:
+          repository: repo
