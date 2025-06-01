@@ -4,6 +4,6 @@ image_resource:
   source:
     repository: alpine
 inputs:
-  - name: repo
+  - name: rgblib
 run:
-  path: repo/cicd/tasks/build.sh
+  path: rgblib/cicd/tasks/build.sh

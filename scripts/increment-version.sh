@@ -1,18 +1,6 @@
 #!/bin/sh -e
 
-# Check for input argument
-if [ $# -ne 1 ]; then
-  echo "Usage: $0 <json-file>"
-  exit 1
-fi
-
-JSON_FILE="$1"
-
-# Ensure the file exists
-if [ ! -f "$JSON_FILE" ]; then
-  echo "File not found: $JSON_FILE"
-  exit 1
-fi
+JSON_FILE="library.json"
 
 # Use sed and awk to increment the PATCH version
 # This assumes the version string is in the format: "version": "x.y.z"
@@ -34,5 +22,4 @@ UPDATED=$(awk '
 
 # Overwrite the file with the updated contents
 echo "$UPDATED" > "$JSON_FILE"
-
 echo "Version updated in $JSON_FILE"

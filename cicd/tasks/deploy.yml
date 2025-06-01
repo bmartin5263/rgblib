@@ -4,11 +4,12 @@ image_resource:
   source:
     repository: alpine
 inputs:
-  - name: repo
+  - name: rgblib
+  - name: version
 outputs:
-  - name: repo
+  - name: version
 params:
   PIO_USERNAME: ((pio.username))
   PIO_PASSWORD: ((pio.password))
 run:
-  path: repo/cicd/tasks/deploy.sh
+  path: rgblib/cicd/tasks/deploy.sh
