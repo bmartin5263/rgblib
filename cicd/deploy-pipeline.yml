@@ -15,6 +15,7 @@ jobs:
       - get: repo
         trigger: true
       - task: build-library
+        timeout: 10m
         params:
           PIO_USERNAME: ((pio.username))
           PIO_PASSWORD: ((pio.password))

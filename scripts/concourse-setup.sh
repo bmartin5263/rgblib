@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 
 echo "Setting up Docker"
 yes | sudo yum install docker

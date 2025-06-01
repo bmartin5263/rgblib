@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 
 docker compose -f cicd/docker-compose-concourse-ec2.yml up -d
 echo "Waiting for Concourse to startup..."

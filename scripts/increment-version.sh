@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # Check for input argument
 if [ $# -ne 1 ]; then

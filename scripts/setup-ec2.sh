@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 
 echo "Creating SSH Key"
 ssh-keygen -f .ssh/id_rsa -t rsa -N ''

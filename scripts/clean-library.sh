@@ -1,7 +1,4 @@
-#!/bin/bash
-
-# Exit on any error
-set -e
+#!/bin/sh -e
 
 OUTPUT_DIR=".libsrc"
 OUTPUT_BUILD_DIR=".libbuild"
