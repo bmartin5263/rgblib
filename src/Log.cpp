@@ -28,7 +28,6 @@ auto printHeader(const char* level, const char* function) -> void {
   auto seconds = milliseconds / MS_PER_SECOND;
   milliseconds %= MS_PER_SECOND;
   Serial.printf("%02lu:%02lu:%02lu.%03lu [%-5s] [%-60s] : ", hours, minutes, seconds, milliseconds, level, function);
-  rgb::DebugScreen::PrintLine(function); \
 }
 
 }

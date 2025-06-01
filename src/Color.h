@@ -101,77 +101,79 @@ struct Color {
     return Color { LerpClamp(r, to.r, time), LerpClamp(g, to.g, time), LerpClamp(b, to.b, time), LerpClamp(w, to.w, time) };
   }
 
+  constexpr static auto DEFAULT_INTENSITY = .03f;
+
   static constexpr auto FromBytes(u8 r, u8 g, u8 b, u8 w = 0) -> Color {
     return Color{ByteToFloat(r), ByteToFloat(g), ByteToFloat(b), ByteToFloat(w)};
   }
 
-  static constexpr auto RED(float intensity = 1.0f) -> Color {
+  static constexpr auto RED(float intensity = DEFAULT_INTENSITY) -> Color {
     return {intensity, 0, 0, 0};
   }
 
-  static constexpr auto ORANGE(float intensity = 1.0f) -> Color {
+  static constexpr auto ORANGE(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {1.0f, 0.2509803922f, 0, 0} * intensity;
   }
 
-  static constexpr auto SALMON(float intensity = 1.0f) -> Color {
+  static constexpr auto SALMON(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {250, 0.5019607843f, 0.4470588235f, 0} * intensity;
   }
 
-  static constexpr auto GOLD(float intensity = 1.0f) -> Color {
+  static constexpr auto GOLD(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {1.0f, 0.5019607843f, 0, 0} * intensity;
   }
 
-  static constexpr auto MAROON(float intensity = 1.0f) -> Color {
+  static constexpr auto MAROON(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {1.0f, 0.8431372549f, 0, 0} * intensity;
   }
 
-  static constexpr auto YELLOW(float intensity = 1.0f) -> Color {
+  static constexpr auto YELLOW(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {intensity, intensity, 0, 0};
   }
 
-  static constexpr auto LIME(float intensity = 1.0f) -> Color {
+  static constexpr auto LIME(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0.7490196078, 1.0f, 0, 0} * intensity;
   }
 
-  static constexpr auto SPRING_GREEN(float intensity = 1.0f) -> Color {
+  static constexpr auto SPRING_GREEN(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0, 1.0f, 0.4980392157f, 0} * intensity;
   }
 
   static constexpr auto GREEN(int intensity) = delete;
 
-  static constexpr auto GREEN(float intensity = 1.0f) -> Color {
+  static constexpr auto GREEN(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0, intensity, 0, 0};
   }
 
-  static constexpr auto AQUAMARINE(float intensity = 1.0f) -> Color {
+  static constexpr auto AQUAMARINE(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0.4980392157f, 1.0f, 0.831372549, 0} * intensity;
   }
 
-  static constexpr auto CYAN(float intensity = 1.0f) -> Color {
+  static constexpr auto CYAN(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0, intensity, intensity, 0};
   }
 
-  static constexpr auto BLUE(float intensity = 1.0f) -> Color {
+  static constexpr auto BLUE(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0, 0, intensity, 0};
   }
 
-  static constexpr auto PURPLE(float intensity = 1.0f) -> Color {
+  static constexpr auto PURPLE(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0.4156862745f, 0.05098039216f, 0.6784313725f, 0} * intensity;
   }
 
-  static constexpr auto VIOLET(float intensity = 1.0f) -> Color {
+  static constexpr auto VIOLET(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0.5019607843f, 0, 1.0f, 0} * intensity;
   }
 
-  static constexpr auto INDIGO(float intensity = 1.0f) -> Color {
+  static constexpr auto INDIGO(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0.2941176471f, 0, 0.5098039216f, 0} * intensity;
   }
 
-  static constexpr auto MAGENTA(float intensity = 1.0f) -> Color {
+  static constexpr auto MAGENTA(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {intensity, 0, intensity, 0};
   }
 
-  static constexpr auto WHITE(float intensity = 1.0) -> Color {
+  static constexpr auto WHITE(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0, 0, 0, intensity};
   }
 

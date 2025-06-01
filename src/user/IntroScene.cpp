@@ -5,7 +5,7 @@
 #include "IntroScene.h"
 #include "Clock.h"
 
-IntroScene::IntroScene(rgb::LEDRing& ring) : ring(ring) {
+IntroScene::IntroScene(rgb::LEDRing& ring, rgb::LEDStrip& stick) : ring(ring), stick(stick) {
 
 }
 
@@ -16,7 +16,7 @@ auto IntroScene::setup() -> void {
     auto c  = rgb::Color::HslToRgb(p);
     led = c * .01f;
   };
-  trailingEffect.trailRatio = 6.0f / 12;
+  trailingEffect.trailRatio = .5f;
   trailingEffect.speed = rgb::Duration::Milliseconds(30);
 //  trailingEffect.speed = rgb::Duration::Seconds(2);
 //  trailingEffect.endBuffer = 20;
@@ -41,6 +41,7 @@ auto IntroScene::update() -> void {
 auto IntroScene::draw() -> void {
 //  fillEffect.draw(ring);
   trailingEffect.draw(ring);
+  trailingEffect.draw(stick);
 }
 
 auto IntroScene::cleanup() -> void {

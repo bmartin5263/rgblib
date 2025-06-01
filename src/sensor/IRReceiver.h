@@ -13,10 +13,10 @@
 namespace rgb {
 
 class IRReceiver {
-  static constexpr auto doNothing() -> void {};
-
 public:
-  auto start(pin_num pin) -> bool;
+  IRReceiver(pin_num pin);
+
+  auto start() -> bool;
   auto update() -> void;
   auto stop() -> void;
 
@@ -37,6 +37,9 @@ public:
   IRButton buttonStar{IRButtonType::BUTTON_STAR};
   IRButton buttonHash{IRButtonType::BUTTON_HASH};
   IRButton buttonOk{IRButtonType::BUTTON_OK};
+
+private:
+  Pin pin;
 };
 
 }

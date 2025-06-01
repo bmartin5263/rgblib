@@ -12,13 +12,14 @@
 
 class IntroScene : public rgb::Scene {
 public:
-  explicit IntroScene(rgb::LEDRing& ring);
+  explicit IntroScene(rgb::LEDRing& ring, rgb::LEDStrip& stick);
   auto setup() -> void override;
   auto update() -> void override;
   auto draw() -> void override;
   auto cleanup() -> void override;
 
   rgb::LEDRing& ring;
+  rgb::LEDStrip& stick;
   rgb::FillEffect fillEffect{};
   rgb::TrailingEffect trailingEffect{};
 };

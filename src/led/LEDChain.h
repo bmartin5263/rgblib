@@ -10,6 +10,17 @@
 
 namespace rgb {
 
+struct FillChain {
+  FillChain(Color* head, u16 size);
+
+  auto fill(const Color& color) -> FillChain;
+  auto fill(const Color& color, u16 range) -> FillChain;
+  auto fill(const Color& color, u16 start, u16 range) -> FillChain;
+
+  Color* mHead{};
+  u16 mSize{};
+};
+
 struct Point;
 class LEDSlice;
 class LEDChain {
@@ -23,7 +34,9 @@ public:
   [[nodiscard]] auto get(Point pixel) -> Color*;
   [[nodiscard]] auto operator[](Point point) -> Color&;
 
-  auto fill(const Color& color) -> void;
+  auto fill(const Color& color) -> FillChain;
+  auto fill(const Color& color, u16 range) -> FillChain;
+  auto fill(const Color& color, u16 start, u16 range) -> FillChain;
   auto clear() -> void;
   auto set(u16 pixel, const Color& color) -> void;
   auto set(Point pixel, const Color& color) -> void;

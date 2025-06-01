@@ -35,7 +35,6 @@ auto run(void* param) -> void {
   auto lastVehicleUpdate = Timestamp{};
   while (true) {
     auto now = Timestamp::OfMicroseconds(micros());
-    TRACE("Vehicle Loop");
     if (!vehicle->isConnected()) {
       if (now.timeSince(lastConnectAttempt) >= Duration::Seconds(1)) {
         vehicle->connect();

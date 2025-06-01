@@ -10,12 +10,21 @@
 
 namespace rgb {
 
-auto LEDChain::fill(const Color& color) -> void {
-  auto head = getHead();
-  auto size = getSize();
-  for (int i = 0; i < size; ++i) {
-    head[i] = color;
+auto LEDChain::fill(const Color& color) -> FillChain {
+  return fill(color, 0, getSize());
+}
+
+auto LEDChain::fill(const Color& color, u16 range) -> FillChain {
+  return fill(color, 0, range);
+}
+
+auto LEDChain::fill(const Color& color, u16 start, u16 range) -> FillChain {
+  for (int i = 0; i < range; ++i) {
+    *get(start + i) = color;
   }
+  auto end = start + range;
+  auto newSize = static_cast<u16>(getSize() - end);
+  return { getHead() + end, newSize };
 }
 
 auto LEDChain::clear() -> void {
@@ -81,6 +90,27 @@ auto LEDChain::end() -> Color* {
 
 auto LEDChain::end() const -> const Color* {
   return getHead() + getSize();
+}
+
+FillChain::FillChain(rgb::Color* head, rgb::u16 size): mHead(head), mSize(size) {
+
+}
+
+auto FillChain::fill(const rgb::Color& color) -> FillChain {
+  return fill(color, 0, mSize);
+}
+
+auto FillChain::fill(const rgb::Color& color, u16 range) -> FillChain {
+  return fill(color, 0, range);
+}
+
+auto FillChain::fill(const Color& color, u16 start, u16 range) -> FillChain {
+  for (int i = 0; i < range; ++i) {
+    mHead[start + i] = color;
+  }
+  auto end = start + range;
+  auto newSize = static_cast<u16>(mSize - end);
+  return { mHead + end, newSize };
 }
 
 }
