@@ -1,6 +1,6 @@
 {
   "name": "rgblib",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "LED effects library",
   "keywords": "LED, neopixels",
   "repository":
