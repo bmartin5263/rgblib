@@ -31,7 +31,6 @@ use of these macros for reporting issues at runtime
 
 ## Terminology
 
-
 ### LED vs Pixel vs RGBW
 - **LED** is the physical component that lights up
 - **Pixel** is an abstract representation to usually 1 LED
