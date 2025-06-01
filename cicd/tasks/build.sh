@@ -14,6 +14,5 @@ ln -s ~/.platformio/penv/bin/pio /usr/local/bin/pio
 ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 
 cd repo
-pio account login -u "${PIO_USERNAME}" -p "${PIO_PASSWORD}"
 
 ./scripts/build.sh

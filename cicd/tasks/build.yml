@@ -5,10 +5,5 @@ image_resource:
     repository: alpine
 inputs:
   - name: repo
-outputs:
-  - name: repo
-params:
-  PIO_USERNAME: ((pio.username))
-  PIO_PASSWORD: ((pio.password))
 run:
   path: repo/cicd/tasks/build.sh
