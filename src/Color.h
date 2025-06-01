@@ -89,6 +89,17 @@ struct Color {
     return *this;
   }
 
+  constexpr friend auto operator==(const Color& lhs, const Color& rhs) -> bool {
+    return lhs.r == rhs.r
+        && lhs.g == rhs.g
+        && lhs.b == rhs.b
+        && lhs.w == rhs.w;
+  }
+
+  constexpr friend auto operator!=(const Color& lhs, const Color& rhs) -> bool {
+    return !(lhs == rhs);
+  }
+
   constexpr auto lerp(const Color& to, float time) -> Color {
     return Color { Lerp(r, to.r, time), Lerp(g, to.g, time), Lerp(b, to.b, time), Lerp(w, to.w, time) };
   }
