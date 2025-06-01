@@ -21,6 +21,7 @@ jobs:
     plan:
       - get: rgblib
         trigger: true
+      - get: version
       - task: build
         timeout: 10m
         file: rgblib/cicd/tasks/build.yml
