@@ -7,8 +7,8 @@
 
 namespace rgb {
 
-auto AppBuilder::DebugOutputLED(LEDChain* ledChain) -> self {
-  this->mDebugOutputLED = ledChain;
+auto AppBuilder::DebugOutputLED(PixelList* pixels) -> self {
+  this->mDebugOutputLED = pixels;
   return *this;
 }
 
@@ -22,7 +22,7 @@ auto AppBuilder::Start() -> void {
   App::Start();
 }
 
-auto AppBuilder::SetLEDs(Iterable<Drawable*> leds) -> AppBuilder& {
+auto AppBuilder::SetLEDs(Iterable<LEDList*> leds) -> AppBuilder& {
   mLeds = leds;
   return *this;
 }

@@ -3,22 +3,22 @@
 //
 
 #include "Assertions.h"
-#include "LEDChain.h"
-#include "LEDSlice.h"
+#include "PixelList.h"
+#include "PixelSlice.h"
 #include "Color.h"
 #include "Point.h"
 
 namespace rgb {
 
-auto LEDChain::fill(const Color& color) -> FillChain {
+auto PixelList::fill(const Color& color) -> FillChain {
   return fill(color, 0, getSize());
 }
 
-auto LEDChain::fill(const Color& color, u16 range) -> FillChain {
+auto PixelList::fill(const Color& color, u16 range) -> FillChain {
   return fill(color, 0, range);
 }
 
-auto LEDChain::fill(const Color& color, u16 start, u16 range) -> FillChain {
+auto PixelList::fill(const Color& color, u16 start, u16 range) -> FillChain {
   for (int i = 0; i < range; ++i) {
     *get(start + i) = color;
   }
@@ -27,44 +27,44 @@ auto LEDChain::fill(const Color& color, u16 start, u16 range) -> FillChain {
   return { getHead() + end, newSize };
 }
 
-auto LEDChain::clear() -> void {
+auto PixelList::clear() -> void {
   fill(Color::OFF());
 }
 
-auto LEDChain::get(u16 pixel) -> Color* {
+auto PixelList::get(u16 pixel) -> Pixel* {
   ASSERT(pixel >= 0, "Pixel is negative");
   ASSERT(pixel < getSize(), "Pixel is out of bounds");
   return getHead() + pixel;
 }
 
-auto LEDChain::get(Point point) -> Color* {
+auto PixelList::get(Point point) -> Pixel* {
   u16 pixel = (getSize() * point.x) + point.y;
   ASSERT(pixel >= 0, "Pixel is negative");
   ASSERT(pixel < getSize(), "Pixel is out of bounds");
   return getHead() + pixel;
 }
 
-auto LEDChain::set(u16 pixel, const Color& color) -> void {
+auto PixelList::set(u16 pixel, const Color& color) -> void {
   *get(pixel) = color;
 }
 
-auto LEDChain::set(Point point, const Color& color) -> void {
+auto PixelList::set(Point point, const Color& color) -> void {
   *get(point) = color;
 }
 
-auto LEDChain::operator[](u16 pixel) -> Color& {
+auto PixelList::operator[](u16 pixel) -> Color& {
   return *get(pixel);
 }
 
-auto LEDChain::operator[](Point point) -> Color& {
+auto PixelList::operator[](Point point) -> Color& {
   return *get(point);
 }
 
-auto LEDChain::slice(u16 length) -> LEDSlice {
+auto PixelList::slice(u16 length) -> PixelSlice {
   return slice(0, length);
 }
 
-auto LEDChain::slice(u16 start, u16 length) -> LEDSlice {
+auto PixelList::slice(u16 start, u16 length) -> PixelSlice {
   auto N = getSize();
   auto data = getHead();
 
@@ -72,27 +72,27 @@ auto LEDChain::slice(u16 start, u16 length) -> LEDSlice {
   auto end = start + length;
   ASSERT(end <= N, "Slice end is beyond length of chain");
 
-  Color* head = data + start;
+  auto* head = data + start;
   return {head, length};
 }
 
-auto LEDChain::begin() -> Color* {
+auto PixelList::begin() -> Pixel* {
   return getHead();
 }
 
-auto LEDChain::begin() const -> const Color* {
+auto PixelList::begin() const -> const Pixel* {
   return getHead();
 }
 
-auto LEDChain::end() -> Color* {
+auto PixelList::end() -> Pixel* {
   return getHead() + getSize();
 }
 
-auto LEDChain::end() const -> const Color* {
+auto PixelList::end() const -> const Pixel* {
   return getHead() + getSize();
 }
 
-FillChain::FillChain(rgb::Color* head, rgb::u16 size): mHead(head), mSize(size) {
+FillChain::FillChain(rgb::Pixel* head, rgb::u16 size): mHead(head), mSize(size) {
 
 }
 

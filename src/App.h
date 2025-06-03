@@ -16,7 +16,7 @@ class Scene;
 class ISceneManager;
 class ILEDManager;
 class ISensorManager;
-class Drawable;
+class LEDList;
 class App {
 public:
   static auto Start() -> void;
@@ -53,7 +53,7 @@ private:
   ISceneManager* sceneManager;
   Scene* introScene{};
   Iterable<Scene*> scenes{};
-  Iterable<Drawable*> leds{};
+  Iterable<LEDList*> leds{};
   Iterable<Runnable> sensors{};
   TimerHandle introSceneTimer{};
   int currentScene{-1};

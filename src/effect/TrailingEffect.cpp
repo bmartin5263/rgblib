@@ -4,7 +4,7 @@
 
 #include "TrailingEffect.h"
 #include "Clock.h"
-#include "LEDChain.h"
+#include "PixelList.h"
 
 using namespace rgb;
 
@@ -21,7 +21,7 @@ auto TrailingEffect::update() -> void {
   }
 }
 
-auto TrailingEffect::draw(LEDChain& chain) -> void {
+auto TrailingEffect::draw(PixelList& chain) -> void {
   auto chainLength = chain.getSize();
   auto trailLength = static_cast<u16>(chainLength * trailRatio);
   auto now = Clock::Now();

@@ -9,7 +9,7 @@
 
 namespace rgb {
 
-class LEDChain;
+class PixelList;
 class Debug {
 public:
   static auto Trigger() -> void { Instance().trigger(); }
@@ -17,7 +17,7 @@ public:
   static auto Recover() -> void { Instance().recover(); }
   static auto Update() -> void { Instance().update(); }
   static auto Draw() -> void { Instance().draw(); }
-  static auto SetDebugChain(LEDChain* chain) -> void { Instance().setDebugChain(chain); }
+  static auto SetDebugChain(PixelList* chain) -> void { Instance().setDebugChain(chain); }
 
 private:
   Debug() = default;
@@ -33,9 +33,9 @@ private:
   auto recover() -> void;
   auto update() -> void;
   auto draw() -> void;
-  auto setDebugChain(LEDChain* chain) -> void;
+  auto setDebugChain(PixelList* chain) -> void;
 
-  LEDChain* debugChain{nullptr};
+  PixelList* debugChain{nullptr};
   Color triggerColor{Color::CYAN(.01f)};
   bool triggered{false};
 };

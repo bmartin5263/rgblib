@@ -4,7 +4,7 @@
 
 #include "Debug.h"
 #include "Color.h"
-#include "LEDChain.h"
+#include "PixelList.h"
 
 namespace rgb {
 
@@ -30,7 +30,7 @@ auto Debug::draw() -> void {
   }
 }
 
-auto Debug::setDebugChain(LEDChain* chain) -> void {
+auto Debug::setDebugChain(PixelList* chain) -> void {
   this->debugChain = chain;
 }
 

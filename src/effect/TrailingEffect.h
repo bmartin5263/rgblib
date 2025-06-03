@@ -23,7 +23,7 @@ struct TrailingEffectShaderParameters {
 
 using TrailingEffectShader = std::function<void(Color&, const TrailingEffectShaderParameters&)>;
 
-class LEDChain;
+class PixelList;
 class TrailingEffect {
 public:
   constexpr static auto DefaultShader(Color& color, const TrailingEffectShaderParameters&) -> void {
@@ -32,7 +32,7 @@ public:
 
   auto init() -> void;
   auto update() -> void;
-  auto draw(LEDChain& chain) -> void;
+  auto draw(PixelList& chain) -> void;
 
   TrailingEffectShader shader{DefaultShader};
   Duration speed{Duration::Milliseconds(500)};

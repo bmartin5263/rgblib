@@ -12,49 +12,47 @@
 #include "Iterable.h"
 #include "AnalogStick.h"
 #include "Every.h"
+#include "LEDMatrix.h"
 
 using namespace rgb;
 
-constexpr auto LED_COUNT = 12;
+constexpr auto LED_COUNT = 64;
 
-auto ring = LEDCircuit<LED_COUNT>{D2_RGB};
-auto slice = ring.slice(3);
-auto stick = LEDCircuit<64>{D4_RGB};
 auto vehicle = Vehicle{};
-auto introScene = IntroScene{ring, stick};
-auto demoScene = DemoScene{ring, stick};
-auto scenes = std::array {
-  static_cast<Scene*>(&demoScene),
-  static_cast<Scene*>(&introScene)
-};
-
-auto irReceiver = IRReceiver{D3_RGB};
+auto irReceiver = IRReceiver{};
 auto analogStick = AnalogStick{22, 23, 24};
 auto sensors = std::array {
   Runnable { []() {
     irReceiver.update();
-  }},
-  Runnable { []() {
-
   }}
 };
 
-
+auto circuit = LEDCircuit<LED_COUNT>{D2_RGB, 0, NEO_GRB + NEO_KHZ800};
+auto grid = LEDMatrix<8, 8>{D2_RGB, 0, NEO_GRB + NEO_KHZ800};
+auto slice = circuit.slice(3);
+auto stick = LEDCircuit<64>{D4_RGB};
 auto leds = std::array {
-  static_cast<Drawable*>(&ring),
-  static_cast<Drawable*>(&stick)
+  static_cast<LEDList*>(&circuit),
+  static_cast<LEDList*>(&stick)
+};
+
+auto introScene = IntroScene{circuit, stick};
+auto demoScene = DemoScene{circuit, stick};
+auto scenes = std::array {
+  static_cast<Scene*>(&demoScene),
+  static_cast<Scene*>(&introScene)
 };
 
 auto setup() -> void {
   log::init();
 
   irReceiver.button0.onPress([](){ App::NextScene(); });
-  irReceiver.start();
+  irReceiver.start(D3);
 
   DebugScreen::Start();
   AppBuilder::Create()
     .DebugOutputLED(&slice)
-    .EnableIntroScene(introScene, Duration::Seconds(5))
+    .EnableIntroScene(introScene, Duration::Seconds(20))
     .SetScenes(scenes)
     .SetLEDs(leds)
     .SetSensors(sensors)

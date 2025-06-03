@@ -11,14 +11,14 @@
 
 class DemoScene : public rgb::Scene {
 public:
-  explicit DemoScene(rgb::LEDChain& ring, rgb::LEDChain& stick);
+  explicit DemoScene(rgb::PixelList& ring, rgb::PixelList& stick);
   auto setup() -> void override;
   auto update() -> void override;
   auto draw() -> void override;
 
 private:
-  rgb::LEDChain& ring;
-  rgb::LEDChain& stick;
+  rgb::PixelList& ring;
+  rgb::PixelList& stick;
   rgb::FillEffect fillEffect{};
 
 };

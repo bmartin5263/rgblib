@@ -5,7 +5,7 @@
 #include "IntroScene.h"
 #include "Clock.h"
 
-IntroScene::IntroScene(rgb::LEDRing& ring, rgb::LEDStrip& stick) : ring(ring), stick(stick) {
+IntroScene::IntroScene(rgb::PixelRing& ring, rgb::PixelStrip& stick) : ring(ring), stick(stick) {
 
 }
 
@@ -17,7 +17,7 @@ auto IntroScene::setup() -> void {
     led = c * .01f;
   };
   trailingEffect.trailRatio = .5f;
-  trailingEffect.speed = rgb::Duration::Milliseconds(30);
+  trailingEffect.speed = rgb::Duration::Milliseconds(200);
 //  trailingEffect.speed = rgb::Duration::Seconds(2);
 //  trailingEffect.endBuffer = 20;
   trailingEffect.shader = [](auto& led, auto& params) {

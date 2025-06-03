@@ -25,10 +25,10 @@ constexpr auto defaultShader(Color& pixel, const FillEffectShaderParameters&) ->
   pixel = Color::CYAN(.01);
 }
 
-class LEDChain;
+class PixelList;
 class FillEffect {
 public:
-  auto draw(LEDChain& chain) -> void;
+  auto draw(PixelList& chain) -> void;
 
   FillEffectShader shader{defaultShader};
 private:

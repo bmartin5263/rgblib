@@ -15,20 +15,20 @@ template <typename T>
 struct Iterable;
 class App;
 class Scene;
-class LEDChain;
+class PixelList;
 class ISceneManager;
 class ILEDManager;
 class ISensorManager;
-class Drawable;
+class LEDList;
 struct Color;
 class AppBuilder {
   using self = AppBuilder&;
 public:
-  auto DebugOutputLED(LEDChain* ledChain) -> self;
+  auto DebugOutputLED(PixelList* pixels) -> self;
   auto SetSceneManager(ISceneManager* sceneManager) -> self;
   auto SetSensors(Iterable<Runnable> sensors) -> self;
   auto SetScenes(Iterable<Scene*> scenes) -> self;
-  auto SetLEDs(Iterable<Drawable*> scenes) -> self;
+  auto SetLEDs(Iterable<LEDList*> scenes) -> self;
   auto EnableIntroScene(Scene& scene, Duration expirationTime) -> self;
 
   auto Start() -> void;
@@ -37,10 +37,10 @@ public:
 private:
   friend class App;
 
-  LEDChain* mDebugOutputLED{nullptr};
+  PixelList* mDebugOutputLED{nullptr};
   ISceneManager* mSceneManager{nullptr};
   ILEDManager* mLedManager{nullptr};
-  Iterable<Drawable*> mLeds{};
+  Iterable<LEDList*> mLeds{};
   Iterable<Scene*> mScenes{};
   Scene* mIntroScene{nullptr};
   Duration mRunIntroSceneFor{Duration::Seconds(1)};

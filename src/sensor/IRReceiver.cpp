@@ -12,12 +12,8 @@
 
 namespace rgb {
 
-IRReceiver::IRReceiver(pin_num pin): pin(pin) {
-
-}
-
-auto IRReceiver::start() -> bool {
-  IrReceiver.begin(*pin, ENABLE_LED_FEEDBACK);
+auto IRReceiver::start(pin_num pin) -> bool {
+  IrReceiver.begin(pin, ENABLE_LED_FEEDBACK);
   return true;
 }
 

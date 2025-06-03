@@ -3,13 +3,13 @@
 //
 
 #include "FillEffect.h"
-#include "LEDChain.h"
+#include "PixelList.h"
 #include "Clock.h"
 #include "Enumerate.h"
 
 namespace rgb {
 
-auto FillEffect::draw(LEDChain& chain) -> void {
+auto FillEffect::draw(PixelList& chain) -> void {
   auto params = FillEffectShaderParameters {
     .now = Clock::Now(),
     .length = chain.getSize(),
