@@ -37,27 +37,13 @@ auto PixelList::get(u16 pixel) -> Pixel* {
   return getHead() + pixel;
 }
 
-auto PixelList::get(Point point) -> Pixel* {
-  u16 pixel = (getSize() * point.x) + point.y;
-  ASSERT(pixel >= 0, "Pixel is negative");
-  ASSERT(pixel < getSize(), "Pixel is out of bounds");
-  return getHead() + pixel;
-}
-
 auto PixelList::set(u16 pixel, const Color& color) -> void {
   *get(pixel) = color;
 }
 
-auto PixelList::set(Point point, const Color& color) -> void {
-  *get(point) = color;
-}
 
 auto PixelList::operator[](u16 pixel) -> Color& {
   return *get(pixel);
-}
-
-auto PixelList::operator[](Point point) -> Color& {
-  return *get(point);
 }
 
 auto PixelList::slice(u16 length) -> PixelSlice {

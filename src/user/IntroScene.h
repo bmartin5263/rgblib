@@ -6,7 +6,7 @@
 #define RGBLIB_INTROSCENE_H
 
 #include "Scene.h"
-#include "LEDCircuit.h"
+#include "LEDStrip.h"
 #include "FillEffect.h"
 #include "TrailingEffect.h"
 

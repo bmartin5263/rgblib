@@ -31,15 +31,12 @@ public:
 
   [[nodiscard]] auto get(u16 pixel) -> Pixel*;
   [[nodiscard]] auto operator[](u16 pixel) -> Pixel&;
-  [[nodiscard]] auto get(Point pixel) -> Pixel*;
-  [[nodiscard]] auto operator[](Point point) -> Pixel&;
 
   auto fill(const Color& color) -> FillChain;
   auto fill(const Color& color, u16 range) -> FillChain;
   auto fill(const Color& color, u16 start, u16 range) -> FillChain;
   auto clear() -> void;
   auto set(u16 pixel, const Color& color) -> void;
-  auto set(Point pixel, const Color& color) -> void;
 
   auto slice(u16 length) -> PixelSlice;
   auto slice(u16 start, u16 length) -> PixelSlice;

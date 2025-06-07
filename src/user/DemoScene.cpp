@@ -37,5 +37,5 @@ auto DemoScene::draw() -> void {
   stick
     .fill(Color::GREEN(), 42)
     .fill(Color::YELLOW(), 18)
-    .fill(Color::WHITE(.1f), 4);
+    .fill(Color::RED(), 4);
 }

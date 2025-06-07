@@ -22,7 +22,7 @@ auto AppBuilder::Start() -> void {
   App::Start();
 }
 
-auto AppBuilder::SetLEDs(Iterable<LEDList*> leds) -> AppBuilder& {
+auto AppBuilder::SetLEDs(Iterable<LEDCircuit*> leds) -> AppBuilder& {
   mLeds = leds;
   return *this;
 }

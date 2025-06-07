@@ -26,10 +26,10 @@ auto sensors = std::array {
 
 auto circuit = LEDMatrix<8, 8>{D2_RGB, NEO_GRBW + NEO_KHZ800};
 auto slice = circuit.slice(3);
-auto stick = LEDCircuit<64>{D4_RGB};
+auto stick = LEDStrip<64>{D4_RGB};
 auto leds = std::array {
-  static_cast<LEDList*>(&circuit),
-  static_cast<LEDList*>(&stick)
+  static_cast<LEDCircuit*>(&circuit),
+  static_cast<LEDCircuit*>(&stick)
 };
 
 auto introScene = IntroScene{circuit, stick};

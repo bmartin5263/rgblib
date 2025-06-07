@@ -12,7 +12,7 @@
 #include "OTASupport.h"
 #include "WebServer.h"
 #include "Timer.h"
-#include "LEDList.h"
+#include "LEDCircuit.h"
 
 namespace rgb {
 

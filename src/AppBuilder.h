@@ -19,7 +19,7 @@ class PixelList;
 class ISceneManager;
 class ILEDManager;
 class ISensorManager;
-class LEDList;
+class LEDCircuit;
 struct Color;
 class AppBuilder {
   using self = AppBuilder&;
@@ -28,7 +28,7 @@ public:
   auto SetSceneManager(ISceneManager* sceneManager) -> self;
   auto SetSensors(Iterable<Runnable> sensors) -> self;
   auto SetScenes(Iterable<Scene*> scenes) -> self;
-  auto SetLEDs(Iterable<LEDList*> scenes) -> self;
+  auto SetLEDs(Iterable<LEDCircuit*> scenes) -> self;
   auto EnableIntroScene(Scene& scene, Duration expirationTime) -> self;
 
   auto Start() -> void;
@@ -40,7 +40,7 @@ private:
   PixelList* mDebugOutputLED{nullptr};
   ISceneManager* mSceneManager{nullptr};
   ILEDManager* mLedManager{nullptr};
-  Iterable<LEDList*> mLeds{};
+  Iterable<LEDCircuit*> mLeds{};
   Iterable<Scene*> mScenes{};
   Scene* mIntroScene{nullptr};
   Duration mRunIntroSceneFor{Duration::Seconds(1)};

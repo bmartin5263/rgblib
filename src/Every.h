@@ -24,6 +24,10 @@ struct Every {
     }
   }
 
+  auto reset() -> void {
+    lastExecution = Clock::Now();
+  }
+
   Duration duration;
   Runnable action;
   Timestamp lastExecution;

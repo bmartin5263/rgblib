@@ -2,8 +2,8 @@
 // Created by Brandon on 1/19/25.
 //
 
-#ifndef RGBLIB_LEDMATRIX_H
-#define RGBLIB_LEDMATRIX_H
+#ifndef RGBLIB_LEDSTRIP_H
+#define RGBLIB_LEDSTRIP_H
 
 #include <Adafruit_NeoPixel.h>
 #include "Types.h"
@@ -15,13 +15,11 @@
 
 namespace rgb {
 
-template <u16 COLUMNS, u16 ROWS, bool STAGGER = false>
-class LEDMatrix : public PixelList, public LEDCircuit {
+template <u16 N>
+class LEDStrip : public PixelList, public LEDCircuit {
 public:
-  static constexpr auto N = COLUMNS * ROWS;
-
-  explicit LEDMatrix(pin_num pin, neoPixelType type = NEO_GRBW + NEO_KHZ800, u16 offset = 0):
-    pixels{}, leds(N, pin, type), mOffset(offset), mReversed(false)
+  explicit LEDStrip(pin_num pin, neoPixelType type = NEO_GRBW + NEO_KHZ800, u16 offset = 0):
+    pixels{}, leds(N, pin, type), mOffset(offset), stagger(8), mReversed(false)
   {
     start();
   }
@@ -30,7 +28,7 @@ public:
     leds.begin();
   }
 
-  auto setBrightness(u8 brightness) -> LEDMatrix& {
+  auto setBrightness(u8 brightness) -> LEDStrip& {
     leds.setBrightness(brightness);
     return *this;
   }
@@ -55,19 +53,6 @@ public:
     clear();
   }
 
-  int zigzagToLinearIndex(int index) {
-    int col = index / ROWS;
-    int rowInCol = index % ROWS;
-
-    if (col % 2 == 0) {
-      // Even column: top-down
-      return col * ROWS + rowInCol;
-    } else {
-      // Odd column: bottom-up
-      return col * ROWS + (ROWS - 1 - rowInCol);
-    }
-  }
-
   auto display() -> void override {
     if (mReversed) {
       for (u16 i = 0; i < N; ++i) {
@@ -76,19 +61,10 @@ public:
       }
     }
     else {
-      if constexpr (STAGGER) {
-        for (u16 i = 0; i < N; ++i) {
-          auto pixel = pixels[i];
-          auto led = mapPixelToLED(i);
-          leds.setPixelColor(zigzagToLinearIndex(led), FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b), FloatToByte(pixel.w));
-        }
-      }
-      else {
-        for (u16 i = 0; i < N; ++i) {
-          auto pixel = pixels[i];
-          auto led = mapPixelToLED(i);
-          leds.setPixelColor(led, FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b), FloatToByte(pixel.w));
-        }
+      for (u16 i = 0; i < N; ++i) {
+        auto pixel = pixels[i];
+        auto led = mapPixelToLED(i);
+        leds.setPixelColor(led, FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b), FloatToByte(pixel.w));
       }
     }
     leds.show();
@@ -127,4 +103,4 @@ private:
 }
 
 
-#endif //RGBLIB_LEDMATRIX_H
+#endif //RGBLIB_LEDSTRIP_H
