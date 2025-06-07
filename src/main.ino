@@ -10,8 +10,6 @@
 #include "VehicleThread.h"
 #include "AppBuilder.h"
 #include "Iterable.h"
-#include "AnalogStick.h"
-#include "Every.h"
 #include "LEDMatrix.h"
 
 using namespace rgb;
@@ -20,15 +18,13 @@ constexpr auto LED_COUNT = 64;
 
 auto vehicle = Vehicle{};
 auto irReceiver = IRReceiver{};
-auto analogStick = AnalogStick{22, 23, 24};
 auto sensors = std::array {
   Runnable { []() {
     irReceiver.update();
   }}
 };
 
-auto circuit = LEDCircuit<LED_COUNT>{D2_RGB, 0, NEO_GRB + NEO_KHZ800};
-auto grid = LEDMatrix<8, 8>{D2_RGB, 0, NEO_GRB + NEO_KHZ800};
+auto circuit = LEDMatrix<8, 8>{D2_RGB, NEO_GRBW + NEO_KHZ800};
 auto slice = circuit.slice(3);
 auto stick = LEDCircuit<64>{D4_RGB};
 auto leds = std::array {
@@ -62,17 +58,10 @@ auto setup() -> void {
 //  VehicleThread::Start(vehicle);
 }
 
-auto doSomething = Every(Duration::Milliseconds(100), [](){
-  char buffer[60];
-  snprintf(buffer, 60, "x: %i, y: %i", analogStick.readX(), analogStick.readY());
-  DebugScreen::PrintLine(0, buffer);
-});
-
 auto loop() -> void {
   if (DebugScreen::ReadyForUpdate()) {
 //    updateDisplay();
     DebugScreen::Display();
   }
-  doSomething.update();
   App::Loop();
 }

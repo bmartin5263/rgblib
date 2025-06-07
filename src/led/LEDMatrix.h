@@ -20,8 +20,8 @@ class LEDMatrix : public PixelList, public LEDList {
 public:
   static constexpr auto N = COLUMNS * ROWS;
 
-  explicit LEDMatrix(pin_num pin, u16 offset = 0, neoPixelType type = NEO_GRBW + NEO_KHZ800):
-    pixels{}, leds(N, pin, type), mOffset(offset), stagger(8), mReversed(false)
+  explicit LEDMatrix(pin_num pin, neoPixelType type = NEO_GRBW + NEO_KHZ800, u16 offset = 0):
+    pixels{}, leds(N, pin, type), mOffset(offset), mReversed(false)
   {
     start();
   }
@@ -80,7 +80,7 @@ public:
         for (u16 i = 0; i < N; ++i) {
           auto pixel = pixels[i];
           auto led = mapPixelToLED(i);
-          leds.setPixelColor(zigzagToLinearIndex(led, stagger), FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b), FloatToByte(pixel.w));
+          leds.setPixelColor(zigzagToLinearIndex(led), FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b), FloatToByte(pixel.w));
         }
       }
       else {
