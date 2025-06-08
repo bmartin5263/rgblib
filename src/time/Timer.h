@@ -18,6 +18,8 @@ class Timer {
 public:
   static auto SetTimeout(Duration duration, const Runnable& function) -> TimerHandle;
   static auto SetInterval(Duration duration, uint times, const Runnable& function) -> TimerHandle;
+  static auto SetTimeout(Duration duration, const TimerFunction& function) -> TimerHandle;
+  static auto SetInterval(Duration duration, uint times, const TimerFunction& function) -> TimerHandle;
   static auto ProcessTimers() -> void;
   static auto Cancel(TimerNode* node) -> void;
   static auto Count() -> decltype(TIMER_COUNT);
@@ -29,7 +31,7 @@ private:
   TimerNode* toAddHead{nullptr};
   TimerNode* activeHead{nullptr};
 
-  auto setTimeout(Duration duration, uint intervals, const Runnable& function) -> TimerHandle;
+  auto setTimeout(Duration duration, uint intervals, const TimerFunction& function) -> TimerHandle;
   auto cancel(TimerNode* node) -> void;
   auto processTimers() -> void;
   auto executeTimer(TimerNode* node, Timestamp now) -> void;

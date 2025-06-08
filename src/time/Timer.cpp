@@ -24,17 +24,28 @@ Timer::Timer() {
 }
 
 auto Timer::SetTimeout(Duration duration, const Runnable& function) -> TimerHandle {
-  return Instance().setTimeout(duration, 0, function);
+  return Instance().setTimeout(duration, 0, [=](){ function(); return false; });
 }
 
 auto Timer::SetInterval(rgb::Duration duration, uint times, const Runnable& function) -> TimerHandle {
   if (times == 0) {
     return TimerHandle {};
   }
+  return Instance().setTimeout(duration, times - 1, [=](){ function(); return false; });
+}
+
+auto Timer::SetTimeout(Duration duration, const TimerFunction& function) -> TimerHandle {
+  return Instance().setTimeout(duration, 0, function);
+}
+
+auto Timer::SetInterval(rgb::Duration duration, uint times, const TimerFunction& function) -> TimerHandle {
+  if (times == 0) {
+    return TimerHandle {};
+  }
   return Instance().setTimeout(duration, times - 1, function);
 }
 
-auto Timer::setTimeout(Duration duration, uint repeatCount, const Runnable& function) -> TimerHandle {
+auto Timer::setTimeout(Duration duration, uint repeatCount, const TimerFunction& function) -> TimerHandle {
   INFO("SetTimeout()");
   auto time = Clock::Now();
   auto timer = nextTimerNode();
@@ -85,9 +96,9 @@ auto Timer::processTimers() -> void {
 
 auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
   INFO("Start Executing Timer");
-  timer->timerFunction();
+  auto repeat = timer->timerFunction();
   INFO("Finish Executing Timer");
-  if (timer->repeatsRemaining > 0) {
+  if (repeat || timer->repeatsRemaining > 0) {
     INFO("Repeating Timer");
     timer->repeat(now);
     enqueueForAdding(timer);

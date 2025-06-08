@@ -20,7 +20,6 @@ auto IRReceiver::start(pin_num pin) -> bool {
 auto IRReceiver::update() -> void {
   if (IrReceiver.decode()) {
     auto data = static_cast<IRButtonType>(IrReceiver.decodedIRData.decodedRawData);
-    INFO("%i", data);
     button0.update(data);
     button1.update(data);
     button2.update(data);
