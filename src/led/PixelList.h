@@ -56,7 +56,6 @@ public:
 
 using PixelStrip = PixelList;
 using PixelRing = PixelList;
-using PixelGrid = PixelList;
 
 }
 

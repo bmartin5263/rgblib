@@ -8,15 +8,14 @@
 #include <Adafruit_NeoPixel.h>
 #include "Types.h"
 #include "Assertions.h"
-#include "Color.h"
-#include "PixelList.h"
-#include "PixelSlice.h"
+#include "PixelGrid.h"
 #include "LEDCircuit.h"
+#include "Point.h"
 
 namespace rgb {
 
 template <u16 COLUMNS, u16 ROWS, bool STAGGER = false>
-class LEDMatrix : public PixelList, public LEDCircuit {
+class LEDMatrix : public PixelGrid, public LEDCircuit {
 public:
   static constexpr auto N = COLUMNS * ROWS;
 
@@ -114,6 +113,10 @@ public:
 
   auto mapPixelToLED(u16 pixel) -> u16 {
     return (pixel + mOffset) % N;
+  }
+
+  [[nodiscard]] auto getColumns() -> size_t {
+    return COLUMNS;
   }
 
 private:
