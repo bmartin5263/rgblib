@@ -45,7 +45,7 @@ auto setup() -> void {
   irReceiver.button0.onPress([](){ App::NextScene(); });
   irReceiver.start(D3);
 
-  DebugScreen::Start();
+  DebugScreen::Start(true);
   AppBuilder::Create()
     .DebugOutputLED(&slice)
     .EnableIntroScene(introScene, Duration::Seconds(20))
@@ -60,7 +60,7 @@ auto setup() -> void {
 
 auto loop() -> void {
   if (DebugScreen::ReadyForUpdate()) {
-//    updateDisplay();
+    DebugScreen::PrintLine("Hello");
     DebugScreen::Display();
   }
   App::Loop();

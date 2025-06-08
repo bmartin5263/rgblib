@@ -15,7 +15,7 @@ class DebugScreen {
 public:
   using DrawFunction = std::function<void(U8G2&)>;
 
-  static auto Start() -> void { Instance().start(); }
+  static auto Start(bool flip = false) -> void { Instance().start(flip); }
   static auto PrintLine(const std::string& msg) -> void { Instance().printLine(msg); }
   static auto PrintLine(int row, const std::string& msg) -> void { Instance().printLine(row, msg); }
   static auto Display() -> void { Instance().display(); }
@@ -36,7 +36,7 @@ private:
     return instance;
   }
 
-  auto start() -> void;
+  auto start(bool flip = false) -> void;
   auto display() -> void;
   auto readyForUpdate() -> bool;
   auto printLine(const std::string& msg) -> void;

@@ -9,8 +9,11 @@
 
 namespace rgb {
 
-auto DebugScreen::start() -> void {
+auto DebugScreen::start(bool flip) -> void {
   ASSERT_C(u8g2.begin(), "Failed to start debug screen", Color::GREEN(.01f));
+  if (flip) {
+    u8g2.setFlipMode(1);
+  }
 }
 
 auto DebugScreen::display() -> void {
