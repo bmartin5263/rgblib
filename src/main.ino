@@ -39,8 +39,19 @@ auto scenes = std::array {
   static_cast<Scene*>(&introScene)
 };
 
+TimerHandle handle;
+
 auto setup() -> void {
   log::init();
+  delay(2000);
+
+  handle = Timer::SetTimeout(Duration::Seconds(1), [x = 0](auto& result) mutable {
+    DebugScreen::PrintLine("Hello " + std::to_string(x++));
+    DebugScreen::Display();
+    result.repeatIn = Duration::Seconds(1);
+  });
+
+  INFO("Success");
 
   irReceiver.button0.onPress([](){ App::NextScene(); });
   irReceiver.start(D3);
@@ -48,7 +59,7 @@ auto setup() -> void {
   DebugScreen::Start(true);
   AppBuilder::Create()
     .DebugOutputLED(&slice)
-    .EnableIntroScene(introScene, Duration::Seconds(20))
+    .EnableIntroScene(introScene, Duration::Seconds(5))
     .SetScenes(scenes)
     .SetLEDs(leds)
     .SetSensors(sensors)
@@ -59,9 +70,9 @@ auto setup() -> void {
 }
 
 auto loop() -> void {
-  if (DebugScreen::ReadyForUpdate()) {
-    DebugScreen::PrintLine("Hello");
-    DebugScreen::Display();
-  }
+//  if (DebugScreen::ReadyForUpdate()) {
+//    DebugScreen::PrintLine("Hello");
+//    DebugScreen::Display();
+//  }
   App::Loop();
 }

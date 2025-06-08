@@ -55,33 +55,8 @@ auto App::start() -> void {
 
 auto App::loop() -> void {
   Clock::StartTick();
-  for (auto& sensor : sensors) {
-    sensor();
-  }
-
-  if constexpr (Wifi::Enabled()) {
-    Wifi::Update();
-  }
-  if constexpr (OTASupport::Enabled()) {
-    OTASupport::Update();
-  }
-
-  Timer::ProcessTimers();
-
-  checkForSceneSwitch();
-  scene->update();
-
-  for (auto& led : leds) {
-    led->reset();
-  }
-
-  scene->draw();
-  Debug::Draw();
-
-  for (auto& led : leds) {
-    led->display();
-  }
-
+  update();
+  draw();
   Clock::StopTick();
 }
 

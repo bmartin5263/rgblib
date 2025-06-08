@@ -18,20 +18,31 @@ struct TimerNode {
   Timestamp executeAt{};
   Duration timeBetweenExecutions{};
   uint repeatsRemaining{};
+  uint id{};
   bool tombstone{};
 
   auto clean() -> void {
-    *this = {};
+    prev = nullptr;
+    next = nullptr;
+    timerFunction = {};
+    repeatsRemaining = 0;
+    tombstone = false;
   }
 
-  auto repeat(Timestamp now) -> void {
-    ASSERT(repeatsRemaining > 0, "No repeats remaining");
+  auto repeat(Timestamp now, Duration repeatOverride) -> void {
+    auto isOverride = repeatOverride > Duration{0};
+    ASSERT(repeatsRemaining > 0 || isOverride, "No repeats remaining");
     --repeatsRemaining;
     tombstone = false; // User code could have set this to `true` while executing the timer function
-    executeAt = now + timeBetweenExecutions;
+
+    auto delta = isOverride ? repeatOverride : timeBetweenExecutions;
+    executeAt = now + delta;
   }
 
   static auto InsertFront(TimerNode*& head, TimerNode* node) {
+    ASSERT(node->next == nullptr, "Next is not nullptr");
+    ASSERT(node->prev == nullptr, "Prev is not nullptr");
+
     node->prev = nullptr;
     node->next = head;
     if (head != nullptr) {
@@ -43,21 +54,23 @@ struct TimerNode {
   static auto Pop(TimerNode*& head) -> TimerNode* {
     ASSERT(head != nullptr, "Popping from empty list");
     auto popped = head;
-    Remove(head, head);
+    ASSERT(popped->prev == nullptr, "Prev is not nullptr");
+
+    if (head->next != nullptr) {
+      head->next->prev = nullptr;
+    }
+    head = head->next;
+
+    popped->next = nullptr;
+    popped->prev = nullptr;
+
     return popped;
   }
 
   static auto Remove(TimerNode*& head, TimerNode* nodeToRemove) -> void {
     ASSERT(head != nullptr, "Removing from empty list");
     ASSERT(nodeToRemove != nullptr, "Removing null node");
-    if (nodeToRemove == head) {
-      head = head->next;
-      if (head != nullptr) {
-        head->prev = nullptr;
-      }
-      nodeToRemove->next = nullptr;
-      return;
-    }
+    ASSERT(nodeToRemove != head, "Attempting to remove head without Pop()");
 
     if (nodeToRemove->next != nullptr) {
       nodeToRemove->next->prev = nodeToRemove->prev;

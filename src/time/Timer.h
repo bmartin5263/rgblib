@@ -27,7 +27,7 @@ public:
 
 private:
   TimerNode nodes[TIMER_COUNT]{};
-  TimerNode* unusedHead{};
+  TimerNode* unusedHead{nullptr};
   TimerNode* toAddHead{nullptr};
   TimerNode* activeHead{nullptr};
 

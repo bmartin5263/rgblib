@@ -6,7 +6,16 @@
 #define RGBLIB_TIMERUTIL_H
 
 #include "Func.h"
+#include "Types.h"
 
-using TimerFunction = Supplier<bool>;
+namespace rgb {
+
+struct TimerResult {
+  Duration repeatIn{};
+};
+
+using TimerFunction = Consumer<TimerResult&>;
+
+}
 
 #endif //RGBLIB_TIMERUTIL_H

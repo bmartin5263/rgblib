@@ -12,26 +12,44 @@ Timer::Timer() {
   INFO("Initializing Timers");
   for (int i = 0; i < TIMER_COUNT; ++i) {
     auto& current = nodes[i];
+    current.id = i;
     if (i > 0) {
       current.prev = &nodes[i - 1];
     }
+    else {
+      current.prev = nullptr;
+    }
     if (i < TIMER_COUNT - 1) {
-      current.prev = &nodes[i + 1];
+      current.next = &nodes[i + 1];
+    }
+    else {
+      current.next = nullptr;
+    }
+  }
+  for (int i = 0; i < TIMER_COUNT; ++i) {
+    ASSERT(nodes[i].id == i, "Id invalid");
+    if (i != 0) {
+      ASSERT(nodes[i].prev == &nodes[i - 1], "Prev Mismatch");
+    }
+    if (i != TIMER_COUNT - 1) {
+      ASSERT(nodes[i].next == &nodes[i + 1], "Next Mismatch");
     }
   }
   unusedHead = &nodes[0];
   ASSERT(unusedHead != nullptr, "Failed to initialize Timers");
+  ASSERT(nodes[0].prev == nullptr, "Head invalid");
+  ASSERT(nodes[TIMER_COUNT - 1].next == nullptr, "Tail invalid");
 }
 
 auto Timer::SetTimeout(Duration duration, const Runnable& function) -> TimerHandle {
-  return Instance().setTimeout(duration, 0, [=](){ function(); return false; });
+  return Instance().setTimeout(duration, 0, [=](const auto& unused){ function(); });
 }
 
 auto Timer::SetInterval(rgb::Duration duration, uint times, const Runnable& function) -> TimerHandle {
   if (times == 0) {
     return TimerHandle {};
   }
-  return Instance().setTimeout(duration, times - 1, [=](){ function(); return false; });
+  return Instance().setTimeout(duration, times - 1, [=](const auto& unused){ function(); });
 }
 
 auto Timer::SetTimeout(Duration duration, const TimerFunction& function) -> TimerHandle {
@@ -56,6 +74,10 @@ auto Timer::setTimeout(Duration duration, uint repeatCount, const TimerFunction&
   timer->repeatsRemaining = repeatCount;
   timer->timeBetweenExecutions = duration;
 
+  INFO("Assigning Timer '%i'", timer->id);
+  ASSERT(timer->next == nullptr, "Timer.Next is not nullptr");
+  ASSERT(timer->prev == nullptr, "Timer.Prev is not nullptr");
+
   TimerNode::InsertFront(toAddHead, timer);
 
   return TimerHandle { timer };
@@ -67,12 +89,14 @@ auto Timer::Cancel(TimerNode* node) -> void {
 
 auto Timer::cancel(TimerNode* node) -> void {
   if (node != nullptr) {
-    INFO("Cancelling Timer");
+    INFO("Cancelling Timer '%i'", node->id);
     node->tombstone = true;
   }
 }
 
 auto Timer::enqueueForAdding(TimerNode* node) -> void {
+  ASSERT(node->next == nullptr, "Timer.Next is not nullptr");
+  ASSERT(node->prev == nullptr, "Timer.Prev is not nullptr");
   TimerNode::InsertFront(toAddHead, node);
 }
 
@@ -87,6 +111,7 @@ auto Timer::processTimers() -> void {
   while (activeHead != nullptr && activeHead->executeAt <= now) {
     auto timer = TimerNode::Pop(activeHead);
     if (timer->tombstone) {
+      INFO("Cleaning Tombstone '%i'", timer->id);
       TimerNode::InsertFront(unusedHead, timer);
       continue;
     }
@@ -95,16 +120,17 @@ auto Timer::processTimers() -> void {
 }
 
 auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
-  INFO("Start Executing Timer");
-  auto repeat = timer->timerFunction();
-  INFO("Finish Executing Timer");
-  if (repeat || timer->repeatsRemaining > 0) {
-    INFO("Repeating Timer");
-    timer->repeat(now);
+  INFO("Start Executing Timer '%i'", timer->id);
+  auto result = TimerResult{};
+  timer->timerFunction(result);
+  INFO("Finish Executing Timer '%i'", timer->id);
+  if (result.repeatIn > Duration(0) || timer->repeatsRemaining > 0) {
+    INFO("Repeating Timer '%i'", timer->id);
+    timer->repeat(now, result.repeatIn);
     enqueueForAdding(timer);
   }
   else {
-    INFO("Trashing Timer");
+    INFO("Recycling Timer '%i'", timer->id);
     TimerNode::InsertFront(unusedHead, timer);
   }
 }
@@ -113,6 +139,9 @@ auto Timer::processAdditions() -> void {
   while (toAddHead != nullptr) {
     auto nodeToInsert = toAddHead;
     toAddHead = toAddHead->next;
+
+    nodeToInsert->prev = nullptr;
+    nodeToInsert->next = nullptr;
 
     if (activeHead == nullptr || nodeToInsert->executeAt < activeHead->executeAt) {
       TimerNode::InsertFront(activeHead, nodeToInsert);
@@ -125,24 +154,30 @@ auto Timer::processAdditions() -> void {
     }
 
     // todo current->next->executeAt >= nodeToInsert->executeAt
+    ASSERT(nodeToInsert->executeAt >= current->executeAt, "Node in wrong position");
+
     nodeToInsert->prev = current;
     nodeToInsert->next = current->next;
     if (current->next != nullptr) {
       current->next->prev = nodeToInsert;
     }
+    current->next = nodeToInsert;
   }
 }
 
 auto Timer::nextTimerNode() -> TimerNode* {
   if (unusedHead == nullptr) {
-    INFO("Reclaiming Timer Nodes");
     reclaimNodes();
     ASSERT(unusedHead != nullptr, "No more timer nodes available");
   }
-  return TimerNode::Pop(unusedHead);
+  auto next = TimerNode::Pop(unusedHead);
+  ASSERT(next->next == nullptr, "Next is not a nullptr");
+  ASSERT(next->prev == nullptr, "Prev is not a nullptr");
+  return next;
 }
 
 auto Timer::reclaimNodes() -> void {
+  INFO("Reclaiming Timer Nodes");
   for (auto& node : nodes) {
     if (node.tombstone) {
       TimerNode::Remove(activeHead, &node);
