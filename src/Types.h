@@ -180,6 +180,11 @@ struct Timestamp : public number_wrapper<unsigned long, Timestamp> {
     return Timestamp { value % rhs.value };
   }
 
+  [[nodiscard]]
+  constexpr auto mod(const Duration& rhs) const -> Timestamp {
+    return Timestamp { value % rhs.value };
+  }
+
   using number_wrapper::operator%=;
   constexpr auto operator%=(const Duration& rhs) -> Timestamp& {
     value %= rhs.value;
