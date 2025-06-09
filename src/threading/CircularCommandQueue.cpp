@@ -1,9 +1,9 @@
-#include "CircularBuffer.h"
+#include "CircularCommandQueue.h"
 #include "Assertions.h"
 
 namespace rgb {
 
-CircularBuffer::CircularBuffer()
+CircularCommandQueue::CircularCommandQueue()
 	: data(), back(SIZE), front(SIZE), empty(true), full(false), mu(), cond()
 {
 	// initialized data
@@ -12,9 +12,9 @@ CircularBuffer::CircularBuffer()
 	}
 }
 
-void CircularBuffer::push(ThreadCommand* command) {
+void CircularCommandQueue::push(ThreadCommand* command) {
   std::unique_lock<std::mutex> locker(mu);
-  ASSERT(this->front != this->back || this->empty, "CircularBuffer full");
+  ASSERT(this->front != this->back || this->empty, "CircularCommandQueue full");
 
   this->data[this->back.getIndex()] = command;
   this->back++;
@@ -27,14 +27,14 @@ void CircularBuffer::push(ThreadCommand* command) {
   cond.notify_one();
 }
 
-ThreadCommand* CircularBuffer::pop(){
+ThreadCommand* CircularCommandQueue::pop(){
   std::unique_lock<std::mutex> locker(mu);
 
   while (empty) {
     cond.wait(locker);
   }
 
-  ASSERT(this->front != this->back || this->full, "CircularBuffer empty");
+  ASSERT(this->front != this->back || this->full, "CircularCommandQueue empty");
 
   auto command = this->data[this->front.getIndex()];
   this->data[this->front.getIndex()] = nullptr;
@@ -49,17 +49,17 @@ ThreadCommand* CircularBuffer::pop(){
   return command;
 }
 
-bool CircularBuffer::isEmpty() {
+bool CircularCommandQueue::isEmpty() {
 	std::lock_guard<std::mutex> locker(mu);
 	return empty;
 }
 
-void CircularBuffer::wait() {
+void CircularCommandQueue::wait() {
 	std::unique_lock<std::mutex> locker(mu);
 	cond.wait(locker, [&]() { return !empty; });
 }
 
-void CircularBuffer::notify() {
+void CircularCommandQueue::notify() {
 	std::lock_guard<std::mutex> lock(mu);
 	cond.notify_one();
 }

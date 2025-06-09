@@ -121,12 +121,12 @@ auto Timer::processTimers() -> void {
 
 auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
   INFO("Start Executing Timer '%i'", timer->id);
-  auto result = TimerResult{};
-  timer->timerFunction(result);
+  auto options = TimerOptions{};
+  timer->timerFunction(options);
   INFO("Finish Executing Timer '%i'", timer->id);
-  if (result.repeatIn > Duration(0) || timer->repeatsRemaining > 0) {
+  if (options.repeatIn > Duration(0) || timer->repeatsRemaining > 0) {
     INFO("Repeating Timer '%i'", timer->id);
-    timer->repeat(now, result.repeatIn);
+    timer->repeat(now, options.repeatIn);
     enqueueForAdding(timer);
   }
   else {

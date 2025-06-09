@@ -43,12 +43,11 @@ TimerHandle handle;
 
 auto setup() -> void {
   log::init();
-  delay(2000);
 
-  handle = Timer::SetTimeout(Duration::Seconds(1), [x = 0](auto& result) mutable {
+  handle = Timer::SetTimeout(Duration::Seconds(1), [x = 0](auto& options) mutable {
     DebugScreen::PrintLine("Hello " + std::to_string(x++));
     DebugScreen::Display();
-    result.repeatIn = Duration::Seconds(1);
+    options.repeatIn = Duration::Seconds(1);
   });
 
   INFO("Success");

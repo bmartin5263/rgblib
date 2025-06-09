@@ -7,9 +7,15 @@
 
 #include "Types.h"
 #include "Assertions.h"
-#include "TimerUtil.h"
+#include "Func.h"
 
 namespace rgb {
+
+struct TimerOptions {
+  Duration repeatIn{};
+};
+
+using TimerFunction = Consumer<TimerOptions&>;
 
 struct TimerNode {
   TimerNode* prev{};

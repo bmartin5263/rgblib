@@ -9,16 +9,16 @@
 namespace rgb {
 
 class ThreadCommand;
-class CircularBuffer {
+class CircularCommandQueue {
 public:
 	static constexpr int SIZE = 32;
 
-	CircularBuffer();
-	CircularBuffer(const CircularBuffer&) = delete;
-	CircularBuffer(CircularBuffer &&) = delete;
-	CircularBuffer& operator = (const CircularBuffer &) = delete;
-	CircularBuffer& operator = (const CircularBuffer &&) = delete;
-	~CircularBuffer() = default;
+	CircularCommandQueue();
+	CircularCommandQueue(const CircularCommandQueue&) = delete;
+	CircularCommandQueue(CircularCommandQueue &&) = delete;
+	CircularCommandQueue& operator = (const CircularCommandQueue &) = delete;
+	CircularCommandQueue& operator = (const CircularCommandQueue &&) = delete;
+	~CircularCommandQueue() = default;
 
 	void push(ThreadCommand* command);
   ThreadCommand* pop();
