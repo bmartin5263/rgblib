@@ -44,23 +44,24 @@ TimerHandle handle;
 auto setup() -> void {
   log::init();
 
-  handle = Timer::SetTimeout(Duration::Seconds(1), [x = 0](auto& options) mutable {
-    DebugScreen::PrintLine("Hello " + std::to_string(x++));
-    DebugScreen::Display();
-    if (x < 5) {
-      options.repeatIn = Duration::Seconds(1);
-    }
-  });
-
   INFO("Success");
 
   irReceiver.button0.onPress([](){ App::NextScene(); });
+  irReceiver.button1.onPress([](){
+    handle = Timer::SetTimeout(Duration::Seconds(1), [x = 0](auto& options) mutable {
+      DebugScreen::PrintLine("Hello " + std::to_string(x++));
+      DebugScreen::Display();
+      if (x < 5) {
+        options.repeatIn = Duration::Seconds(1);
+      }
+    });
+  });
   irReceiver.start(D3);
 
   DebugScreen::Start(true);
   AppBuilder::Create()
     .DebugOutputLED(&slice)
-    .EnableIntroScene(introScene, Duration::Seconds(5))
+//    .EnableIntroScene(introScene, Duration::Seconds(5))
     .SetScenes(scenes)
     .SetLEDs(leds)
     .SetSensors(sensors)

@@ -128,7 +128,7 @@ auto App::configure(const AppBuilder& appBuilder) -> void {
 
 auto App::nextScene() -> void {
   INFO("---> Next Scene --->");
-  introSceneTimer.reset();
+  introSceneTimer.cancel();
   currentScene = (currentScene + 1) % scenes.size();
   ASSERT(scenes[currentScene] != nullptr, "Null scene detected");
   switchScene(*scenes[currentScene]);
@@ -136,7 +136,7 @@ auto App::nextScene() -> void {
 
 auto App::prevScene() -> void {
   INFO("<--- Previous Scene <---");
-  introSceneTimer.reset();
+  introSceneTimer.cancel();
   currentScene = (currentScene > 0 ? currentScene : scenes.size()) - 1;
   ASSERT(scenes[currentScene] != nullptr, "Null scene detected");
   switchScene(*scenes[currentScene]);

@@ -73,6 +73,7 @@ auto Timer::setTimeout(Duration duration, uint repeatCount, const TimerFunction&
   timer->executeAt = time + duration;
   timer->repeatsRemaining = repeatCount;
   timer->timeBetweenExecutions = duration;
+  timer->handleId = nextHandleId++;
 
   INFO("Assigning Timer '%i'", timer->id);
   ASSERT(timer->next == nullptr, "Timer.Next is not nullptr");

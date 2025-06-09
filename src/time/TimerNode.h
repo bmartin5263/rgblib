@@ -25,6 +25,7 @@ struct TimerNode {
   Duration timeBetweenExecutions{};
   uint repeatsRemaining{};
   uint id{};
+  uint handleId{};
   bool tombstone{};
 
   auto clean() -> void {
@@ -33,6 +34,7 @@ struct TimerNode {
     timerFunction = {};
     repeatsRemaining = 0;
     tombstone = false;
+    handleId = 0;
   }
 
   auto repeat(Timestamp now, Duration repeatOverride) -> void {

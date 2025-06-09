@@ -30,6 +30,7 @@ private:
   TimerNode* unusedHead{nullptr};
   TimerNode* toAddHead{nullptr};
   TimerNode* activeHead{nullptr};
+  uint nextHandleId{1};
 
   auto setTimeout(Duration duration, uint intervals, const TimerFunction& function) -> TimerHandle;
   auto cancel(TimerNode* node) -> void;

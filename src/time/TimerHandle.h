@@ -11,12 +11,23 @@
 namespace rgb {
 
 class TimerNode;
-struct HandleDeleter {
-  constexpr HandleDeleter() noexcept = default;
-  auto operator()(TimerNode* ptr) -> void;
-};
 
-using TimerHandle = std::unique_ptr<TimerNode, HandleDeleter>;
+class TimerHandle {
+public:
+  TimerHandle();
+  explicit TimerHandle(TimerNode* node);
+  TimerHandle(const TimerHandle& rhs) = delete;
+  TimerHandle(TimerHandle&& rhs) noexcept;
+  TimerHandle& operator=(const TimerHandle& rhs) = delete;
+  TimerHandle& operator=(TimerHandle&& rhs) noexcept;
+  ~TimerHandle();
+
+  auto cancel() -> void;
+
+private:
+  uint handleId;
+  TimerNode* node;
+};
 
 }
 
