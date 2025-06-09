@@ -7,11 +7,6 @@
 
 namespace rgb {
 
-auto HandleDeleter::operator()(rgb::TimerNode* ptr) -> void {
-  INFO("HandleDeleter()");
-  Timer::Cancel(ptr);
-}
-
 TimerHandle::TimerHandle(TimerNode* node): handleId(node->handleId), node(node) {
 
 }
