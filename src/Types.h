@@ -44,6 +44,11 @@ struct number_wrapper {
   constexpr explicit number_wrapper(V value) : value(value) {}
   constexpr explicit number_wrapper(Self& wrapper) : value(wrapper.value) {}
 
+  template<typename cast_to>
+  constexpr auto to() const -> cast_to {
+    return static_cast<cast_to>(value);
+  }
+
   constexpr auto operator=(V rhs) -> self_type& {
     value = rhs;
     return *this;
