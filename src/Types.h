@@ -99,7 +99,7 @@ struct number_wrapper {
   }
 
   constexpr friend auto operator!=(self_type lhs, self_type rhs) -> bool {
-    return !(lhs == rhs);
+    return lhs.value != rhs.value;
   }
 
   constexpr friend auto operator<(self_type lhs, self_type rhs) -> bool {
@@ -107,15 +107,15 @@ struct number_wrapper {
   }
 
   constexpr friend auto operator>(self_type lhs, self_type rhs) -> bool {
-    return rhs < lhs;
+    return lhs.value > rhs.value;
   }
 
   constexpr friend auto operator<=(self_type lhs, self_type rhs) -> bool {
-    return !(rhs < lhs);
+    return lhs.value <= rhs.value;
   }
 
   constexpr friend auto operator>=(self_type lhs, self_type rhs) -> bool {
-    return !(lhs < rhs);
+    return lhs.value >= rhs.value;
   }
 
   constexpr auto operator++() -> Self& {

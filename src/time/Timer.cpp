@@ -123,9 +123,9 @@ auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
   INFO("Start Executing Timer '%i'", timer->id);
   auto options = TimerOptions{};
   timer->timerFunction(options);
-  INFO("Finish Executing Timer '%i'", timer->id);
+  INFO("Finish Executing Timer '%i'. Repeat = %li, %f, %f", timer->id, options.repeatIn.value, options.repeatIn.asMicroseconds(), options.repeatIn.asMilliseconds());
   if (options.repeatIn > Duration(0) || timer->repeatsRemaining > 0) {
-    INFO("Repeating Timer '%i'", timer->id);
+    INFO("Repeating Timer '%i', repeats remaining = %i", timer->id, timer->repeatsRemaining);
     timer->repeat(now, options.repeatIn);
     enqueueForAdding(timer);
   }

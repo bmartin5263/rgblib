@@ -47,7 +47,9 @@ auto setup() -> void {
   handle = Timer::SetTimeout(Duration::Seconds(1), [x = 0](auto& options) mutable {
     DebugScreen::PrintLine("Hello " + std::to_string(x++));
     DebugScreen::Display();
-    options.repeatIn = Duration::Seconds(1);
+    if (x < 5) {
+      options.repeatIn = Duration::Seconds(1);
+    }
   });
 
   INFO("Success");

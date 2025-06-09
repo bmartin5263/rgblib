@@ -38,7 +38,9 @@ struct TimerNode {
   auto repeat(Timestamp now, Duration repeatOverride) -> void {
     auto isOverride = repeatOverride > Duration{0};
     ASSERT(repeatsRemaining > 0 || isOverride, "No repeats remaining");
-    --repeatsRemaining;
+    if (!isOverride) {
+      --repeatsRemaining;
+    }
     tombstone = false; // User code could have set this to `true` while executing the timer function
 
     auto delta = isOverride ? repeatOverride : timeBetweenExecutions;
