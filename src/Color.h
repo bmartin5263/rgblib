@@ -100,15 +100,18 @@ struct Color {
     return !(lhs == rhs);
   }
 
-  constexpr auto lerp(const Color& to, float time) -> Color {
+  [[nodiscard]]
+  constexpr auto lerp(const Color& to, float time) const -> Color {
     return Color { Lerp(r, to.r, time), Lerp(g, to.g, time), Lerp(b, to.b, time), Lerp(w, to.w, time) };
   }
 
-  constexpr auto lerpWrap(const Color& to, float time) -> Color {
+  [[nodiscard]]
+  constexpr auto lerpWrap(const Color& to, float time) const -> Color {
     return Color { LerpWrap(r, to.r, time), LerpWrap(g, to.g, time), LerpWrap(b, to.b, time), LerpWrap(w, to.w, time) };
   }
 
-  constexpr auto lerpClamp(const Color& to, float time) -> Color {
+  [[nodiscard]]
+  constexpr auto lerpClamp(const Color& to, float time) const -> Color {
     return Color { LerpClamp(r, to.r, time), LerpClamp(g, to.g, time), LerpClamp(b, to.b, time), LerpClamp(w, to.w, time) };
   }
 

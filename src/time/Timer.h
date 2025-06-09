@@ -17,8 +17,8 @@ class Timer {
 
 public:
   static auto SetTimeout(Duration duration, const Runnable& function) -> TimerHandle;
-  static auto SetInterval(Duration duration, uint times, const Runnable& function) -> TimerHandle;
   static auto SetTimeout(Duration duration, const TimerFunction& function) -> TimerHandle;
+  static auto SetInterval(Duration duration, uint times, const Runnable& function) -> TimerHandle;
   static auto SetInterval(Duration duration, uint times, const TimerFunction& function) -> TimerHandle;
   static auto ProcessTimers() -> void;
   static auto Cancel(TimerNode* node) -> void;

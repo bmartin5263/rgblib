@@ -48,7 +48,7 @@ auto setup() -> void {
 
   irReceiver.button0.onPress([](){ App::NextScene(); });
   irReceiver.button1.onPress([](){
-    handle = Timer::SetTimeout(Duration::Seconds(1), [x = 0](auto& options) mutable {
+    handle = Timer::SetTimeout(Duration {}, [x = 0](auto& options) mutable {
       DebugScreen::PrintLine("Hello " + std::to_string(x++));
       DebugScreen::Display();
       if (x < 5) {
