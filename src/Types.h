@@ -34,6 +34,7 @@ using mph = float;
 using revs_per_minute = float;
 using cstring = const char*;
 using normal = float;
+using time_t = unsigned long;
 
 template<typename V, class Self>
 struct number_wrapper {
@@ -81,22 +82,22 @@ struct number_wrapper {
 
   constexpr auto operator-=(const Self& rhs) -> Self& {
     value -= rhs.value;
-    return *this;
+    return static_cast<Self&>(*this);
   }
 
   constexpr auto operator*=(const Self& rhs) -> Self& {
     value *= rhs.value;
-    return *this;
+    return static_cast<Self&>(*this);
   }
 
   constexpr auto operator/=(const Self& rhs) -> Self& {
     value /= rhs.value;
-    return *this;
+    return static_cast<Self&>(*this);
   }
 
   constexpr auto operator%=(const Self& rhs) -> Self& {
     value %= rhs.value;
-    return *this;
+    return static_cast<Self&>(*this);
   }
 
   constexpr friend auto operator==(self_type lhs, self_type rhs) -> bool {
@@ -136,27 +137,32 @@ struct number_wrapper {
   }
 };
 
-struct Duration : public number_wrapper<unsigned long, Duration> {
-  constexpr explicit Duration() : number_wrapper<unsigned long, Duration>(0) {}
-  constexpr explicit Duration(unsigned long microseconds) : number_wrapper<unsigned long, Duration>(microseconds) {}
-  static constexpr auto Seconds(unsigned long amount) -> Duration { return Duration(amount * 1000000); }
-  static constexpr auto Minutes(unsigned long amount) -> Duration { return Duration(amount * 60000000); }
-  static constexpr auto Milliseconds(unsigned long amount) -> Duration { return Duration(amount * 1000); }
-  static constexpr auto Microseconds(unsigned long amount) -> Duration { return Duration(amount); }
+struct Duration : public number_wrapper<time_t, Duration> {
+  constexpr explicit Duration() : number_wrapper<time_t, Duration>(0) {}
+  constexpr explicit Duration(time_t microseconds) : number_wrapper<time_t, Duration>(microseconds) {}
+  static constexpr auto Seconds(time_t amount) -> Duration { return Duration(amount * 1000000); }
+  static constexpr auto Minutes(time_t amount) -> Duration { return Duration(amount * 60000000); }
+  static constexpr auto Milliseconds(time_t amount) -> Duration { return Duration(amount * 1000); }
+  static constexpr auto Microseconds(time_t amount) -> Duration { return Duration(amount); }
   constexpr auto asSeconds() -> float { return static_cast<float>(value) / 1000000.f; }
   constexpr auto asMinutes() -> float { return static_cast<float>(value) / 60000000.f; }
   constexpr auto asMilliseconds() -> float { return static_cast<float>(value) / 1000.f; }
   constexpr auto asMicroseconds() -> float { return static_cast<float>(value); }
 };
 
-struct Timestamp : public number_wrapper<unsigned long, Timestamp> {
-  constexpr explicit Timestamp() : number_wrapper<unsigned long, Timestamp>(0) {}
-  constexpr explicit Timestamp(unsigned long microseconds) : number_wrapper<unsigned long, Timestamp>(microseconds) {}
-  static constexpr auto OfMicroseconds(unsigned long amount) -> Timestamp { return Timestamp(amount); }
+struct Timestamp : public number_wrapper<time_t, Timestamp> {
+  constexpr explicit Timestamp() : number_wrapper<time_t, Timestamp>(0) {}
+  constexpr explicit Timestamp(time_t microseconds) : number_wrapper<time_t, Timestamp>(microseconds) {}
+  static constexpr auto OfMicroseconds(time_t amount) -> Timestamp { return Timestamp(amount); }
   constexpr auto asSeconds() -> float { return static_cast<float>(value) / 1000000.f; }
   constexpr auto asMinutes() -> float { return static_cast<float>(value) / 60000000.f; }
   constexpr auto asMilliseconds() -> float { return static_cast<float>(value) / 1000.f; }
   constexpr auto asMicroseconds() -> float { return static_cast<float>(value); }
+
+  [[nodiscard]]
+  constexpr auto percentOf(Timestamp rhs) const -> normal {
+    return static_cast<float>(value) / static_cast<float>(rhs.value);
+  }
 
   using number_wrapper::operator+;
   constexpr auto operator+(const Duration& rhs) const -> Timestamp {

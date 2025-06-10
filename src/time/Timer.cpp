@@ -42,40 +42,63 @@ Timer::Timer() {
 }
 
 auto Timer::SetTimeout(Duration duration, const Runnable& function) -> TimerHandle {
-  return Instance().setTimeout(duration, 0, [=](const auto& unused){ function(); });
+  return Instance().setTimeout(duration, [=](const auto& unused){ function(); });
 }
 
-auto Timer::SetInterval(rgb::Duration duration, uint times, const Runnable& function) -> TimerHandle {
-  if (times == 0) {
-    return TimerHandle {};
-  }
-  return Instance().setTimeout(duration, times - 1, [=](const auto& unused){ function(); });
+auto Timer::ContinuouslyFor(Duration duration, const Runnable& function) -> TimerHandle {
+  return Instance().continuouslyFor(duration, [=](const auto& unused){ function(); });
+}
+
+
+auto Timer::ContinuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle {
+  return Instance().continuouslyFor(duration, function);
 }
 
 auto Timer::SetTimeout(Duration duration, const TimerFunction& function) -> TimerHandle {
-  return Instance().setTimeout(duration, 0, function);
+  return Instance().setTimeout(duration, function);
 }
 
-auto Timer::SetInterval(rgb::Duration duration, uint times, const TimerFunction& function) -> TimerHandle {
-  if (times == 0) {
-    return TimerHandle {};
-  }
-  return Instance().setTimeout(duration, times - 1, function);
+auto Timer::SetImmediateTimeout(const Runnable& function) -> TimerHandle {
+  return Instance().setTimeout(Duration {0}, [=](const auto& unused){ function(); });
 }
 
-auto Timer::setTimeout(Duration duration, uint repeatCount, const TimerFunction& function) -> TimerHandle {
+auto Timer::SetImmediateTimeout(const TimerFunction& function) -> TimerHandle {
+  return Instance().setTimeout(Duration {0}, function);
+}
+
+auto Timer::setTimeout(Duration duration, const TimerFunction& function) -> TimerHandle {
   INFO("SetTimeout()");
-  auto time = Clock::Now();
+  auto now = Clock::Now();
   auto timer = nextTimerNode();
 
   timer->clean();
   timer->timerFunction = function;
-  timer->executeAt = time + duration;
-  timer->repeatsRemaining = repeatCount;
-  timer->timeBetweenExecutions = duration;
+  timer->executeAt = now + duration;
   timer->handleId = nextHandleId++;
+  timer->startedAt = now;
 
   INFO("Assigning Timer '%i'", timer->id);
+  ASSERT(timer->next == nullptr, "Timer.Next is not nullptr");
+  ASSERT(timer->prev == nullptr, "Timer.Prev is not nullptr");
+
+  TimerNode::InsertFront(toAddHead, timer);
+
+  return TimerHandle { timer };
+}
+
+auto Timer::continuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle {
+  INFO("ContinuouslyFor()");
+  auto now = Clock::Now();
+  auto timer = nextTimerNode();
+
+  timer->clean();
+  timer->timerFunction = function;
+  timer->finishAt = now + duration;
+  timer->executeAt = now;
+  timer->startedAt = now;
+  timer->handleId = nextHandleId++;
+
+  INFO("Assigning Timer '%i'. startedAt=%lu, finishAt=%lu", timer->id, timer->startedAt.value, timer->finishAt.value);
   ASSERT(timer->next == nullptr, "Timer.Next is not nullptr");
   ASSERT(timer->prev == nullptr, "Timer.Prev is not nullptr");
 
@@ -121,16 +144,32 @@ auto Timer::processTimers() -> void {
 }
 
 auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
-  INFO("Start Executing Timer '%i'", timer->id);
-  auto options = TimerOptions{};
-  timer->timerFunction(options);
-  INFO("Finish Executing Timer '%i'. Repeat = %li, %f, %f", timer->id, options.repeatIn.value, options.repeatIn.asMicroseconds(), options.repeatIn.asMilliseconds());
-  if (options.repeatIn > Duration(0) || timer->repeatsRemaining > 0) {
-    INFO("Repeating Timer '%i', repeats remaining = %i", timer->id, timer->repeatsRemaining);
-    timer->repeat(now, options.repeatIn);
-    enqueueForAdding(timer);
+  auto context = TimerContext{};
+  auto recycle = false;
+  if (timer->finishAt != Timestamp{0}) {
+    context.percentComplete = min(1.0f, (Clock::Now() - timer->startedAt).percentOf(timer->finishAt - timer->startedAt));
+    timer->timerFunction(context);
+    if (now < timer->finishAt) {
+      timer->repeat(now, Duration{});
+      enqueueForAdding(timer);
+    }
+    else {
+      recycle = true;
+    }
   }
   else {
+    INFO("Running Timer '%i'", timer->id);
+    timer->timerFunction(context);
+    if (context.repeatIn) {
+      INFO("Repeating Timer '%i'", timer->id);
+      timer->repeat(now, context.repeatIn.value());
+      enqueueForAdding(timer);
+    }
+    else {
+      recycle = true;
+    }
+  }
+  if (recycle) {
     INFO("Recycling Timer '%i'", timer->id);
     TimerNode::InsertFront(unusedHead, timer);
   }
@@ -169,7 +208,7 @@ auto Timer::processAdditions() -> void {
 auto Timer::nextTimerNode() -> TimerNode* {
   if (unusedHead == nullptr) {
     reclaimNodes();
-    ASSERT(unusedHead != nullptr, "No more timer nodes available");
+    ASSERT_C(unusedHead != nullptr, "No more timer nodes available", Color::WHITE());
   }
   auto next = TimerNode::Pop(unusedHead);
   ASSERT(next->next == nullptr, "Next is not a nullptr");

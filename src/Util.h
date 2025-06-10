@@ -166,6 +166,7 @@ constexpr auto RemapPercent(T min, T max, T actual) -> normal {
   }
   return (actual - min) / diff;
 }
+
 }
 
 #endif //RGBLIB_UTIL_H

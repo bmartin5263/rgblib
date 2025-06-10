@@ -22,6 +22,7 @@ public:
   TimerHandle& operator=(TimerHandle&& rhs) noexcept;
   ~TimerHandle();
 
+  auto release() -> void;
   auto cancel() -> void;
 
 private:

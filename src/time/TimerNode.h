@@ -11,19 +11,20 @@
 
 namespace rgb {
 
-struct TimerOptions {
-  Duration repeatIn{};
+struct TimerContext {
+  std::optional<Duration> repeatIn{};
+  normal percentComplete{1.0f};
 };
 
-using TimerFunction = Consumer<TimerOptions&>;
+using TimerFunction = Consumer<TimerContext&>;
 
 struct TimerNode {
   TimerNode* prev{};
   TimerNode* next{};
   TimerFunction timerFunction{};
   Timestamp executeAt{};
-  Duration timeBetweenExecutions{};
-  uint repeatsRemaining{};
+  Timestamp startedAt{};
+  Timestamp finishAt{};
   uint id{};
   uint handleId{};
   bool tombstone{};
@@ -32,20 +33,18 @@ struct TimerNode {
     prev = nullptr;
     next = nullptr;
     timerFunction = {};
-    repeatsRemaining = 0;
     tombstone = false;
     handleId = 0;
+    startedAt = Timestamp{0};
+    finishAt = Timestamp{0};
   }
 
-  auto repeat(Timestamp now, Duration repeatOverride) -> void {
-    auto isOverride = repeatOverride > Duration{0};
-    ASSERT(repeatsRemaining > 0 || isOverride, "No repeats remaining");
-    if (!isOverride) {
-      --repeatsRemaining;
-    }
-    tombstone = false; // User code could have set this to `true` while executing the timer function
+  auto isContinuous() -> bool {
+    return finishAt != Timestamp{0};
+  }
 
-    auto delta = isOverride ? repeatOverride : timeBetweenExecutions;
+  auto repeat(Timestamp now, Duration delta) -> void {
+    tombstone = false; // User code could have set this to `true` while executing the timer function
     executeAt = now + delta;
   }
 
