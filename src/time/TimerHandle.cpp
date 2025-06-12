@@ -21,7 +21,7 @@ auto TimerHandle::cancel() -> void {
     if (node->handleId == handleId) {
       Timer::Cancel(node);
     }
-    release();
+    detach();
   }
 }
 
@@ -33,17 +33,17 @@ TimerHandle::~TimerHandle() {
 TimerHandle::TimerHandle(TimerHandle&& rhs) noexcept {
   this->node = rhs.node;
   this->handleId = rhs.handleId;
-  rhs.release();
+  rhs.detach();
 }
 
 TimerHandle& TimerHandle::operator=(TimerHandle&& rhs) noexcept {
   this->node = rhs.node;
   this->handleId = rhs.handleId;
-  rhs.release();
+  rhs.detach();
   return *this;
 }
 
-auto TimerHandle::release() -> void {
+auto TimerHandle::detach() -> void {
   this->node = nullptr;
   this->handleId = 0;
 }

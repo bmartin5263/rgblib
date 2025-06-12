@@ -67,7 +67,7 @@ auto Timer::SetImmediateTimeout(const TimerFunction& function) -> TimerHandle {
 }
 
 auto Timer::setTimeout(Duration duration, const TimerFunction& function) -> TimerHandle {
-  INFO("SetTimeout()");
+  TRACE("SetTimeout()");
   auto now = Clock::Now();
   auto timer = nextTimerNode();
 
@@ -77,7 +77,7 @@ auto Timer::setTimeout(Duration duration, const TimerFunction& function) -> Time
   timer->handleId = nextHandleId++;
   timer->startedAt = now;
 
-  INFO("Assigning Timer '%i'", timer->id);
+  TRACE("Assigning Timer '%i'", timer->id);
   ASSERT(timer->next == nullptr, "Timer.Next is not nullptr");
   ASSERT(timer->prev == nullptr, "Timer.Prev is not nullptr");
 
@@ -87,7 +87,7 @@ auto Timer::setTimeout(Duration duration, const TimerFunction& function) -> Time
 }
 
 auto Timer::continuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle {
-  INFO("ContinuouslyFor()");
+  TRACE("ContinuouslyFor()");
   auto now = Clock::Now();
   auto timer = nextTimerNode();
 
@@ -98,7 +98,7 @@ auto Timer::continuouslyFor(Duration duration, const TimerFunction& function) ->
   timer->startedAt = now;
   timer->handleId = nextHandleId++;
 
-  INFO("Assigning Timer '%i'. startedAt=%lu, finishAt=%lu", timer->id, timer->startedAt.value, timer->finishAt.value);
+  TRACE("Assigning Timer '%i'. startedAt=%lu, finishAt=%lu", timer->id, timer->startedAt.value, timer->finishAt.value);
   ASSERT(timer->next == nullptr, "Timer.Next is not nullptr");
   ASSERT(timer->prev == nullptr, "Timer.Prev is not nullptr");
 
@@ -113,7 +113,7 @@ auto Timer::Cancel(TimerNode* node) -> void {
 
 auto Timer::cancel(TimerNode* node) -> void {
   if (node != nullptr) {
-    INFO("Cancelling Timer '%i'", node->id);
+    TRACE("Cancelling Timer '%i'", node->id);
     node->tombstone = true;
   }
 }
@@ -135,7 +135,7 @@ auto Timer::processTimers() -> void {
   while (activeHead != nullptr && activeHead->executeAt <= now) {
     auto timer = TimerNode::Pop(activeHead);
     if (timer->tombstone) {
-      INFO("Cleaning Tombstone '%i'", timer->id);
+      TRACE("Cleaning Tombstone '%i'", timer->id);
       TimerNode::InsertFront(unusedHead, timer);
       continue;
     }
@@ -146,7 +146,7 @@ auto Timer::processTimers() -> void {
 auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
   auto context = TimerContext{};
   auto recycle = false;
-  if (timer->finishAt != Timestamp{0}) {
+  if (timer->isContinuous()) {
     context.percentComplete = min(1.0f, (Clock::Now() - timer->startedAt).percentOf(timer->finishAt - timer->startedAt));
     timer->timerFunction(context);
     if (now < timer->finishAt) {
@@ -158,10 +158,10 @@ auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
     }
   }
   else {
-    INFO("Running Timer '%i'", timer->id);
+    TRACE("Running Timer '%i'", timer->id);
     timer->timerFunction(context);
     if (context.repeatIn) {
-      INFO("Repeating Timer '%i'", timer->id);
+      TRACE("Repeating Timer '%i'", timer->id);
       timer->repeat(now, context.repeatIn.value());
       enqueueForAdding(timer);
     }
@@ -170,7 +170,7 @@ auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
     }
   }
   if (recycle) {
-    INFO("Recycling Timer '%i'", timer->id);
+    TRACE("Recycling Timer '%i'", timer->id);
     TimerNode::InsertFront(unusedHead, timer);
   }
 }

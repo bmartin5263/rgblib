@@ -99,4 +99,15 @@ auto FillChain::fill(const Color& color, u16 start, u16 range) -> FillChain {
   return { mHead + end, newSize };
 }
 
+Pixel* NullPixelList::getHead() {
+  return nullptr;
+}
+
+const Pixel* NullPixelList::getHead() const {
+  return nullptr;
+}
+
+u16 NullPixelList::getSize() const {
+  return 0;
+}
 }

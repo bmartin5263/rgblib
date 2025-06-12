@@ -22,7 +22,10 @@ public:
   TimerHandle& operator=(TimerHandle&& rhs) noexcept;
   ~TimerHandle();
 
-  auto release() -> void;
+  // Release ownership of the timer without canceling it
+  auto detach() -> void;
+
+  // Release ownership and cancel the timer
   auto cancel() -> void;
 
 private:

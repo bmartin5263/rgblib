@@ -54,6 +54,19 @@ public:
   virtual ~PixelList() = default;
 };
 
+class NullPixelList : public PixelList {
+public:
+  auto getHead() -> Pixel* override;
+  auto getHead() const -> const Pixel* override;
+  auto getSize() const -> u16 override;
+
+
+  static auto Instance() -> NullPixelList& {
+    static NullPixelList instance;
+    return instance;
+  }
+};
+
 using PixelStrip = PixelList;
 using PixelRing = PixelList;
 

@@ -18,6 +18,7 @@
 #include "AppBuilder.h"
 #include "Iterable.h"
 #include "LEDMatrix.h"
+#include "DataSet.h"
 
 using namespace rgb;
 
@@ -31,22 +32,21 @@ auto sensors = std::array {
   }}
 };
 
-auto circuit = LEDMatrix<8, 8>{D2_RGB, NEO_GRBW + NEO_KHZ800};
+auto circuit = LEDStrip<64>{D2_RGB};
 auto slice = circuit.slice(3);
-auto stick = LEDStrip<64>{D4_RGB};
 auto leds = std::array {
-  static_cast<LEDCircuit*>(&circuit),
-  static_cast<LEDCircuit*>(&stick)
+  static_cast<LEDCircuit*>(&circuit)
 };
 
-auto introScene = IntroScene{circuit, stick};
-auto demoScene = DemoScene{circuit, stick};
+auto introScene = IntroScene{circuit, NullPixelList::Instance()};
+auto demoScene = DemoScene{circuit, NullPixelList::Instance()};
 auto scenes = std::array {
   static_cast<Scene*>(&demoScene),
   static_cast<Scene*>(&introScene)
 };
 
-TimerHandle handle;
+auto handle = TimerHandle{};
+auto dataSet = DataSet<int, 20>{};
 
 auto setup() -> void {
   log::init();
@@ -55,17 +55,18 @@ auto setup() -> void {
 
   irReceiver.button0.onPress([](){ App::NextScene(); });
   irReceiver.button1.onPress([](){
-    handle = Timer::ContinuouslyFor(Duration::Seconds(1), [](TimerContext& context) mutable {
+    Timer::ContinuouslyFor(Duration::Seconds(1), [](TimerContext& context) mutable {
       DebugScreen::PrintLine("Hello " + std::to_string(context.percentComplete));
       DebugScreen::Display();
-    });
+      dataSet.push(10);
+    }).detach();
   });
   irReceiver.start(D3);
 
   DebugScreen::Start(true);
   AppBuilder::Create()
     .DebugOutputLED(&slice)
-//    .EnableIntroScene(introScene, Duration::Seconds(5))
+    .EnableIntroScene(introScene, Duration::Seconds(5))
     .SetScenes(scenes)
     .SetLEDs(leds)
     .SetSensors(sensors)
@@ -81,7 +82,6 @@ auto loop() -> void {
 //    DebugScreen::Display();
 //  }
   App::Loop();
-  micros();
 }
 
 #endif //RGBLIB_DEMO1_H

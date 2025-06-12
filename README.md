@@ -1,19 +1,8 @@
 # RGBLib
 
 ## TODO
-- [X] Vehicle Thread to eliminate blocking main thread when accessing vehicle data
-- [X] Update sensors on every frame in main thread
-- [X] Debug LEDS on top layer
-- [X] OTA led turns on even when its not active
-- [X] Scene Manager timer for intro
-- [X] Library build + import into _another_ project w/o copying and pasting this project into it
-- [X] CICD pipeline
-- [X] Resiliency - able to automatically recover subsystems if connection issues
-  - [X] Vehicle
-  - [X] Wi-Fi
+- [ ] Resiliency - able to automatically recover subsystems if connection issues
   - [ ] Debug Screen
-- [ ] Check if vehicle supports PID
-- [ ] Smoothing vehicle value changes
 
 ## Debugging Tools
 
@@ -21,13 +10,17 @@
 Macros such as `INFO()` and `ERROR()` can be used to print logs to the Serial output. The library makes
 use of these macros for reporting issues at runtime
 
-| Macro             | Description                            |
-|-------------------|----------------------------------------|
-| `TRACE(msg, ...)` | Print a log message with level _Trace_ |
-| `INFO(msg, ...)`  | Print a log message with level _Info_  |
-| `ERROR(msg, ...)` | Print a log message with level _Error_ |
+| Logging Macro      | Description                                                                                |
+|--------------------|--------------------------------------------------------------------------------------------|
+| `PRINTF(msg, ...)` | Print a log message without any header/timestamp. Always enabled, intended for real output |
+| `TRACE(msg, ...)`  | Print a log message with level _Trace_. Intended for low-level or repeated messages        |
+| `INFO(msg, ...)`   | Print a log message with level _Info_. Intended for high-level messages                    |
+| `ERROR(msg, ...)`  | Print a log message with level _Error_. Intended for abnormal events                       |
 
-`TODO - disable per-level basis`
+| Configuration Macro | Description                                                                 |
+|---------------------|-----------------------------------------------------------------------------|
+| `RGB_DEBUG`         | Sets `RGB_LOG_LEVEL` to `1`. Meant to do other debug-related things as well |
+| `RGB_LOG_LEVEL`     | `0=ERROR`, `1=INFO`, `2=TRACE`. Defaults to `0`                             |
 
 ## Terminology
 

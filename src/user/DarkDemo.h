@@ -24,7 +24,11 @@ using namespace rgb;
 
 constexpr auto LED_COUNT = 64;
 
-auto sensors = std::array<Runnable, 0> {
+auto irReceiver = IRReceiver{};
+auto sensors = std::array {
+  Runnable {
+    [](){ irReceiver.update(); }
+  }
 };
 
 auto leds = std::array<LEDCircuit*, 0> {
@@ -45,14 +49,16 @@ auto setup() -> void {
     .SetSensors(sensors)
     .Start();
 
+  irReceiver.start(D3);
+
   Timer::ContinuouslyFor(Duration::Seconds(5), [runs = 0](TimerContext& context) mutable {
     INFO("Step 1: %f %i", context.percentComplete, ++runs);
     if (context.percentComplete >= 1.0f) {
       Timer::ContinuouslyFor(Duration::Seconds(1), [runs = 0](TimerContext& context) mutable {
         INFO("Step 2: %f %i", context.percentComplete, ++runs);
-      }).release();
+      }).detach();
     }
-  }).release();
+  }).detach();
 }
 
 auto loop() -> void {
