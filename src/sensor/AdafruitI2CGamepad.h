@@ -7,7 +7,7 @@
 
 #include "Types.h"
 #include "Func.h"
-#include <Adafruit_seesaw.h>
+#include "MyAdafruitSeesaw.h"
 #include "GamePadButton.h"
 
 namespace rgb {

@@ -69,9 +69,9 @@ auto setup() -> void {
 
 auto loop() -> void {
   App::Loop();
-  if (trigger.test()) {
-    PRINTF("LEFT");
-  }
+//  if (trigger.test()) {
+//    PRINTF("LEFT");
+//  }
 }
 
 #endif //RGBLIB_DEMO1_H
