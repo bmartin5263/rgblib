@@ -15,4 +15,6 @@ using Consumer = std::function<void(T)>;
 template <typename T>
 using Supplier = std::function<T(void)>;
 
+using Predicate = Supplier<bool>;
+
 #endif //RGBLIB_FUNC_H

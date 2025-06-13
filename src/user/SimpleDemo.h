@@ -22,7 +22,7 @@ using namespace rgb;
 
 constexpr auto LED_COUNT = 12;
 
-auto circuit = LEDStrip<LED_COUNT>{D2_RGB};
+auto circuit = LEDStrip<LED_COUNT>{D2_RGB, NEO_BRG};
 auto leds = std::array {
   static_cast<LEDCircuit*>(&circuit)
 };
@@ -55,48 +55,6 @@ auto setup() -> void {
   Timer::SetTimeout(Duration::Seconds(10), [](auto& context) {
     colorFactory.intensity = ColorFactory::LEVEL_1;
   }).detach();
-
-  demoScene.fillEffect.shader = [](auto& pixel, const auto& params){
-    if (params.position == 0) {
-      pixel = colorFactory.red();
-    }
-    else if (params.position == 1) {
-      pixel = colorFactory.magenta();
-    }
-    else if (params.position == 2) {
-      pixel = colorFactory.maroon();
-    }
-    else if (params.position == 3) {
-      pixel = colorFactory.orange();
-    }
-    else if (params.position == 4) {
-      pixel = colorFactory.gold();
-    }
-    else if (params.position == 5) {
-      pixel = colorFactory.salmon();
-    }
-    else if (params.position == 6) {
-      pixel = colorFactory.green();
-    }
-    else if (params.position == 7) {
-      pixel = colorFactory.springGreen();
-    }
-    else if (params.position == 8) {
-      pixel = colorFactory.lime();
-    }
-    else if (params.position == 9) {
-      pixel = colorFactory.aquamarine();
-    }
-    else if (params.position == 10) {
-      pixel = colorFactory.indigo();
-    }
-    else if (params.position == 11) {
-      pixel = colorFactory.purple();
-    }
-    else {
-      pixel = colorFactory.red();
-    }
-  };
 }
 
 auto loop() -> void {

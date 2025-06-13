@@ -32,14 +32,14 @@ auto sensors = std::array {
   }}
 };
 
-auto circuit = LEDStrip<64>{D2_RGB};
+auto circuit = LEDStrip<64>{D2_RGB, NEO_BRG};
 auto slice = circuit.slice(3);
 auto leds = std::array {
   static_cast<LEDCircuit*>(&circuit)
 };
 
 auto introScene = IntroScene{circuit, NullPixelList::Instance()};
-auto demoScene = DemoScene{circuit, NullPixelList::Instance()};
+auto demoScene = DemoScene{circuit};
 auto scenes = std::array {
   static_cast<Scene*>(&demoScene),
   static_cast<Scene*>(&introScene)

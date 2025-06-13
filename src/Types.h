@@ -144,6 +144,8 @@ struct Duration : public number_wrapper<time_t, Duration> {
   static constexpr auto Minutes(time_t amount) -> Duration { return Duration(amount * 60000000); }
   static constexpr auto Milliseconds(time_t amount) -> Duration { return Duration(amount * 1000); }
   static constexpr auto Microseconds(time_t amount) -> Duration { return Duration(amount); }
+  static constexpr auto Max() -> Duration { return Duration(std::numeric_limits<time_t>::max()); }
+  static constexpr auto Min() -> Duration { return Duration(0); }
   constexpr auto asSeconds() -> float { return static_cast<float>(value) / 1000000.f; }
   constexpr auto asMinutes() -> float { return static_cast<float>(value) / 60000000.f; }
   constexpr auto asMilliseconds() -> float { return static_cast<float>(value) / 1000.f; }
