@@ -22,6 +22,7 @@ constexpr auto StaticAssertions() -> void {
   static_assert(sizeof(double) == 8);
 }
 
+
 constexpr float pi = PI;
 
 constexpr auto ExtractBytes(u32 input, u8& byte0, u8& byte1, u8& byte2, u8& byte3) {
