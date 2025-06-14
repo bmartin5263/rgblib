@@ -159,6 +159,19 @@ constexpr auto EaseOutCubic(normal t) -> normal {
   return 1 - pow(1.0f - t, 3.0f);
 }
 
+constexpr auto EaseInOutExpo(normal t) -> normal {
+  return t == 0.f
+         ? 0.f
+         : t == 1.f
+           ? 1.f
+           : t < 0.5f ? pow(2.f, 20.f * t - 10.f) / 2.f
+                      : (2.f - pow(2.f, -20.f * t + 10.f)) / 2.f;
+}
+
+constexpr auto EaseInOutCubic(normal t) -> normal {
+  return t < 0.5f ? 4.f * t * t * t : 1.f - pow(-2.f * t + 2.f, 3.f) / 2.f;
+}
+
 template<typename T>
 constexpr auto RemapPercent(T min, T max, T actual) -> normal {
   auto diff = max - min;
