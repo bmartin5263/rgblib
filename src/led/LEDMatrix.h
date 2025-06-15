@@ -55,15 +55,15 @@ public:
   }
 
   int zigzagToLinearIndex(int index) {
-    int col = index / ROWS;
-    int rowInCol = index % ROWS;
+    int col = index / COLUMNS;
+    int rowInCol = index % COLUMNS;
 
     if (col % 2 == 0) {
       // Even column: top-down
-      return col * ROWS + rowInCol;
+      return col * COLUMNS + rowInCol;
     } else {
       // Odd column: bottom-up
-      return col * ROWS + (ROWS - 1 - rowInCol);
+      return col * COLUMNS + (COLUMNS - 1 - rowInCol);
     }
   }
 
@@ -115,7 +115,7 @@ public:
     return (pixel + mOffset) % N;
   }
 
-  [[nodiscard]] auto getColumns() -> size_t {
+  [[nodiscard]] auto getColumns() -> size_t override {
     return COLUMNS;
   }
 

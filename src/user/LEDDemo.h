@@ -32,7 +32,7 @@ auto sensors = std::array {
   }}
 };
 
-auto circuit = LEDStrip<64>{D2_RGB, NEO_BRG};
+auto circuit = LEDMatrix<8, 32, true>{D2_RGB, NEO_GRB + NEO_KHZ800};
 auto slice = circuit.slice(3);
 auto leds = std::array {
   static_cast<LEDCircuit*>(&circuit)
@@ -66,7 +66,7 @@ auto setup() -> void {
   DebugScreen::Start(true);
   AppBuilder::Create()
     .DebugOutputLED(&slice)
-    .EnableIntroScene(introScene, Duration::Seconds(5))
+    .EnableIntroScene(introScene, Duration::Seconds(100))
     .SetScenes(scenes)
     .SetLEDs(leds)
     .SetSensors(sensors)
