@@ -55,15 +55,13 @@ public:
   }
 
   int zigzagToLinearIndex(int index) {
-    int col = index / COLUMNS;
-    int rowInCol = index % COLUMNS;
+    int row = index / COLUMNS;
+    int columnInRow = index % COLUMNS;
 
-    if (col % 2 == 0) {
-      // Even column: top-down
-      return col * COLUMNS + rowInCol;
+    if (row % 2 == 0) {
+      return row * COLUMNS + (COLUMNS - 1 - columnInRow);
     } else {
-      // Odd column: bottom-up
-      return col * COLUMNS + (COLUMNS - 1 - rowInCol);
+      return row * COLUMNS + columnInRow;
     }
   }
 
@@ -125,6 +123,7 @@ private:
   int mOffset;
   int stagger;
   bool mReversed;
+  bool mMirrored;
 };
 
 }
