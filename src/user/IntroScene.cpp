@@ -32,7 +32,6 @@ auto IntroScene::setup() -> void {
 //    }
     auto c  = Color::HslToRgb(p);
     led = c * .03f;
-    led = Color::PURPLE();
   };
   trailingEffect.init();
 }

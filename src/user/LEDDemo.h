@@ -19,6 +19,7 @@
 #include "Iterable.h"
 #include "LEDMatrix.h"
 #include "DataSet.h"
+#include "Brightness.h"
 
 using namespace rgb;
 
@@ -32,8 +33,8 @@ auto sensors = std::array {
   }}
 };
 
-auto circuit = LEDMatrix<8, 8>{D2_RGB, NEO_GRBW + NEO_KHZ800};
-//auto circuit = LEDStrip<16>{D2_RGB, NEO_GRBW + NEO_KHZ800};
+//auto circuit = LEDMatrix<8, 8>{D2_RGB, NEO_GRBW + NEO_KHZ800};
+auto circuit = LEDStrip<24>{D4_RGB, NEO_GRB + NEO_KHZ800};
 auto slice = circuit.slice(3);
 auto leds = std::array {
   static_cast<LEDCircuit*>(&circuit)
@@ -62,9 +63,22 @@ auto setup() -> void {
       dataSet.push(10);
     }).detach();
   });
+  irReceiver.buttonUp.onPress([](){
+    Brightness::Increase();
+  });
+  irReceiver.buttonDown.onPress([](){
+    Brightness::Decrease();
+  });
   irReceiver.start(D3);
 
-  DebugScreen::Start(true);
+  DebugScreen::Start(FlipDisplay(true));
+
+  Brightness::Configure()
+      .MinBrightness(0.0f)
+      .MaxBrightness(.2f)
+      .DefaultBrightness(.05f)
+      .Step(.05);
+
   AppBuilder::Create()
     .DebugOutputLED(&slice)
     .EnableIntroScene(introScene, Duration::Seconds(5))
@@ -72,16 +86,9 @@ auto setup() -> void {
     .SetLEDs(leds)
     .SetSensors(sensors)
     .Start();
-
-//  VehicleThread::Instance().autoUpdate = true;
-//  VehicleThread::Start(vehicle);
 }
 
 auto loop() -> void {
-//  if (DebugScreen::ReadyForUpdate()) {
-//    DebugScreen::PrintLine("Hello");
-//    DebugScreen::Display();
-//  }
   App::Loop();
 }
 

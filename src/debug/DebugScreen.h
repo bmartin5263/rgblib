@@ -11,11 +11,19 @@
 
 namespace rgb {
 
+struct FlipDisplay {
+  explicit FlipDisplay(bool v): value(v) {}
+  operator bool() const {
+    return value;
+  }
+  bool value;
+};
+
 class DebugScreen {
 public:
   using DrawFunction = std::function<void(U8G2&)>;
 
-  static auto Start(bool flip = false) -> void { Instance().start(flip); }
+  static auto Start(FlipDisplay flip = FlipDisplay(false)) -> void { Instance().start(flip); }
   static auto PrintLine(const std::string& msg) -> void { Instance().printLine(msg); }
   static auto PrintLine(int row, const std::string& msg) -> void { Instance().printLine(row, msg); }
   static auto Display() -> void { Instance().display(); }
@@ -36,7 +44,7 @@ private:
     return instance;
   }
 
-  auto start(bool flip = false) -> void;
+  auto start(FlipDisplay flip) -> void;
   auto display() -> void;
   auto readyForUpdate() -> bool;
   auto printLine(const std::string& msg) -> void;
