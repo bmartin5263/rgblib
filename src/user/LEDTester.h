@@ -23,7 +23,13 @@
 
 using namespace rgb;
 
-constexpr auto LED_COUNT = 64;
+constexpr auto STARTUP_DELAY = Duration::Milliseconds(0);
+constexpr auto INTRO_LENGTH = Duration::Seconds(10);
+constexpr auto LED_COUNT = 8;
+
+constexpr auto LED_TYPE = NEO_GRBW + NEO_KHZ800;   // RGBW
+constexpr auto LED_PIN = D4_RGB;
+constexpr auto IR_PIN = D3;
 
 auto vehicle = Vehicle{};
 auto irReceiver = IRReceiver{};
@@ -34,8 +40,8 @@ auto sensors = std::array {
 };
 
 //auto circuit = LEDMatrix<8, 8>{D2_RGB, NEO_GRBW + NEO_KHZ800};
-auto circuit = LEDStrip<24>{D4_RGB, NEO_GRB + NEO_KHZ800};
-auto slice = circuit.slice(3);
+auto circuit = LEDStrip<LED_COUNT>{LED_PIN, LED_TYPE};
+auto slice = circuit.slice(LED_COUNT / 2);
 auto leds = std::array {
   static_cast<LEDCircuit*>(&circuit)
 };
@@ -47,29 +53,14 @@ auto scenes = std::array {
   static_cast<Scene*>(&introScene)
 };
 
-auto handle = TimerHandle{};
-auto dataSet = DataSet<int, 20>{};
-
 auto setup() -> void {
   log::init();
-
-  INFO("Success");
+  delay(STARTUP_DELAY.asMilliseconds());
 
   irReceiver.button0.onPress([](){ App::NextScene(); });
-  irReceiver.button1.onPress([](){
-    Timer::ContinuouslyFor(Duration::Seconds(1), [](TimerContext& context) mutable {
-      DebugScreen::PrintLine("Hello " + std::to_string(context.percentComplete));
-      DebugScreen::Display();
-      dataSet.push(10);
-    }).detach();
-  });
-  irReceiver.buttonUp.onPress([](){
-    Brightness::Increase();
-  });
-  irReceiver.buttonDown.onPress([](){
-    Brightness::Decrease();
-  });
-  irReceiver.start(D3);
+  irReceiver.buttonUp.onPress([](){ Brightness::Increase(); });
+  irReceiver.buttonDown.onPress([](){ Brightness::Decrease(); });
+  irReceiver.start(IR_PIN);
 
   DebugScreen::Start(FlipDisplay(true));
 
@@ -77,11 +68,11 @@ auto setup() -> void {
       .MinBrightness(0.0f)
       .MaxBrightness(.2f)
       .DefaultBrightness(.05f)
-      .Step(.05);
+      .Step(.05f);
 
   AppBuilder::Create()
     .DebugOutputLED(&slice)
-    .EnableIntroScene(introScene, Duration::Seconds(5))
+    .EnableIntroScene(introScene, INTRO_LENGTH)
     .SetScenes(scenes)
     .SetLEDs(leds)
     .SetSensors(sensors)
