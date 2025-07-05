@@ -81,7 +81,6 @@ auto App::draw() -> void {
   scene->draw();
   Debug::Draw();
   leds.forEach([](auto led){ led->display();} );
-
 }
 
 auto App::switchScene(Scene& scene) -> void {

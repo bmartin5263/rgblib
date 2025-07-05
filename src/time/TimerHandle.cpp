@@ -16,8 +16,8 @@ TimerHandle::TimerHandle(): handleId(0), node(nullptr) {
 }
 
 auto TimerHandle::cancel() -> void {
-  INFO("TimerHandle(id=%ui)::cancel()", handleId);
   if (node != nullptr) {
+    TRACE("TimerHandle(id=%ui)::cancel()", handleId);
     if (node->handleId == handleId) {
       Timer::Cancel(node);
     }
@@ -26,7 +26,7 @@ auto TimerHandle::cancel() -> void {
 }
 
 TimerHandle::~TimerHandle() {
-  INFO("~TimerHandle(id=%ui)", handleId);
+  TRACE("~TimerHandle(id=%ui)", handleId);
   cancel();
 }
 

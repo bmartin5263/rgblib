@@ -22,9 +22,9 @@ using u16 = uint16_t;
 using u32 = uint32_t;
 using u64 = uint64_t;
 
-using milliseconds_t = unsigned long;
-using microseconds_t = unsigned long;
-using frames_t = unsigned long;
+using milliseconds_t = u64;
+using microseconds_t = u64;
+using frames_t = u64;
 using pin_num = i8;
 using fahrenheit = float;
 using percent = float;
@@ -34,12 +34,12 @@ using mph = float;
 using revs_per_minute = float;
 using cstring = const char*;
 using normal = float;
-using time_t = unsigned long;
+using time_t = u64;
 
 template<typename V, class Self>
 struct number_wrapper {
   using self_type = number_wrapper<V, Self>;
-  
+
   V value;
 
   constexpr explicit number_wrapper(V value) : value(value) {}

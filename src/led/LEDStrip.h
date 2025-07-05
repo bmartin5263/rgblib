@@ -19,7 +19,7 @@ template <u16 N>
 class LEDStrip : public PixelList, public LEDCircuit {
 public:
   explicit LEDStrip(pin_num pin, neoPixelType type = NEO_GRBW + NEO_KHZ800, u16 offset = 0):
-    pixels{}, leds(N, pin, type), mOffset(offset), stagger(8), mReversed(false)
+    pixels{}, leds(N, pin, type), mOffset(offset), mReversed(false)
   {
     start();
   }
@@ -96,7 +96,6 @@ private:
   Pixel pixels[N];
   Adafruit_NeoPixel leds;
   int mOffset;
-  int stagger;
   bool mReversed;
 };
 

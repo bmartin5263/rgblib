@@ -16,7 +16,6 @@
 #include "LEDMatrix.h"
 #include "NullScene.h"
 #include "DataSet.h"
-#include "ColorFactory.h"
 
 using namespace rgb;
 
@@ -31,8 +30,6 @@ auto demoScene = DemoScene{circuit};
 auto scenes = std::array {
   static_cast<Scene*>(&demoScene)
 };
-
-auto colorFactory = ColorFactory{ColorFactory::LEVEL_0};
 
 auto dataSet = DataSet<int, 100>{};
 auto setup() -> void {
@@ -50,10 +47,6 @@ auto setup() -> void {
   Timer::SetTimeout(Duration::Seconds(1), [](auto& context){
     PRINTF("Average: %f", dataSet.average());
     context.repeatIn = Duration::Seconds(1);
-  }).detach();
-
-  Timer::SetTimeout(Duration::Seconds(10), [](auto& context) {
-    colorFactory.intensity = ColorFactory::LEVEL_1;
   }).detach();
 }
 
