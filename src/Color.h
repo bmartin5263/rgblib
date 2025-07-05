@@ -115,7 +115,7 @@ struct Color {
     return Color { LerpClamp(r, to.r, time), LerpClamp(g, to.g, time), LerpClamp(b, to.b, time), LerpClamp(w, to.w, time) };
   }
 
-  constexpr static auto DEFAULT_INTENSITY = .03f;
+  constexpr static auto DEFAULT_INTENSITY = 1.0f;
 
   static constexpr auto FromBytes(u8 r, u8 g, u8 b, u8 w = 0) -> Color {
     return Color{ByteToFloat(r), ByteToFloat(g), ByteToFloat(b), ByteToFloat(w)};

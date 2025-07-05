@@ -42,8 +42,8 @@ public:
   static auto Step() -> normal { return Instance().step(); };
 
 private:
-  normal mCurrentBrightness{};
   BrightnessConfiguration mConfig{};
+  normal mCurrentBrightness{mConfig.mDefaultBrightness};
 
   static auto Instance() -> Brightness& {
     static Brightness instance;
