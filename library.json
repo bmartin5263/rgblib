@@ -23,7 +23,7 @@
     "olikraus/U8g2": "2.36.5",
     "adafruit/Adafruit NeoPixel": "1.13.0",
     "adafruit/Adafruit BusIO": "1.17.1",
-    "z3t0/IRremote": "14.4.2"
+    "z3t0/IRremote": "4.4.3"
   },
   "frameworks": "arduino",
   "platforms": "*"
