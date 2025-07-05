@@ -27,12 +27,12 @@ public:
   static auto PrevScene() -> void { Instance().prevScene(); }
   static auto SwitchScene(Scene& scene) -> void;
 
-private:
-  App() = default;
   App(const App& rhs) = delete;
   App(App&& rhs) noexcept = delete;
   App& operator=(const App& rhs) = delete;
   App& operator=(App&& rhs) noexcept = delete;
+private:
+  App() = default;
   ~App() = default;
 
   static auto Instance() -> App&;

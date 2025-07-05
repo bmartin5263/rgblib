@@ -191,6 +191,10 @@ struct Color {
     return Color {0, 0, 0, intensity};
   }
 
+  static constexpr auto FAKE_WHITE(float intensity = DEFAULT_INTENSITY) -> Color {
+    return Color {intensity, intensity, intensity, 0};
+  }
+
   static constexpr auto OFF() -> Color {
     return {0.f, 0.f, 0.f, 0.f};
   }
