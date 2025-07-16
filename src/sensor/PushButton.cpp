@@ -11,45 +11,29 @@
 namespace rgb {
 
 PushButton::PushButton(pin_num pin)
-  : state(ButtonState::UNPRESSED), pin(pin), onPressCallback(doNothing)
+  : pin(pin), button()
 {
   pinMode(pin, INPUT);
 }
 
 PushButton::PushButton(pin_num pin, Runnable callback)
-  : state(ButtonState::UNPRESSED), pin(pin), onPressCallback(std::move(callback))
+  : pin(pin), button(std::move(callback))
 {
   pinMode(pin, INPUT);
 }
 
-auto PushButton::onPress(Runnable callback) noexcept -> PushButton& {
-  onPressCallback = std::move(callback);
+auto PushButton::onPress(const Runnable& callback) noexcept -> PushButton& {
+  button.onPress(callback);
   return *this;
 }
 
-// TODO - must be called every frame, but easy to forget
 auto PushButton::update() -> ButtonState {
   auto pressed = digitalRead(*pin);
-  if (state == ButtonState::UNPRESSED || state == ButtonState::UNPRESS) {
-    if (pressed) {
-      if (onPressCallback) {
-        onPressCallback();
-      }
-      state = ButtonState::PRESS;
-    }
-    else {
-      state = ButtonState::UNPRESSED;
-    }
-  }
-  else if (state == ButtonState::PRESS || state == ButtonState::PRESSED) {
-    state = pressed ? ButtonState::PRESSED : ButtonState::UNPRESS;
-  }
-
-  return state;
+  return button.update(pressed);
 }
 
 auto PushButton::getState() const noexcept -> ButtonState {
-  return state;
+  return button.getState();
 }
 
 }

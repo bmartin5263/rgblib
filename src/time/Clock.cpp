@@ -24,7 +24,7 @@ auto Clock::startTick() -> void {
   auto elapsed = mTickStart - mLastFrameRateCheck;
 
   if (elapsed >= 1'000'000) { // Update every second
-    INFO("FPS: %lu", mFpsCounter);
+    INFO("FPS: %llu", mFpsCounter);
 
     if (mFpsCounter < (mTargetFps / 2)) {
       digitalWrite(config::LED_DROPPING_FRAMES, LOW);

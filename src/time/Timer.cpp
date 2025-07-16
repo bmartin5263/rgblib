@@ -98,7 +98,7 @@ auto Timer::continuouslyFor(Duration duration, const TimerFunction& function) ->
   timer->startedAt = now;
   timer->handleId = nextHandleId++;
 
-  TRACE("Assigning Timer '%i'. startedAt=%lu, finishAt=%lu", timer->id, timer->startedAt.value, timer->finishAt.value);
+  TRACE("Assigning Timer '%i'. startedAt=%lu, finishAt=%llu", timer->id, timer->startedAt.value, timer->finishAt.value);
   ASSERT(timer->next == nullptr, "Timer.Next is not nullptr");
   ASSERT(timer->prev == nullptr, "Timer.Prev is not nullptr");
 

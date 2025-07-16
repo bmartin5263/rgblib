@@ -10,7 +10,7 @@
 #include "Types.h"
 #include "Func.h"
 #include "Pin.h"
-#include "ButtonState.h"
+#include "Button.h"
 
 namespace rgb {
 
@@ -20,15 +20,14 @@ class PushButton {
 public:
   explicit PushButton(pin_num pin);
   PushButton(pin_num pin, Runnable callback);
-  auto onPress(Runnable callback) noexcept -> PushButton&;
+  auto onPress(const Runnable& callback) noexcept -> PushButton&;
 
   auto update() -> ButtonState;
   auto getState() const noexcept -> ButtonState;
 
 private:
-  ButtonState state;
   Pin pin;
-  Runnable onPressCallback;
+  Button button;
 };
 
 }

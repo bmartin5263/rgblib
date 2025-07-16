@@ -32,7 +32,7 @@ auto printHeader(const char* level, const char* function) -> void;
 
 #if RGB_LOG_LEVEL > 0
 #define INFO(format, ...) do { \
-  rgb::log::printHeader("INFO", __FUNCTION__);  \
+  rgb::log::printHeader("INFO", __PRETTY_FUNCTION__);  \
   Serial.printf(format, ##__VA_ARGS__);                \
   Serial.println();            \
 } while(false)
