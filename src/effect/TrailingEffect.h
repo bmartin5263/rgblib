@@ -9,25 +9,25 @@
 #include <limits>
 #include "Types.h"
 #include "Color.h"
+#include "Brightness.h"
 
 namespace rgb {
 
 struct TrailingEffectShaderParameters {
-  rgb::Timestamp now;
-  rgb::Duration speed;
-  rgb::u16 trailLength;
-  rgb::u16 absolutePosition;
-  rgb::u16 relativePosition;
-  float positionRatio;
+  rgb::Timestamp now{};
+  rgb::Duration speed{};
+  rgb::u16 trailLength{};
+  rgb::u16 absolutePosition{};
+  rgb::u16 relativePosition{};
+  float positionRatio{};
 };
-
 using TrailingEffectShader = std::function<void(Color&, const TrailingEffectShaderParameters&)>;
 
 class PixelList;
 class TrailingEffect {
 public:
-  constexpr static auto DefaultShader(Color& color, const TrailingEffectShaderParameters&) -> void {
-    color = Color::CYAN(.01);
+  static auto DefaultShader(Color& color, const TrailingEffectShaderParameters&) -> void {
+    color = Color::CYAN(Brightness::Current());
   }
 
   auto init() -> void;

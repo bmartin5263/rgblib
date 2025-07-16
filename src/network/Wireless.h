@@ -44,12 +44,13 @@ public:
   static auto Start() -> int { return Instance().start(); }
   static auto Update() -> void { Instance().update(); }
   static auto GetStatus() -> int { return Instance().getStatus(); }
+  static auto GetAddress() -> String { return Instance().getAddress(); }
 
+  Wifi(const Wifi& rhs) = delete;
+  Wifi& operator=(const Wifi& rhs) = delete;
 private:
   Wifi() = default;
-  Wifi(const Wifi& rhs) = delete;
   Wifi(Wifi&& rhs) noexcept = default;
-  Wifi& operator=(const Wifi& rhs) = delete;
   Wifi& operator=(Wifi&& rhs) noexcept = default;
   ~Wifi() = default;
 
@@ -65,6 +66,7 @@ private:
   auto start() -> int;
   auto update() -> void;
   auto getStatus() const -> int;
+  auto getAddress() const -> String;
 };
 
 }

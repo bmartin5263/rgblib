@@ -135,6 +135,10 @@ struct number_wrapper {
     operator++();
     return tmp;
   }
+
+  constexpr auto isZero() const -> bool {
+    return value == 0;
+  }
 };
 
 struct Duration : public number_wrapper<time_t, Duration> {

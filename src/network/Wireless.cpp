@@ -78,4 +78,8 @@ auto Wifi::getStatus() const -> int {
   return WiFi.status();
 }
 
+auto Wifi::getAddress() const -> String {
+  return WiFi.localIP().toString();
+}
+
 }
