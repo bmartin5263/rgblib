@@ -73,6 +73,7 @@ auto Timer::setTimeout(Duration duration, const TimerFunction& function) -> Time
 
   timer->clean();
   timer->timerFunction = function;
+  timer->cancelFunction = DoNothing;
   timer->executeAt = now + duration;
   timer->handleId = nextHandleId++;
   timer->startedAt = now;
@@ -93,6 +94,7 @@ auto Timer::continuouslyFor(Duration duration, const TimerFunction& function) ->
 
   timer->clean();
   timer->timerFunction = function;
+  timer->cancelFunction = DoNothing;
   timer->finishAt = now + duration;
   timer->executeAt = now;
   timer->startedAt = now;
@@ -136,10 +138,13 @@ auto Timer::processTimers() -> void {
     auto timer = TimerNode::Pop(activeHead);
     if (timer->tombstone) {
       TRACE("Cleaning Tombstone '%i'", timer->id);
+      timer->cancelFunction();
       TimerNode::InsertFront(unusedHead, timer);
       continue;
     }
-    executeTimer(timer, now);
+    else {
+      executeTimer(timer, now);
+    }
   }
 }
 

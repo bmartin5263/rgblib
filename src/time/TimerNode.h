@@ -22,6 +22,7 @@ struct TimerNode {
   TimerNode* prev{};
   TimerNode* next{};
   TimerFunction timerFunction{};
+  Runnable cancelFunction{};
   Timestamp executeAt{};
   Timestamp startedAt{};
   Timestamp finishAt{};

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "Handle.h"
+#include "Func.h"
 
 namespace rgb {
 
@@ -27,6 +28,8 @@ public:
 
   // Release ownership and cancel the timer
   auto cancel() -> void;
+
+  auto onCancel(const Runnable& function) -> TimerHandle&;
 
 private:
   uint handleId;

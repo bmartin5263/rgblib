@@ -24,11 +24,11 @@
 using namespace rgb;
 
 constexpr auto STARTUP_DELAY = Duration::Milliseconds(0);
-constexpr auto INTRO_LENGTH = Duration::Seconds(10);
-constexpr auto LED_COUNT = 8;
+constexpr auto INTRO_LENGTH = Duration::Seconds(100);
+constexpr auto LED_COUNT = 200;
 
-constexpr auto LED_TYPE = NEO_GRBW + NEO_KHZ800;   // RGBW
-constexpr auto LED_PIN = D4_RGB;
+constexpr auto LED_TYPE = NEO_GRB + NEO_KHZ800;   // RGBW
+constexpr auto LED_PIN = D2_RGB;
 constexpr auto IR_PIN = D3;
 
 auto vehicle = Vehicle{};
@@ -47,7 +47,7 @@ auto leds = std::array {
 };
 
 auto introScene = IntroScene{circuit, NullPixelList::Instance()};
-auto demoScene = DemoScene{circuit};
+auto demoScene = DemoScene{circuit, irReceiver};
 auto scenes = std::array {
   static_cast<Scene*>(&demoScene),
   static_cast<Scene*>(&introScene)
@@ -57,18 +57,20 @@ auto setup() -> void {
   log::init();
   delay(STARTUP_DELAY.asMilliseconds());
 
-  irReceiver.button0.onPress([](){ App::NextScene(); });
+  irReceiver.buttonRight.onPress([](){ App::NextScene(); });
+  irReceiver.buttonLeft.onPress([](){ App::PrevScene(); });
   irReceiver.buttonUp.onPress([](){ Brightness::Increase(); });
   irReceiver.buttonDown.onPress([](){ Brightness::Decrease(); });
+  irReceiver.buttonHash.onPress([](){ Brightness::SetToDefault(); });
   irReceiver.start(IR_PIN);
 
   DebugScreen::Start(FlipDisplay(true));
 
   Brightness::Configure()
       .MinBrightness(0.0f)
-      .MaxBrightness(.2f)
+      .MaxBrightness(1.0f)
       .DefaultBrightness(.05f)
-      .Step(.05f);
+      .Step(.025f);
 
   AppBuilder::Create()
     .DebugOutputLED(&slice)

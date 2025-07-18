@@ -14,7 +14,7 @@
           Serial.printf("Failure Detected\n");      \
           Serial.printf("File: %s, Function: %s, Line: %i, Message: %s\n", __FILE__, __FUNCTION__, __LINE__, message);                   \
           rgb::Debug::Trigger(color);                                    \
-          rgb::DebugScreen::PrintLine(4, message);                   \
+          rgb::DebugScreen::PrintLine(0, message);                   \
         } while (false)
 
 #define ASSERT(condition, message) \
@@ -23,7 +23,7 @@
                 Serial.printf("Assertion failed: (%s)\n", #condition);                   \
                 Serial.printf("File: %s, Function: %s, Line: %i, Message: %s\n", __FILE__, __FUNCTION__, __LINE__, message);                   \
                 rgb::Debug::Trigger();                                    \
-                rgb::DebugScreen::PrintLine(4, message);                   \
+                rgb::DebugScreen::PrintLine(0, message);                   \
             } \
         } while (false)
 
@@ -33,7 +33,7 @@
                 Serial.printf("Assertion failed: (%s)\n", #condition);                   \
                 Serial.printf("File: %s, Function: %s, Line: %i, Message: %s\n", __FILE__, __FUNCTION__, __LINE__, message);                   \
                 rgb::Debug::Trigger(color);                                    \
-                rgb::DebugScreen::PrintLine(4, message);                   \
+                rgb::DebugScreen::PrintLine(0, message);                   \
             } \
         } while (false)
 //#else

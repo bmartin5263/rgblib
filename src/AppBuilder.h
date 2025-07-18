@@ -16,16 +16,12 @@ struct Iterable;
 class App;
 class Scene;
 class PixelList;
-class ISceneManager;
-class ILEDManager;
-class ISensorManager;
 class LEDCircuit;
 struct Color;
 class AppBuilder {
   using self = AppBuilder&;
 public:
   auto DebugOutputLED(PixelList* pixels) -> self;
-  auto SetSceneManager(ISceneManager* sceneManager) -> self;
   auto SetSensors(Iterable<Runnable> sensors) -> self;
   auto SetScenes(Iterable<Scene*> scenes) -> self;
   auto SetLEDs(Iterable<LEDCircuit*> scenes) -> self;
@@ -38,8 +34,6 @@ private:
   friend class App;
 
   PixelList* mDebugOutputLED{nullptr};
-  ISceneManager* mSceneManager{nullptr};
-  ILEDManager* mLedManager{nullptr};
   Iterable<LEDCircuit*> mLeds{};
   Iterable<Scene*> mScenes{};
   Scene* mIntroScene{nullptr};

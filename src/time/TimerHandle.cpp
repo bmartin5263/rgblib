@@ -48,4 +48,9 @@ auto TimerHandle::detach() -> void {
   this->handleId = 0;
 }
 
+auto TimerHandle::onCancel(const Runnable& function) -> TimerHandle& {
+  node->cancelFunction = function;
+  return *this;
+}
+
 }

@@ -47,7 +47,8 @@ auto setup() -> void {
   Timer::SetTimeout(Duration::Seconds(1), [](auto& context){
     PRINTF("Average: %f", dataSet.average());
     context.repeatIn = Duration::Seconds(1);
-  }).detach();
+  })
+  .detach();
 }
 
 auto loop() -> void {

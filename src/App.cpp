@@ -115,7 +115,6 @@ auto App::SwitchScene(Scene& scene) -> void {
 
 auto App::configure(const AppBuilder& appBuilder) -> void {
   ASSERT(!started, "App has already started");
-  sceneManager = appBuilder.mSceneManager;
   leds = appBuilder.mLeds;
   sensors = appBuilder.mSensors;
   scenes = appBuilder.mScenes;

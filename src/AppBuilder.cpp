@@ -12,11 +12,6 @@ auto AppBuilder::DebugOutputLED(PixelList* pixels) -> self {
   return *this;
 }
 
-auto AppBuilder::SetSceneManager(ISceneManager* sceneManager) -> self {
-  this->mSceneManager = sceneManager;
-  return *this;
-}
-
 auto AppBuilder::Start() -> void {
   App::Configure(*this);
   App::Start();

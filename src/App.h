@@ -13,9 +13,6 @@ namespace rgb {
 
 class AppBuilder;
 class Scene;
-class ISceneManager;
-class ILEDManager;
-class ISensorManager;
 class LEDCircuit;
 class App {
 public:
@@ -50,7 +47,6 @@ private:
 
   Scene* scene;
   Scene* mNextScene;
-  ISceneManager* sceneManager;
   Scene* introScene{};
   Iterable<Scene*> scenes{};
   Iterable<LEDCircuit*> leds{};

@@ -23,18 +23,14 @@ using FillEffectShader = std::function<void(Color&, const FillEffectShaderParame
 
 class PixelList;
 class FillEffect {
-  constexpr static auto defaultShader(Color& pixel, const FillEffectShaderParameters&) -> void {
-    pixel = Color::CYAN(.01);
-  }
-
-  constexpr static auto rainbowShader(Color& pixel, const FillEffectShaderParameters& params) -> void {
-    pixel = rgb::Color::HslToRgb(params.relativePosition()) * .03f;
+  static auto RainbowShader(Color& pixel, const FillEffectShaderParameters& params) -> void {
+    pixel = rgb::Color::HslToRgb(params.relativePosition()) * Brightness::Current();
   }
 
 public:
   auto draw(PixelList& chain) -> void;
 
-  FillEffectShader shader{rainbowShader};
+  FillEffectShader shader{RainbowShader};
 private:
 
 };

@@ -7,6 +7,7 @@
 
 #include "Types.h"
 #include "Util.h"
+#include "Brightness.h"
 
 namespace rgb {
 
@@ -153,8 +154,6 @@ struct Color {
     return Color {0, 1.0f, 0.4980392157f, 0} * intensity;
   }
 
-  static constexpr auto GREEN(int intensity) = delete;
-
   static constexpr auto GREEN(float intensity = DEFAULT_INTENSITY) -> Color {
     return Color {0, intensity, 0, 0};
   }
@@ -188,11 +187,15 @@ struct Color {
   }
 
   static constexpr auto WHITE(float intensity = DEFAULT_INTENSITY) -> Color {
-    return Color {0, 0, 0, intensity};
+    return REAL_WHITE(intensity);
   }
 
   static constexpr auto FAKE_WHITE(float intensity = DEFAULT_INTENSITY) -> Color {
-    return Color {intensity, intensity, intensity, 0};
+    return Color {intensity, intensity, intensity, 0.f};
+  }
+
+  static constexpr auto REAL_WHITE(float intensity = DEFAULT_INTENSITY) -> Color {
+    return Color {0.f, 0.f, 0.f, intensity};
   }
 
   static constexpr auto OFF() -> Color {

@@ -17,4 +17,6 @@ using Supplier = std::function<T(void)>;
 
 using Predicate = Supplier<bool>;
 
+static constexpr auto DoNothing() {};
+
 #endif //RGBLIB_FUNC_H

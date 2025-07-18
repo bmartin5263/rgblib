@@ -8,18 +8,20 @@
 #include "Scene.h"
 #include "FillEffect.h"
 #include "Vehicle.h"
+#include "IRReceiver.h"
 
 class DemoScene : public rgb::Scene {
 public:
-  explicit DemoScene(rgb::PixelList& ring);
+  explicit DemoScene(rgb::PixelList& ring, rgb::IRReceiver& irReceiver);
   auto setup() -> void override;
   auto update() -> void override;
   auto draw() -> void override;
 
 public:
   rgb::PixelList& ring;
+  rgb::IRReceiver& irReceiver;
   rgb::FillEffect fillEffect{};
-
+  rgb::Color color{rgb::Color::BLUE(rgb::Brightness::Current())};
 };
 
 
