@@ -29,6 +29,7 @@ public:
   // Release ownership and cancel the timer
   auto cancel() -> void;
 
+  // Callback for when the timer is manually cancelled
   auto onCancel(const Runnable& function) -> TimerHandle&;
 
 private:

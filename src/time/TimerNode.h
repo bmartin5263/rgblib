@@ -22,22 +22,24 @@ struct TimerNode {
   TimerNode* prev{};
   TimerNode* next{};
   TimerFunction timerFunction{};
-  Runnable cancelFunction{};
+  Runnable cancelFunction{DoNothing};
   Timestamp executeAt{};
   Timestamp startedAt{};
   Timestamp finishAt{};
   uint id{};
   uint handleId{};
-  bool tombstone{};
+  bool cancelled{};
 
   auto clean() -> void {
     prev = nullptr;
     next = nullptr;
     timerFunction = {};
-    tombstone = false;
+    cancelFunction = DoNothing;
+    executeAt = Timestamp{};
+    startedAt = Timestamp{};
+    finishAt = Timestamp{};
     handleId = 0;
-    startedAt = Timestamp{0};
-    finishAt = Timestamp{0};
+    cancelled = false;
   }
 
   auto isContinuous() -> bool {
@@ -45,7 +47,7 @@ struct TimerNode {
   }
 
   auto repeat(Timestamp now, Duration delta) -> void {
-    tombstone = false; // User code could have set this to `true` while executing the timer function
+    cancelled = false; // User code could have set this to `true` while executing the timer function
     executeAt = now + delta;
   }
 

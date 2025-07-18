@@ -116,7 +116,7 @@ auto Timer::Cancel(TimerNode* node) -> void {
 auto Timer::cancel(TimerNode* node) -> void {
   if (node != nullptr) {
     TRACE("Cancelling Timer '%i'", node->id);
-    node->tombstone = true;
+    node->cancelled = true;
   }
 }
 
@@ -136,7 +136,7 @@ auto Timer::processTimers() -> void {
   auto now = Clock::Now();
   while (activeHead != nullptr && activeHead->executeAt <= now) {
     auto timer = TimerNode::Pop(activeHead);
-    if (timer->tombstone) {
+    if (timer->cancelled) {
       TRACE("Cleaning Tombstone '%i'", timer->id);
       timer->cancelFunction();
       TimerNode::InsertFront(unusedHead, timer);
@@ -224,9 +224,9 @@ auto Timer::nextTimerNode() -> TimerNode* {
 auto Timer::reclaimNodes() -> void {
   INFO("Reclaiming Timer Nodes");
   for (auto& node : nodes) {
-    if (node.tombstone) {
+    if (node.cancelled) {
       TimerNode::Remove(activeHead, &node);
-      node.tombstone = false;
+      node.cancelled = false;
       TimerNode::InsertFront(unusedHead, &node);
     }
   }
@@ -245,7 +245,7 @@ auto Timer::count() -> decltype(TIMER_COUNT) {
   auto num = static_cast<decltype(TIMER_COUNT)>(0);
   auto current = activeHead;
   while (current != nullptr) {
-    if (!current->tombstone) {
+    if (!current->cancelled) {
       ++num;
     }
     current = current->next;
