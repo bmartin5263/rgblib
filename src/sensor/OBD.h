@@ -158,7 +158,7 @@ class COBD
 public:
 	COBD():dataMode(1),errors(0),m_state(OBD_DISCONNECTED) {}
 	// begin serial UART, return the version number on success and 0 on failure
-	byte begin(int8_t rxPin = RX, int8_t txPin = TX);
+	byte begin(int8_t rxPin, int8_t txPin);
 	// initialize OBD-II connection
 	bool init(OBD_PROTOCOLS protocol = PROTO_AUTO);
 	// un-initialize OBD-II connection

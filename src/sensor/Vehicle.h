@@ -29,7 +29,7 @@ public:
 
   auto setTimeout(Duration timeout) -> void;
   auto update() -> void;
-  auto connect() -> bool;
+  auto connect(pin_num rx = RX, pin_num tx = TX) -> bool;
   auto setLowPowerMode(bool value) -> void;
 
   auto rpm() const -> revs_per_minute;

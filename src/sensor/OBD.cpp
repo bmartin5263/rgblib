@@ -300,7 +300,7 @@ byte COBD::begin(int8_t rxPin, int8_t txPin)
 	long baudrates[] = {115200, 38400};
 	byte version = 0;
 	for (byte n = 0; n < sizeof(baudrates) / sizeof(baudrates[0]) && version == 0; n++) {
-		OBDUART.begin(baudrates[n], SERIAL_8N1, RX, TX);
+		OBDUART.begin(baudrates[n], SERIAL_8N1, rxPin, txPin);
 		version = getVersion(); 
 	}
 	return version;	
