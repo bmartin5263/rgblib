@@ -295,7 +295,7 @@ bool COBD::isValidPID(byte pid)
 	return (pidmap[i] & b) != 0;
 }
 
-byte COBD::begin()
+byte COBD::begin(int8_t rxPin, int8_t txPin)
 {
 	long baudrates[] = {115200, 38400};
 	byte version = 0;

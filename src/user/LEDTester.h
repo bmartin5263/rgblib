@@ -24,8 +24,8 @@
 using namespace rgb;
 
 constexpr auto STARTUP_DELAY = Duration::Milliseconds(0);
-constexpr auto INTRO_LENGTH = Duration::Seconds(100);
-constexpr auto LED_COUNT = 200;
+constexpr auto INTRO_LENGTH = Duration::Seconds(100000);
+constexpr auto LED_COUNT = 240;
 
 constexpr auto LED_TYPE = NEO_GRB + NEO_KHZ800;   // RGBW
 constexpr auto LED_PIN = D2_RGB;
