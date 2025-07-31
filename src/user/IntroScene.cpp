@@ -19,7 +19,7 @@ auto IntroScene::setup() -> void {
     led = c * Brightness::Current();
   };
   trailingEffect.trailRatio = .3f;
-  trailingEffect.speed = Duration::Milliseconds(10);
+  trailingEffect.speed = Duration::Milliseconds(200);
 //  trailingEffect.speed = Duration::Seconds(2);
 //  trailingEffect.endBuffer = 20;
   trailingEffect.shader = [](auto& led, auto& params) {
