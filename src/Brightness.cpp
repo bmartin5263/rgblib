@@ -26,23 +26,23 @@ auto BrightnessConfiguration::Step(rgb::normal value) -> BrightnessConfiguration
   return *this;
 }
 
-auto Brightness::maximumBrightness() -> normal {
+auto Brightness::maximumBrightness() const -> normal {
   return mConfig.mMaxBrightness;
 }
 
-auto Brightness::minimumBrightness() -> normal {
+auto Brightness::minimumBrightness() const -> normal {
   return mConfig.mMaxBrightness;
 }
 
-auto Brightness::defaultBrightness() -> normal {
-  return mConfig.mMinBrightness;
+auto Brightness::defaultBrightness() const -> normal {
+  return mConfig.mDefaultBrightness;
 }
 
-auto Brightness::step() -> normal {
+auto Brightness::step() const -> normal {
   return mConfig.mStep;
 }
 
-auto Brightness::currentBrightness() -> normal {
+auto Brightness::currentBrightness() const -> normal {
   return mCurrentBrightness;
 }
 

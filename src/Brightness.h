@@ -50,11 +50,11 @@ private:
     return instance;
   }
 
-  auto currentBrightness() -> normal;
-  auto minimumBrightness() -> normal;
-  auto maximumBrightness() -> normal;
-  auto defaultBrightness() -> normal;
-  auto step() -> normal;
+  auto currentBrightness() const -> normal;
+  auto minimumBrightness() const -> normal;
+  auto maximumBrightness() const -> normal;
+  auto defaultBrightness() const -> normal;
+  auto step() const -> normal;
   auto setToMax() -> void;
   auto setToMin() -> void;
   auto setToDefault() -> void;
