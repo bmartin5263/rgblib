@@ -23,6 +23,7 @@ enum class SevenSegmentDigit {
   _7,
   _8,
   _9,
+  BLANK
 };
 
 class MAX7219EightDigitSevenSegmentDisplay {
@@ -100,6 +101,15 @@ public:
     writeNumber(static_cast<int>(digit), offset);
   }
 
+  auto writeDigitOrBlank(SevenSegmentDigit digit, unsigned int offset) -> void {
+    if (digit == SevenSegmentDigit::BLANK) {
+      writePattern(EMPTY, offset);
+    }
+    else {
+      writeNumber(static_cast<int>(digit), offset);
+    }
+  }
+
   auto writePattern(byte pattern, unsigned int position, unsigned int count = 1) -> void {
     count = min(count, DIGITS);
     if (count == DIGITS) {
@@ -119,7 +129,7 @@ public:
     }
   }
 
-  auto writeNumber(int number, unsigned int offset = 0) -> void {
+  auto writeNumber(int number, unsigned int offset = 0, SevenSegmentDigit padding = SevenSegmentDigit::BLANK) -> void {
     // Handle negative numbers
     bool isNegative = false;
     if (number < 0) {
@@ -142,6 +152,13 @@ public:
       number /= 10;
       position = (position + 1) % DIGITS;
       ++count;
+    }
+    if (padding != SevenSegmentDigit::BLANK) {
+      while (count < DIGITS) {
+        writePattern(DIGIT_PATTERNS[static_cast<int>(padding)], position);
+        position = (position + 1) % DIGITS;
+        ++count;
+      }
     }
 
     // Display negative sign if needed

@@ -14,20 +14,24 @@
 #include "IRReceiver.h"
 #include "App.h"
 #include "AppBuilder.h"
-#include "VehicleThread.h"
 #include "AppBuilder.h"
 #include "Iterable.h"
 #include "LEDMatrix.h"
 #include "DataSet.h"
 #include "Brightness.h"
+#include "SevenSegmentDisplay.h"
 
 using namespace rgb;
 
-constexpr auto STARTUP_DELAY = Duration::Milliseconds(0);
-constexpr auto INTRO_LENGTH = Duration::Seconds(10);
+auto display = MAX7219EightDigitSevenSegmentDisplay(D5);
 
-constexpr auto LED_COUNT = 20;
-constexpr auto LED_TYPE = NEO_GRB + NEO_KHZ800;   // RGBW
+constexpr auto STARTUP_DELAY = Duration::Milliseconds(0);
+constexpr auto INTRO_LENGTH = Duration::Minutes(15);
+
+constexpr auto LED_COUNT = 64 * 4;
+constexpr auto LED_ROWS = 16;
+constexpr auto LED_COLUMNS = 16;
+constexpr auto LED_TYPE = NEO_GRBW + NEO_KHZ800;   // RGBW
 constexpr auto LED_PIN = D2_RGB;
 constexpr auto IR_PIN = D3;
 
@@ -39,8 +43,8 @@ auto sensors = std::array {
   }}
 };
 
-//auto circuit = LEDMatrix<8, 8>{D2_RGB, NEO_GRBW + NEO_KHZ800};
-auto circuit = LEDStrip<LED_COUNT>{LED_PIN, LED_TYPE};
+auto circuit = LEDMatrix<LED_COLUMNS, LED_ROWS>{LED_PIN, LED_TYPE};
+//auto circuit = LEDStrip<LED_COUNT>{LED_PIN, LED_TYPE};
 auto slice = circuit.slice(LED_COUNT / 2);
 auto leds = std::array {
   static_cast<LEDCircuit*>(&circuit)
@@ -56,6 +60,9 @@ auto scenes = std::array {
 auto setup() -> void {
   log::init();
   delay(STARTUP_DELAY.asMilliseconds());
+
+  SPI.begin();
+  display.start();
 
   irReceiver.buttonRight.onPress([](){ App::NextScene(); });
   irReceiver.buttonLeft.onPress([](){ App::PrevScene(); });
@@ -83,6 +90,8 @@ auto setup() -> void {
 
 auto loop() -> void {
   App::Loop();
+  display.clear();
+  display.writeNumber(12345, 0, SevenSegmentDigit::_0);
 }
 
 #endif //RGBLIB_DEMO1_H

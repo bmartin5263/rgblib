@@ -13,8 +13,6 @@
 #include "IRReceiver.h"
 #include "App.h"
 #include "AppBuilder.h"
-#include "VehicleThread.h"
-#include "AppBuilder.h"
 #include "Iterable.h"
 #include "LEDMatrix.h"
 #include "NullScene.h"
