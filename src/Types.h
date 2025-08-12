@@ -257,6 +257,7 @@ struct Timestamp : public number_wrapper<time_t, Timestamp> {
 constexpr auto D2_RGB = D5;
 constexpr auto D3_RGB = D6;
 constexpr auto D4_RGB = D7;
+constexpr auto D5_RGB = D8;
 
 constexpr auto A4_RGB = 11;
 constexpr auto A5_RGB = 12;

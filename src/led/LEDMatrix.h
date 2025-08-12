@@ -113,8 +113,20 @@ public:
     return (pixel + mOffset) % N;
   }
 
-  [[nodiscard]] auto getColumns() -> size_t override {
-    return COLUMNS;
+  auto get(Point point) -> Pixel* override {
+    ASSERT(point.x >= 0, "Point.X is negative");
+    ASSERT(point.y >= 0, "Pixel.Y is negative");
+    ASSERT(point.x < COLUMNS, "Pixel.X is out of bounds");
+    ASSERT(point.y < ROWS, "Pixel.Y is out of bounds");
+    return getHead() + ((point.y * COLUMNS) + point.x);
+  }
+
+  auto set(Point point, const Color& color) -> void override {
+    *(getHead() + ((point.y * COLUMNS) + point.x)) = color;
+  }
+
+  auto operator[](Point point) -> Color& override {
+    return *(getHead() + ((point.y * COLUMNS) + point.x));
   }
 
 private:

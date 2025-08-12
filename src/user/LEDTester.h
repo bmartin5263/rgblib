@@ -14,12 +14,12 @@
 #include "IRReceiver.h"
 #include "App.h"
 #include "AppBuilder.h"
-#include "AppBuilder.h"
 #include "Iterable.h"
 #include "LEDMatrix.h"
 #include "DataSet.h"
 #include "Brightness.h"
 #include "SevenSegmentDisplay.h"
+#include "PixelSlice.h"
 
 using namespace rgb;
 
