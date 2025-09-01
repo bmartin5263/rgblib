@@ -2,7 +2,6 @@
 
 ## TODO
 - [ ] Resiliency - able to automatically recover subsystems if connection issues
-  - [ ] Debug Screen
 
 ## Debugging Tools
 
