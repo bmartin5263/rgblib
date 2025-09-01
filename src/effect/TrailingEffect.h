@@ -44,7 +44,10 @@ public:
 private:
   int pixel{0};
   Timestamp nextMoveTime{0};
+public:
   bool isRing{false};
+
+private:
 
   auto move() -> void;
 };
