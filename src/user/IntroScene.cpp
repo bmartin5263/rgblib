@@ -16,7 +16,7 @@ auto IntroScene::setup() -> void {
     auto t = (Clock::Now() % Duration::Seconds(4)).value;
     auto p = LerpWrap(0.0f, 1.0f, (static_cast<float>(t) / Duration::Seconds(4).value));
     auto c  = Color::HslToRgb(p);
-    led = c * Brightness::Current();
+    led = c * Brightness::GetBrightness(1.0f);
   };
   trailingEffect.trailRatio = .3f;
   trailingEffect.speed = Duration::Milliseconds(100);
@@ -27,7 +27,7 @@ auto IntroScene::setup() -> void {
     auto p = LerpWrap(0.0f, 1.0f, (static_cast<float>(t) / Duration::Seconds(1).value));
     auto c  = Color::HslToRgb(p);
 //    auto c  = Color::PURPLE();
-    led = c * Brightness::Current();
+    led = c * Brightness::GetBrightness(1.0f);
   };
   trailingEffect.init();
 }

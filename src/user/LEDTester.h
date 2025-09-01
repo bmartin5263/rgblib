@@ -18,19 +18,16 @@
 #include "LEDMatrix.h"
 #include "DataSet.h"
 #include "Brightness.h"
-#include "SevenSegmentDisplay.h"
 #include "PixelSlice.h"
 
 using namespace rgb;
 
-auto display = MAX7219EightDigitSevenSegmentDisplay(D5);
-
 constexpr auto STARTUP_DELAY = Duration::Milliseconds(0);
-constexpr auto INTRO_LENGTH = Duration::Minutes(15);
+constexpr auto INTRO_LENGTH = Duration::Seconds(5);
 
-constexpr auto LED_COUNT = 64 * 4;
-constexpr auto LED_ROWS = 16;
-constexpr auto LED_COLUMNS = 16;
+constexpr auto LED_COUNT = 64;
+constexpr auto LED_ROWS = 8;
+constexpr auto LED_COLUMNS = 8;
 constexpr auto LED_TYPE = NEO_GRBW + NEO_KHZ800;   // RGBW
 constexpr auto LED_PIN = D2_RGB;
 constexpr auto IR_PIN = D3;
@@ -61,23 +58,14 @@ auto setup() -> void {
   log::init();
   delay(STARTUP_DELAY.asMilliseconds());
 
-  SPI.begin();
-  display.start();
-
   irReceiver.buttonRight.onPress([](){ App::NextScene(); });
   irReceiver.buttonLeft.onPress([](){ App::PrevScene(); });
-  irReceiver.buttonUp.onPress([](){ Brightness::Increase(); });
-  irReceiver.buttonDown.onPress([](){ Brightness::Decrease(); });
-  irReceiver.buttonHash.onPress([](){ Brightness::SetToDefault(); });
+  irReceiver.buttonUp.onPress([](){ Brightness::IncreaseLevel(); });
+  irReceiver.buttonDown.onPress([](){ Brightness::DecreaseLevel(); });
+  irReceiver.buttonHash.onPress([](){ Brightness::SetLevel(BrightnessLevel::DIM); });
   irReceiver.start(IR_PIN);
 
   DebugScreen::Start(FlipDisplay(true));
-
-  Brightness::Configure()
-      .MinBrightness(0.0f)
-      .MaxBrightness(1.0f)
-      .DefaultBrightness(.05f)
-      .Step(.025f);
 
   AppBuilder::Create()
     .DebugOutputLED(&slice)
@@ -90,8 +78,6 @@ auto setup() -> void {
 
 auto loop() -> void {
   App::Loop();
-  display.clear();
-  display.writeNumber(12345, 0, SevenSegmentDigit::_0);
 }
 
 #endif //RGBLIB_DEMO1_H

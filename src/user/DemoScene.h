@@ -21,7 +21,7 @@ public:
   rgb::PixelList& ring;
   rgb::IRReceiver& irReceiver;
   rgb::FillEffect fillEffect{};
-  rgb::Color color{rgb::Color::BLUE(rgb::Brightness::Current())};
+  rgb::Color color{rgb::Color::BLUE(1.0f)};
 };
 
 

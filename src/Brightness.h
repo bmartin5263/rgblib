@@ -9,57 +9,39 @@
 
 namespace rgb {
 
-class Brightness;
-class BrightnessConfiguration {
-public:
-  auto MinBrightness(normal value) -> BrightnessConfiguration&;
-  auto MaxBrightness(normal value) -> BrightnessConfiguration&;
-  auto DefaultBrightness(normal value) -> BrightnessConfiguration&;
-  auto Step(normal value) -> BrightnessConfiguration&;
-
-private:
-  friend class Brightness;
-
-  normal mMinBrightness{0.0f};
-  normal mMaxBrightness{1.0f};
-  normal mDefaultBrightness{.05f};
-  normal mStep{.01f};
+enum class BrightnessLevel {
+  OFF,
+  DIM,
+  MEDIUM,
+  BRIGHT,
 };
 
 class Brightness {
 public:
-  static auto Configure() -> BrightnessConfiguration& { return Instance().mConfig; };
-  static auto SetToMax() -> void { Instance().setToMax(); }
-  static auto SetToMin() -> void { Instance().setToMin(); }
-  static auto SetToDefault() -> void { Instance().setToDefault(); }
-  static auto Increase() -> void { Instance().increase(); }
-  static auto Decrease() -> void { Instance().decrease(); }
+  static auto GetBrightness(float onlyBrightness) -> float { return Instance().getBrightness(onlyBrightness); };
+  static auto GetBrightness(float low, float medium) -> float { return Instance().getBrightness(low, medium); };
+  static auto GetBrightness(float low, float medium, float high) -> float { return Instance().getBrightness(low, medium, high); };
+  static auto GetLevel() -> BrightnessLevel { return Instance().getLevel(); };
 
-  static auto Current() -> normal { return Instance().currentBrightness(); };
-  static auto Minimum() -> normal { return Instance().minimumBrightness(); };
-  static auto Maximum() -> normal { return Instance().maximumBrightness(); };
-  static auto Default() -> normal { return Instance().defaultBrightness(); };
-  static auto Step() -> normal { return Instance().step(); };
+  static auto SetLevel(BrightnessLevel level) -> void { Instance().setLevel(level); };
+  static auto IncreaseLevel() -> void { Instance().increaseLevel(); };
+  static auto DecreaseLevel(bool includeOff = false) -> void { Instance().decreaseLevel(includeOff); };
 
 private:
-  BrightnessConfiguration mConfig{};
-  normal mCurrentBrightness{mConfig.mDefaultBrightness};
+  BrightnessLevel mLevel{BrightnessLevel::DIM};
 
   static auto Instance() -> Brightness& {
     static Brightness instance;
     return instance;
   }
 
-  auto currentBrightness() const -> normal;
-  auto minimumBrightness() const -> normal;
-  auto maximumBrightness() const -> normal;
-  auto defaultBrightness() const -> normal;
-  auto step() const -> normal;
-  auto setToMax() -> void;
-  auto setToMin() -> void;
-  auto setToDefault() -> void;
-  auto increase() -> void;
-  auto decrease() -> void;
+  auto getBrightness(float onlyBrightness) const -> float;
+  auto getBrightness(float low, float medium) const -> float;
+  auto getBrightness(float low, float medium, float high) const -> float;
+  auto setLevel(BrightnessLevel level) -> void;
+  auto getLevel() const -> BrightnessLevel;
+  auto increaseLevel() -> void;
+  auto decreaseLevel(bool includeOff) -> void;
 
 };
 

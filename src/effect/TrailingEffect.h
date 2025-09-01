@@ -27,7 +27,7 @@ class PixelList;
 class TrailingEffect {
 public:
   static auto DefaultShader(Color& color, const TrailingEffectShaderParameters&) -> void {
-    color = Color::CYAN(Brightness::Current());
+    color = Color::CYAN(1.0f);
   }
 
   auto init() -> void;
@@ -44,6 +44,7 @@ public:
 private:
   int pixel{0};
   Timestamp nextMoveTime{0};
+  bool isRing{false};
 
   auto move() -> void;
 };

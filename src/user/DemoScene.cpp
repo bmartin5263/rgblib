@@ -19,7 +19,7 @@ auto DemoScene::setup() -> void {
     color.r = min(1.0f, color.r + .1f);
   });
   irReceiver.button4.onPress([&](){
-    color.r = Brightness::Current();
+    color.r = Brightness::GetBrightness(1.0f);
   });
   irReceiver.button7.onPress([&](){
     color.r = max(0.0f, color.r - .1f);
@@ -29,7 +29,7 @@ auto DemoScene::setup() -> void {
     color.g = min(1.0f, color.g + .1f);
   });
   irReceiver.button5.onPress([&](){
-    color.g = Brightness::Current();
+    color.g = Brightness::GetBrightness(1.0f);
   });
   irReceiver.button8.onPress([&](){
     color.g = max(0.0f, color.g - .1f);
@@ -39,7 +39,7 @@ auto DemoScene::setup() -> void {
     color.b = min(1.0f, color.b + .1f);
   });
   irReceiver.button6.onPress([&](){
-    color.b = Brightness::Current();
+    color.b = Brightness::GetBrightness(1.0f);
   });
   irReceiver.button9.onPress([&](){
     color.b = max(0.0f, color.b - .1f);

@@ -37,7 +37,7 @@ auto TrailingEffect::draw(PixelList& chain) -> void {
     if (p < 0) {
       break;
     }
-    if (p > chainLength * cycles) {
+    if (isRing ? p > chainLength * cycles : p >= chainLength * cycles) {
       continue;
     }
     auto led = p % (chainLength + endBuffer);

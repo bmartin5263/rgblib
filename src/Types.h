@@ -136,6 +136,7 @@ struct number_wrapper {
     return tmp;
   }
 
+  [[nodiscard]]
   constexpr auto isZero() const -> bool {
     return value == 0;
   }
@@ -149,21 +150,21 @@ struct Duration : public number_wrapper<time_t, Duration> {
   static constexpr auto Milliseconds(time_t amount) -> Duration { return Duration(amount * 1000); }
   static constexpr auto Microseconds(time_t amount) -> Duration { return Duration(amount); }
   static constexpr auto Max() -> Duration { return Duration(std::numeric_limits<time_t>::max()); }
-  static constexpr auto Min() -> Duration { return Duration(0); }
-  constexpr auto asSeconds() const -> float { return static_cast<float>(value) / 1000000.f; }
-  constexpr auto asMinutes() const -> float { return static_cast<float>(value) / 60000000.f; }
-  constexpr auto asMilliseconds() const -> float { return static_cast<float>(value) / 1000.f; }
-  constexpr auto asMicroseconds() const -> float { return static_cast<float>(value); }
+  [[nodiscard]] constexpr auto asSeconds() const -> time_t { return value / 1000000; }
+  [[nodiscard]] constexpr auto asMinutes() const -> time_t { return value / 60000000; }
+  [[nodiscard]] constexpr auto asMilliseconds() const -> time_t { return value / 1000; }
+  [[nodiscard]] constexpr auto asMicroseconds() const -> time_t { return value; }
 };
 
 struct Timestamp : public number_wrapper<time_t, Timestamp> {
   constexpr explicit Timestamp() : number_wrapper<time_t, Timestamp>(0) {}
   constexpr explicit Timestamp(time_t microseconds) : number_wrapper<time_t, Timestamp>(microseconds) {}
   static constexpr auto OfMicroseconds(time_t amount) -> Timestamp { return Timestamp(amount); }
-  constexpr auto asSeconds() -> float { return static_cast<float>(value) / 1000000.f; }
-  constexpr auto asMinutes() -> float { return static_cast<float>(value) / 60000000.f; }
-  constexpr auto asMilliseconds() -> float { return static_cast<float>(value) / 1000.f; }
-  constexpr auto asMicroseconds() -> float { return static_cast<float>(value); }
+  static constexpr auto Max() -> Timestamp { return Timestamp(std::numeric_limits<time_t>::max()); }
+  constexpr auto asSeconds() -> time_t { return value / 1000000; }
+  constexpr auto asMinutes() -> time_t { return value / 60000000; }
+  constexpr auto asMilliseconds() -> time_t { return value / 1000; }
+  constexpr auto asMicroseconds() -> time_t { return value; }
 
   [[nodiscard]]
   constexpr auto percentOf(Timestamp rhs) const -> normal {

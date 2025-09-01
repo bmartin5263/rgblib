@@ -24,7 +24,7 @@ using FillEffectShader = std::function<void(Color&, const FillEffectShaderParame
 class PixelList;
 class FillEffect {
   static auto RainbowShader(Color& pixel, const FillEffectShaderParameters& params) -> void {
-    pixel = rgb::Color::HslToRgb(params.relativePosition()) * Brightness::Current();
+    pixel = rgb::Color::HslToRgb(params.relativePosition()) * Brightness::GetBrightness(1.0f);
   }
 
 public:

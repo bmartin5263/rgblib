@@ -3,67 +3,87 @@
 //
 
 #include "Brightness.h"
+#include "Assertions.h"
 
 namespace rgb {
 
-auto BrightnessConfiguration::MaxBrightness(rgb::normal value) -> BrightnessConfiguration& {
-  mMaxBrightness = value;
-  return *this;
+auto Brightness::setLevel(BrightnessLevel level) -> void {
+  mLevel = level;
 }
 
-auto BrightnessConfiguration::MinBrightness(rgb::normal value) -> BrightnessConfiguration& {
-  mMinBrightness = value;
-  return *this;
+auto Brightness::decreaseLevel(bool includeOff) -> void {
+  switch (mLevel) {
+    case BrightnessLevel::OFF:
+      break;
+    case BrightnessLevel::DIM:
+      if (includeOff) {
+        mLevel = BrightnessLevel::OFF;
+      }
+      break;
+    case BrightnessLevel::MEDIUM:
+      mLevel = BrightnessLevel::DIM;
+      break;
+    case BrightnessLevel::BRIGHT:
+      mLevel = BrightnessLevel::MEDIUM;
+      break;
+    default:
+      ASSERT(false, "Unknown Brightness Level");
+  }
 }
 
-auto BrightnessConfiguration::DefaultBrightness(rgb::normal value) -> BrightnessConfiguration& {
-  mDefaultBrightness = value;
-  return *this;
+auto Brightness::increaseLevel() -> void {
+  switch (mLevel) {
+    case BrightnessLevel::OFF:
+      mLevel = BrightnessLevel::DIM;
+      break;
+    case BrightnessLevel::DIM:
+      mLevel = BrightnessLevel::MEDIUM;
+      break;
+    case BrightnessLevel::MEDIUM:
+      mLevel = BrightnessLevel::BRIGHT;
+    case BrightnessLevel::BRIGHT:
+      break;
+    default:
+      ASSERT(false, "Unknown Brightness Level");
+  }
 }
 
-auto BrightnessConfiguration::Step(rgb::normal value) -> BrightnessConfiguration& {
-  mStep = value;
-  return *this;
+auto Brightness::getBrightness(float onlyBrightness) const -> float {
+  if (mLevel == BrightnessLevel::OFF) {
+    return 0.0f;
+  }
+  return onlyBrightness;
 }
 
-auto Brightness::maximumBrightness() const -> normal {
-  return mConfig.mMaxBrightness;
+auto Brightness::getBrightness(float low, float medium) const -> float {
+  switch (mLevel) {
+    case BrightnessLevel::OFF:
+      return 0.0f;
+    case BrightnessLevel::DIM:
+      return low;
+    case BrightnessLevel::MEDIUM:
+    case BrightnessLevel::BRIGHT:
+      return medium;
+    default:
+      ASSERT(false, "Unknown Brightness Level");
+      return low;
+  }
 }
 
-auto Brightness::minimumBrightness() const -> normal {
-  return mConfig.mMaxBrightness;
-}
-
-auto Brightness::defaultBrightness() const -> normal {
-  return mConfig.mDefaultBrightness;
-}
-
-auto Brightness::step() const -> normal {
-  return mConfig.mStep;
-}
-
-auto Brightness::currentBrightness() const -> normal {
-  return mCurrentBrightness;
-}
-
-auto Brightness::setToMax() -> void {
-  mCurrentBrightness = mConfig.mMaxBrightness;
-}
-
-auto Brightness::setToMin() -> void {
-  mCurrentBrightness = mConfig.mMinBrightness;
-}
-
-auto Brightness::setToDefault() -> void {
-  mCurrentBrightness = mConfig.mDefaultBrightness;
-}
-
-auto Brightness::increase() -> void {
-  mCurrentBrightness = std::min(mCurrentBrightness + mConfig.mStep, mConfig.mMaxBrightness);
-}
-
-auto Brightness::decrease() -> void {
-  mCurrentBrightness = std::max(mCurrentBrightness - mConfig.mStep, mConfig.mMinBrightness);
+auto Brightness::getBrightness(float low, float medium, float high) const -> float {
+  switch (mLevel) {
+    case BrightnessLevel::OFF:
+      return 0.0f;
+    case BrightnessLevel::DIM:
+      return low;
+    case BrightnessLevel::MEDIUM:
+      return medium;
+    case BrightnessLevel::BRIGHT:
+      return high;
+    default:
+      ASSERT(false, "Unknown Brightness Level");
+      return low;
+  }
 }
 
 }
