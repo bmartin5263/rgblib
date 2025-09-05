@@ -53,4 +53,8 @@ auto TimerHandle::onCancel(const Runnable& function) -> TimerHandle& {
   return *this;
 }
 
+auto TimerHandle::isScheduled() -> bool {
+  return this->node != nullptr && !this->node->cancelled;
+}
+
 }

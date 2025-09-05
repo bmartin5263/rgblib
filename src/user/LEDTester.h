@@ -23,7 +23,7 @@
 using namespace rgb;
 
 constexpr auto STARTUP_DELAY = Duration::Milliseconds(0);
-constexpr auto INTRO_LENGTH = Duration::Seconds(5);
+constexpr auto INTRO_LENGTH = Duration::Seconds(10);
 
 constexpr auto LED_COUNT = 64;
 constexpr auto LED_ROWS = 8;

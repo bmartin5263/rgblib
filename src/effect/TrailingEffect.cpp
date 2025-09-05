@@ -37,11 +37,11 @@ auto TrailingEffect::draw(PixelList& chain) -> void {
     if (p < 0) {
       break;
     }
-    if (isRing ? p > chainLength * cycles : p >= chainLength * cycles) {
+    if (p > chainLength * cycles) {
       continue;
     }
     auto led = p % (chainLength + endBuffer);
-    if (led < chainLength + 1) {
+    if (led < chainLength + (isRing ? 1 : 0)) {
       led = (led + offset) % chainLength;
       params.relativePosition = i;
       params.positionRatio = i / static_cast<float>(trailLength);

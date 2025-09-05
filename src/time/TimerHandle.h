@@ -32,6 +32,8 @@ public:
   // Callback for when the timer is manually cancelled
   auto onCancel(const Runnable& function) -> TimerHandle&;
 
+  auto isScheduled() -> bool;
+
 private:
   uint handleId;
   TimerNode* node;
