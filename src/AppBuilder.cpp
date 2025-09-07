@@ -5,6 +5,8 @@
 #include "App.h"
 #include "AppBuilder.h"
 
+#include <utility>
+
 namespace rgb {
 
 auto AppBuilder::DebugOutputLED(PixelList* pixels) -> self {
@@ -12,7 +14,7 @@ auto AppBuilder::DebugOutputLED(PixelList* pixels) -> self {
   return *this;
 }
 
-auto AppBuilder::Start() -> void {
+auto AppBuilder::Start() const -> void {
   App::Configure(*this);
   App::Start();
 }
@@ -32,9 +34,20 @@ auto AppBuilder::SetScenes(Iterable<rgb::Scene*> scenes) -> self {
   return *this;
 }
 
+auto AppBuilder::SetActiveCheck(Duration frequency, Predicate activeCheck) -> self {
+  mActiveCheckFrequency = frequency;
+  mActiveCheck = std::move(activeCheck);
+  return *this;
+}
+
 auto AppBuilder::EnableIntroScene(rgb::Scene& introScene, rgb::Duration expirationTime) -> self {
   mIntroScene = &introScene;
   mRunIntroSceneFor = expirationTime;
+  return *this;
+}
+
+auto AppBuilder::SetInactivityTimeout(Duration timeout) -> AppBuilder& {
+  mInactivityTimeout = timeout;
   return *this;
 }
 

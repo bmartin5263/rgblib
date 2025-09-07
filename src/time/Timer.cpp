@@ -137,9 +137,8 @@ auto Timer::processTimers() -> void {
   while (activeHead != nullptr && activeHead->executeAt <= now) {
     auto timer = TimerNode::Pop(activeHead);
     if (timer->cancelled) {
-      TRACE("Cleaning Tombstone '%i'", timer->id);
       timer->cancelFunction();
-      TimerNode::InsertFront(unusedHead, timer);
+      recycle(timer);
       continue;
     }
     else {
@@ -149,34 +148,16 @@ auto Timer::processTimers() -> void {
 }
 
 auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
-  auto context = TimerContext{};
-  auto recycle = false;
+  auto shouldRecycle = false;
   if (timer->isContinuous()) {
-    context.percentComplete = min(1.0f, (Clock::Now() - timer->startedAt).percentOf(timer->finishAt - timer->startedAt));
-    timer->timerFunction(context);
-    if (now < timer->finishAt) {
-      timer->repeat(now, Duration{});
-      enqueueForAdding(timer);
-    }
-    else {
-      recycle = true;
-    }
+    shouldRecycle = executeContinuousTimer(timer, now);
   }
   else {
-    TRACE("Running Timer '%i'", timer->id);
-    timer->timerFunction(context);
-    if (context.repeatIn) {
-      TRACE("Repeating Timer '%i'", timer->id);
-      timer->repeat(now, context.repeatIn.value());
-      enqueueForAdding(timer);
-    }
-    else {
-      recycle = true;
-    }
+    shouldRecycle = executeRegularTimer(timer, now);
   }
-  if (recycle) {
-    TRACE("Recycling Timer '%i'", timer->id);
-    TimerNode::InsertFront(unusedHead, timer);
+
+  if (shouldRecycle) {
+    recycle(timer);
   }
 }
 
@@ -251,6 +232,41 @@ auto Timer::count() -> decltype(TIMER_COUNT) {
     current = current->next;
   }
   return num;
+}
+
+auto Timer::recycle(TimerNode* timer) -> void {
+  TRACE("Recycling Timer '%i'", timer->id);
+  timer->clean();
+  TimerNode::InsertFront(unusedHead, timer);
+}
+
+auto Timer::executeRegularTimer(TimerNode* timer, Timestamp now) -> bool {
+  auto context = TimerContext{};
+  TRACE("Running Timer '%i'", timer->id);
+  timer->timerFunction(context);
+  if (context.repeatIn) {
+    TRACE("Repeating Timer '%i'", timer->id);
+    timer->repeat(now, context.repeatIn.value());
+    enqueueForAdding(timer);
+    return false;
+  }
+  else {
+    return true;
+  }
+}
+
+auto Timer::executeContinuousTimer(TimerNode* timer, Timestamp now) -> bool {
+  auto context = TimerContext{};
+  context.percentComplete = min(1.0f, (now - timer->startedAt).percentOf(timer->finishAt - timer->startedAt));
+  timer->timerFunction(context);
+  if (now < timer->finishAt) {
+    timer->repeat(now, Duration::Zero());
+    enqueueForAdding(timer);
+    return false;
+  }
+  else {
+    return true;
+  }
 }
 
 }

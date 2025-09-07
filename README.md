@@ -1,7 +1,12 @@
 # RGBLib
 
-## TODO
-- [ ] Resiliency - able to automatically recover subsystems if connection issues
+## Effects
+
+- Single (1 color for the entire strip)
+- Solid (basic shader for address-specific coloring)
+- Chase (segment of LEDs lit up and move from one end to other on repeat)
+- Scan (back and forth chase)
+- Wipe (color fills up completely, then another 'overlaps' it)
 
 ## Debugging Tools
 

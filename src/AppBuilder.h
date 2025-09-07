@@ -26,8 +26,10 @@ public:
   auto SetScenes(Iterable<Scene*> scenes) -> self;
   auto SetLEDs(Iterable<LEDCircuit*> scenes) -> self;
   auto EnableIntroScene(Scene& scene, Duration expirationTime) -> self;
+  auto SetActiveCheck(Duration frequency, Predicate activeCheck) -> self;
+  auto SetInactivityTimeout(Duration timeout) -> self;
 
-  auto Start() -> void;
+  auto Start() const -> void;
   static auto Create() -> AppBuilder { return {}; }
 
 private:
@@ -37,7 +39,10 @@ private:
   Iterable<LEDCircuit*> mLeds{};
   Iterable<Scene*> mScenes{};
   Scene* mIntroScene{nullptr};
+  Predicate mActiveCheck{[](){ return true; }};
+  Duration mActiveCheckFrequency{Duration::Minutes(1)};
   Duration mRunIntroSceneFor{Duration::Seconds(1)};
+  Duration mInactivityTimeout{Duration::Seconds(10)};
   Iterable<Runnable> mSensors{};
 };
 

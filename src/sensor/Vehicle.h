@@ -24,12 +24,16 @@ class Vehicle {
 public:
   template<typename T>
   using TypeRemapper = T(*)(int);
-
   using mutex = std::recursive_mutex;
+  template<class T>
+  using atomic = std::atomic<T>;
+
+  static constexpr auto DISCONNECT_TIMEOUT = Duration::Seconds(5);
 
   auto setTimeout(Duration timeout) -> void;
   auto update() -> void;
   auto connect(pin_num rx = RX, pin_num tx = TX) -> bool;
+  auto disconnect() -> void;
   auto setLowPowerMode(bool value) -> void;
 
   auto rpm() const -> revs_per_minute;
@@ -43,25 +47,24 @@ public:
 private:
   Handle<COBD, OBDDestroyer> obdHandle{{}};
   mutable mutex mu{};
-  std::atomic<revs_per_minute> mRpm{};
-  std::atomic<mph> mSpeed{};
-  std::atomic<fahrenheit> mCoolantTemp{};
-  std::atomic<percent> mFuelLevel{};
-  std::atomic<percent> mThrottlePosition{};
-  std::atomic<bool> mConnected{false};
+  atomic<revs_per_minute> mRpm{};
+  atomic<kph> mSpeed{};
+  atomic<fahrenheit> mCoolantTemp{};
+  atomic<percent> mFuelLevel{};
+  atomic<percent> mThrottlePosition{};
+  atomic<bool> mConnected{false};
   Timestamp mLastResponse{0};
   Timestamp mLastUpdate{0};
   int timeoutMs{25};
-  std::atomic<bool> mLowPowerMode{false};
+  atomic<bool> mLowPowerMode{false};
 
-  auto disconnect() -> void;
 //  auto readPID(byte pid, atomic_float& result, Timestamp now) -> void;
 
   constexpr static auto NoRemapping(int value) -> int { return value; }
+  constexpr static auto ToUint(int value) -> uint { return static_cast<uint>(value); }
   constexpr static auto ToPercent(int value) -> percent { return static_cast<float>(value) / 100.f; }
   constexpr static auto ToFloat(int value) -> float { return static_cast<float>(value); }
   constexpr static auto ToFahrenheit(int value) -> float { return CToF(static_cast<float>(value)); }
-  constexpr static auto ToMph(int value) -> float { return KphToMph(static_cast<float>(value)); }
   constexpr static auto ToBitset(int value) -> std::bitset<32> { return std::bitset<32>(value); }
 
   template<typename T>
@@ -70,13 +73,17 @@ private:
     ASSERT(obd.getState() == OBD_CONNECTED, "OBD not connected");
 
     int value;
-    if (obd.readPID(pid, value, static_cast<int>(timeoutMs))) {
+    if (obd.readPID(pid, value, timeoutMs)) {
       result = remapper(value);
       mLastResponse = Clock::Now();
     }
     else {
-      if (Clock::Now().timeSince(mLastResponse) >= Duration::Seconds(5)) {
+      if (Clock::Now().timeSince(mLastResponse) >= DISCONNECT_TIMEOUT) {
+#if RGB_DEBUG
         FAIL("Disconnected OBD2", Color::MAGENTA(.01f));
+#else
+        ERROR("Disconnected OBD2");
+#endif
         disconnect();
       }
     }

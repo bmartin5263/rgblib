@@ -29,9 +29,9 @@ using pin_num = i8;
 using fahrenheit = float;
 using percent = float;
 using celsius = float;
-using kph = float;
-using mph = float;
-using revs_per_minute = float;
+using kph = uint;
+using mph = uint;
+using revs_per_minute = uint;
 using cstring = const char*;
 using normal = float;
 using time_t = u64;
@@ -150,6 +150,7 @@ struct Duration : public number_wrapper<time_t, Duration> {
   static constexpr auto Milliseconds(time_t amount) -> Duration { return Duration(amount * 1000); }
   static constexpr auto Microseconds(time_t amount) -> Duration { return Duration(amount); }
   static constexpr auto Max() -> Duration { return Duration(std::numeric_limits<time_t>::max()); }
+  static constexpr auto Zero() -> Duration { return Duration(0); }
   [[nodiscard]] constexpr auto asSeconds() const -> time_t { return value / 1000000; }
   [[nodiscard]] constexpr auto asMinutes() const -> time_t { return value / 60000000; }
   [[nodiscard]] constexpr auto asMilliseconds() const -> time_t { return value / 1000; }
@@ -161,6 +162,7 @@ struct Timestamp : public number_wrapper<time_t, Timestamp> {
   constexpr explicit Timestamp(time_t microseconds) : number_wrapper<time_t, Timestamp>(microseconds) {}
   static constexpr auto OfMicroseconds(time_t amount) -> Timestamp { return Timestamp(amount); }
   static constexpr auto Max() -> Timestamp { return Timestamp(std::numeric_limits<time_t>::max()); }
+  static constexpr auto Zero() -> Timestamp { return Timestamp(0); }
   constexpr auto asSeconds() -> time_t { return value / 1000000; }
   constexpr auto asMinutes() -> time_t { return value / 60000000; }
   constexpr auto asMilliseconds() -> time_t { return value / 1000; }

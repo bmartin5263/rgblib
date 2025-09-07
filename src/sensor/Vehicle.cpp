@@ -59,16 +59,13 @@ auto Vehicle::update() -> void {
   auto lock = std::unique_lock { mu };
 
   if (!mConnected) { return; }
-  readPID(PID_RPM, mRpm, ToFloat);
+  readPID(PID_RPM, mRpm, ToUint);
 
   if (!mConnected) { return; }
   readPID(PID_COOLANT_TEMP, mCoolantTemp, ToFahrenheit);
 
   if (!mConnected) { return; }
-  readPID(PID_SPEED, mSpeed, ToMph);
-
-  if (!mConnected) { return; }
-  readPID(PID_THROTTLE, mThrottlePosition, ToPercent);
+  readPID(PID_SPEED, mSpeed, ToUint);
 }
 
 auto Vehicle::rpm() const -> revs_per_minute {

@@ -45,6 +45,9 @@ private:
   auto processAdditions() -> void;
   auto reclaimNodes() -> void;
   auto count() -> decltype(TIMER_COUNT);
+  auto recycle(TimerNode* timer) -> void;
+  auto executeRegularTimer(TimerNode* timer, Timestamp now) -> bool;
+  auto executeContinuousTimer(TimerNode* timer, Timestamp now) -> bool;
 
   Timer();
   Timer(const Timer& rhs) = default;

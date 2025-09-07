@@ -80,7 +80,7 @@ auto Clock::Milli() -> milliseconds_t {
 }
 
 auto Clock::Now() -> Timestamp {
-  return Timestamp::OfMicroseconds(micros());
+  return Timestamp{micros()};
 }
 
 auto Clock::Delta() -> Duration {

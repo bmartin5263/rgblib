@@ -26,7 +26,7 @@ auto TimerHandle::cancel() -> void {
 }
 
 TimerHandle::~TimerHandle() {
-  TRACE("~TimerHandle(id=%ui)", handleId);
+  TRACE("~TimerHandle(id=%u)", handleId);
   cancel();
 }
 
@@ -54,7 +54,9 @@ auto TimerHandle::onCancel(const Runnable& function) -> TimerHandle& {
 }
 
 auto TimerHandle::isScheduled() -> bool {
-  return this->node != nullptr && !this->node->cancelled;
+  return node != nullptr
+      && node->handleId == handleId
+      && !node->cancelled;
 }
 
 }
