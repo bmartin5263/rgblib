@@ -11,8 +11,6 @@
 namespace rgb::config {
 
 constexpr auto FPS = 300;
-constexpr auto DEBUG_SCREEN_REFRESH_RATE = Duration::Milliseconds(100);
-constexpr auto VEHICLE_REFRESH_RATE = Duration::Milliseconds(100);
 constexpr auto LED_OTA_CONNECTED = LED_BLUE;
 constexpr auto LED_VEHICLE_CONNECTED = LED_GREEN;
 constexpr auto LED_DROPPING_FRAMES = LED_RED;

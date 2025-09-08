@@ -93,8 +93,8 @@ constexpr auto LerpClamp(T a, T b, R time, R range) -> T {
   return a + (b - a) * t;
 }
 
-constexpr auto SinWave(float t, float frequency = .1f) -> float {
-  return 1.0f * sinf(2.f * pi * frequency * t);
+constexpr auto SinWave(float time, float frequency = .1f) -> float {
+  return sinf(2.f * pi * frequency * time);
 }
 
 constexpr auto Pulse(float time, float frequency = .1f) -> float {
