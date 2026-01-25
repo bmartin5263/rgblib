@@ -25,12 +25,12 @@ using namespace rgb;
 constexpr auto STARTUP_DELAY = Duration::Milliseconds(0);
 constexpr auto INTRO_LENGTH = Duration::Seconds(10);
 
-constexpr auto LED_COUNT = 16;
+constexpr auto LED_COUNT = 146;
 constexpr auto LED_ROWS = 8;
 constexpr auto LED_COLUMNS = 8;
-constexpr auto LED_TYPE = NEO_GRB + NEO_KHZ800;   // RGBW
+constexpr auto LED_TYPE = NEO_GRB + NEO_KHZ800;
 constexpr auto LED_PIN = D2_RGB;
-constexpr auto IR_PIN = D3;
+constexpr auto IR_PIN = D4;
 
 auto vehicle = Vehicle{};
 auto irReceiver = IRReceiver{};
@@ -54,6 +54,7 @@ auto scenes = std::array {
   static_cast<Scene*>(&introScene)
 };
 
+auto active = false;
 auto reactivateAt = Timestamp{};
 
 auto setup() -> void {
@@ -79,21 +80,6 @@ auto setup() -> void {
     .SetScenes(scenes)
     .SetLEDs(leds)
     .SetSensors(sensors)
-    .SetActiveCheck(Duration::Seconds(1), [](){
-      if (!reactivateAt.isZero()) {
-        if (Clock::Now() >= reactivateAt) {
-          reactivateAt = Timestamp::Zero();
-          return true;
-        }
-        else {
-          return false;
-        }
-      }
-      else {
-        return true;
-      }
-    })
-    .SetInactivityTimeout(Duration::Seconds(5))
     .Start();
 }
 

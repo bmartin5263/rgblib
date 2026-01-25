@@ -21,11 +21,12 @@ public:
   explicit LEDStrip(pin_num pin, neoPixelType type = NEO_GRBW + NEO_KHZ800, u16 offset = 0):
     pixels{}, leds(N, pin, type), mOffset(offset), mReversed(false)
   {
-    start();
+//    start();
   }
 
-  auto start() -> void {
-    leds.begin();
+  auto start() -> void override {
+    auto x = leds.begin();
+    INFO("begin = %i", x);
   }
 
   auto setBrightness(u8 brightness) -> LEDStrip& {

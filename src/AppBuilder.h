@@ -38,12 +38,9 @@ private:
   PixelList* mDebugOutputLED{nullptr};
   Iterable<LEDCircuit*> mLeds{};
   Iterable<Scene*> mScenes{};
-  Scene* mIntroScene{nullptr};
-  Predicate mActiveCheck{[](){ return true; }};
-  Duration mActiveCheckFrequency{Duration::Minutes(1)};
-  Duration mRunIntroSceneFor{Duration::Seconds(1)};
-  Duration mInactivityTimeout{Duration::Seconds(10)};
   Iterable<Runnable> mSensors{};
+  Scene* mIntroScene{nullptr};
+  Duration mRunIntroSceneFor{Duration::Seconds(1)};
 };
 
 }

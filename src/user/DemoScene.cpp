@@ -9,9 +9,19 @@ using namespace rgb;
 
 DemoScene::DemoScene(rgb::PixelList& ring, rgb::IRReceiver& irReceiver)
   : ring(ring), irReceiver(irReceiver) {
+
   fillEffect.shader = [&](auto& pixel, auto& params){
     pixel = color;
   };
+
+  fillEffect.shader = [&](auto& pixel, auto& params){
+    const auto SPEED = Duration::Seconds(20);
+    auto time = Clock::Now().mod(SPEED).to<float>() / SPEED.to<float>();
+    auto hue = LerpWrap(0.0f, 1.0f, time);
+    pixel = Color::HslToRgb(hue) * .3f;
+//    pixel = Color(1.0f, 0.0f, .2f) * .1f;
+  };
+
 }
 
 auto DemoScene::setup() -> void {
@@ -51,5 +61,15 @@ auto DemoScene::update() -> void {
 }
 
 auto DemoScene::draw() -> void {
-  fillEffect.draw(ring);
+//  fillEffect.draw(ring);
+  auto size = ring.getSize();
+  for (int i = 0; i < size; i += 1) {
+    ring[i] = Color::GREEN();
+//    if (i + 1 < size) {
+//      ring[i + 1] = Color::RED();
+//    }
+//    if (i + 2 < size) {
+//      ring[i + 2] = Color::GREEN();
+//    }
+  }
 }

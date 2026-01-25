@@ -55,7 +55,7 @@ struct CircularLogIterator {
   }
 };
 
-template<typename Iter, typename T = typename Iter::value_type>
+template<typename Iterable, typename T = typename Iterable::value_type>
 class CircularLog {
 public:
 
@@ -93,7 +93,7 @@ public:
   }
 
 private:
-  Iter data{};
+  Iterable data{};
   size_t next{0};
 
 };

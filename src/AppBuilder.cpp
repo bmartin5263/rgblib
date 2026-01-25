@@ -34,20 +34,9 @@ auto AppBuilder::SetScenes(Iterable<rgb::Scene*> scenes) -> self {
   return *this;
 }
 
-auto AppBuilder::SetActiveCheck(Duration frequency, Predicate activeCheck) -> self {
-  mActiveCheckFrequency = frequency;
-  mActiveCheck = std::move(activeCheck);
-  return *this;
-}
-
 auto AppBuilder::EnableIntroScene(rgb::Scene& introScene, rgb::Duration expirationTime) -> self {
   mIntroScene = &introScene;
   mRunIntroSceneFor = expirationTime;
-  return *this;
-}
-
-auto AppBuilder::SetInactivityTimeout(Duration timeout) -> AppBuilder& {
-  mInactivityTimeout = timeout;
   return *this;
 }
 

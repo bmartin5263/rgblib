@@ -42,8 +42,6 @@ private:
   auto prevScene() -> void;
   auto checkForSceneSwitch() -> void;
   auto initializeStartingScene() -> void;
-  auto checkForSleep() -> void;
-  auto goToSleep() -> void;
 
   auto update() -> void;
   auto draw() -> void;
@@ -51,19 +49,13 @@ private:
   Scene* scene;
   Scene* mNextScene;
   Scene* introScene{};
-  Predicate activeCheck;
   Iterable<Scene*> scenes{};
   Iterable<LEDCircuit*> leds{};
   Iterable<Runnable> sensors{};
   TimerHandle introSceneTimer{};
   int currentScene{-1};
   Duration runIntroSceneFor;
-  Duration activeCheckFrequency;
-  Duration inactivityTimeout;
-  Timestamp detectedInitialInactivityAt{};
-  Timestamp lastActiveCheckAt{};
   bool started{};
-  bool sleeping{};
 };
 
 }

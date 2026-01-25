@@ -47,39 +47,10 @@ auto App::start() -> void {
 auto App::loop() -> void {
   Clock::StartTick();
 
-  if (Clock::Now() >= lastActiveCheckAt + activeCheckFrequency) {
-    App::checkForSleep();
-    lastActiveCheckAt = Clock::Now();
-  }
-
-  if (!sleeping) {
-    update();
-    draw();
-  }
+  update();
+  draw();
 
   Clock::StopTick();
-}
-
-auto App::checkForSleep() -> void {
-  TRACE("Checking for Sleep");
-  auto active = activeCheck();
-  if (active) {
-    detectedInitialInactivityAt = Timestamp::Zero();
-    if (sleeping) {
-      INFO("Waking up from sleep");
-      sleeping = false;
-      initializeStartingScene();
-    }
-  }
-  else {
-    if (detectedInitialInactivityAt.isZero()) {
-      detectedInitialInactivityAt = Clock::Now();
-    }
-    if (Clock::Now() >= detectedInitialInactivityAt + inactivityTimeout) {
-      goToSleep();
-      detectedInitialInactivityAt = Clock::Now();
-    }
-  }
 }
 
 auto App::update() -> void {
@@ -142,9 +113,6 @@ auto App::configure(const AppBuilder& appBuilder) -> void {
   scenes = appBuilder.mScenes;
   runIntroSceneFor = appBuilder.mRunIntroSceneFor;
   introScene = appBuilder.mIntroScene;
-  activeCheck = appBuilder.mActiveCheck;
-  activeCheckFrequency = appBuilder.mActiveCheckFrequency;
-  inactivityTimeout = appBuilder.mInactivityTimeout;
   Debug::SetDebugChain(appBuilder.mDebugOutputLED);
 }
 
@@ -178,26 +146,6 @@ auto App::initializeStartingScene() -> void {
     this->scene = scenes[0];
   }
   this->scene->setup();
-}
-
-auto App::goToSleep() -> void {
-  INFO("Going to sleep");
-
-  this->sleeping = true;
-  this->scene->cleanup();
-  this->scene = &NullScene::Instance();
-  this->leds.forEach([](auto led){ led->reset(); led->display(); } );
-
-  digitalWrite(rgb::config::LED_DROPPING_FRAMES, HIGH);
-  digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, HIGH);
-  digitalWrite(rgb::config::LED_OTA_CONNECTED, HIGH);
-
-  Clock::StopTick();
-
-  esp_sleep_enable_timer_wakeup(activeCheckFrequency.asMicroseconds());
-  esp_light_sleep_start();
-
-  INFO("Check for wakeup");
 }
 
 }

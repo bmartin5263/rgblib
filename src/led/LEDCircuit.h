@@ -16,6 +16,7 @@ public:
   LEDCircuit& operator=(LEDCircuit&& rhs) noexcept = default;
   virtual ~LEDCircuit() = default;
 
+  virtual auto start() -> void = 0;
   virtual auto reset() -> void = 0;
   virtual auto display() -> void = 0;
 };
