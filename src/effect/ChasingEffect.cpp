@@ -7,33 +7,54 @@
 
 namespace rgb {
 
-auto ChasingEffect::reset() -> void {
-  position = 0;
-  nextMoveTime = Clock::Now();
-}
+auto ChasingEffect::draw(Timestamp now, PixelList& pixels) -> void {
+  auto pixelLength = pixels.length();
 
-auto ChasingEffect::update() -> void {
-  if (Clock::Now() >= nextMoveTime) {
-    step();
-    nextMoveTime = Clock::Now() + delay;
-  }
-}
+  uint actualTrailLength = trailLength.getUnits(pixels);
 
-auto ChasingEffect::step() -> void {
-  position += 1;
-}
+  auto params = ShaderParameters {
+    .now = now,
+    .duration = progression.duration,
+    .trailLength = actualTrailLength,
+    .pixelPosition = 0,
+    .trailPosition = 0,
+    .positionRatio = 0.0f,
+    .brightness = Brightness::GetBrightness(brightness)
+  };
 
-auto ChasingEffect::draw(PixelList& pixels) -> void {
-  if (std::holds_alternative<normal>(trailLength.variant)) {
-
+  Duration duration;
+  if (progression.isDelay) {
+    duration = Duration{progression.duration.value * pixelLength};
   }
   else {
-
+    duration = progression.duration;
   }
-}
 
-auto ChasingEffect::draw(Iterable<PixelList*> pixelLists) -> void {
+  auto headPercent = now.percentOf(Timestamp{duration.value});
+  auto effectPosition = static_cast<uint>(static_cast<float>(pixelLength) * headPercent); // round down
 
+  if (buildup) {
+    for (auto trailPosition = 0; trailPosition < actualTrailLength; ++trailPosition) {
+      if (trailPosition > effectPosition) {
+        // Anything before effectPosition is not drawn
+        break;
+      }
+      auto pixelPosition = (effectPosition - trailPosition + shift) % pixelLength; // draw head first
+      params.trailPosition = trailPosition;
+      params.positionRatio = static_cast<float>(actualTrailLength - trailPosition) / static_cast<float>(actualTrailLength);
+      params.pixelPosition = pixelPosition;
+      pixels.set(pixelPosition, shader(pixels.get(pixelPosition), params));
+    }
+  }
+  else {
+    for (auto trailPosition = 0; trailPosition < actualTrailLength; ++trailPosition) {
+      auto pixelPosition = (effectPosition + trailPosition + shift) % pixelLength; // draw tail first
+      params.trailPosition = actualTrailLength - 1 - trailPosition;
+      params.positionRatio = static_cast<float>(trailPosition + 1) / static_cast<float>(actualTrailLength);
+      params.pixelPosition = pixelPosition;
+      pixels.set(pixelPosition, shader(pixels.get(pixelPosition), params));
+    }
+  }
 }
 
 }

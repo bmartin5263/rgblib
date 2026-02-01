@@ -1,0 +1,68 @@
+//
+// Created by Brandon on 7/4/25.
+//
+
+#ifndef RGBLIB_BRIGHTNESS_H
+#define RGBLIB_BRIGHTNESS_H
+
+#include "Types.h"
+
+namespace rgb {
+
+enum class BrightnessLevel {
+  OFF,
+  DIM, // LOW is a macro name in Arduino
+  MEDIUM,
+  BRIGHT, // HIGH is a macro name in Arduino
+  MAX,
+};
+
+struct BrightnessLevels {
+  float dim{-1.0f};
+  float medium{-1.0f};
+  float bright{-1.0f};
+  float max{-1.0f};
+};
+
+class Brightness {
+public:
+  static auto GetBrightness() -> float { return Instance().getBrightness(); };
+  static auto GetBrightness(float onlyBrightness) -> float { return Instance().getBrightness(onlyBrightness); };
+  static auto GetBrightness(const BrightnessLevels& levels) -> float { return Instance().getBrightness(levels); };
+  static auto GetLevel() -> BrightnessLevel { return Instance().getLevel(); };
+
+  static auto TurnOff() -> void { Instance().turnOff(); };
+  static auto TurnOn() -> void { Instance().turnOn(); };
+  static auto SetLevel(BrightnessLevel level) -> void { Instance().setLevel(level); };
+  static auto IncreaseLevel() -> void { Instance().increaseLevel(); };
+  static auto DecreaseLevel(bool includeOff = false) -> void { Instance().decreaseLevel(includeOff); };
+
+private:
+  BrightnessLevel mLevel{BrightnessLevel::DIM};
+  BrightnessLevel mLastLevel{mLevel};
+  Timestamp mBrightnessSetAt{Timestamp::Max()};
+  Duration mFadeDelay{Duration::Milliseconds(500)};
+  normal mDefaultBrightness{1.0f};
+
+  static auto Instance() -> Brightness& {
+    static Brightness instance;
+    return instance;
+  }
+
+  auto getBrightness() const -> float;
+  auto getBrightness(float onlyBrightness) const -> float;
+  auto getBrightness(const BrightnessLevels& levels) const -> float;
+  auto turnOff() -> void;
+  auto turnOn() -> void;
+  auto setLevel(BrightnessLevel level) -> void;
+  auto getLevel() const -> BrightnessLevel;
+  auto increaseLevel() -> void;
+  auto decreaseLevel(bool includeOff) -> void;
+
+  static auto GetBrightness(BrightnessLevel level, normal defaultLevel, const BrightnessLevels& levels) -> float;
+};
+
+}
+
+
+#endif //RGBLIB_BRIGHTNESS_H

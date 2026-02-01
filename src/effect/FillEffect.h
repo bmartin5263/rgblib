@@ -5,31 +5,31 @@
 #ifndef RGBLIB_FILLEFFECT_H
 #define RGBLIB_FILLEFFECT_H
 
-#include "Color.h"
+#include <functional>
+#include "rgb/Color.h"
+#include "Brightness.h"
+#include "Effect.h"
 
 namespace rgb {
 
 struct FillEffectShaderParameters {
-  Timestamp now;
-  u16 length;
-  u16 position;
+  Timestamp now{};
+  uint length{};
+  uint position{};
 
   [[nodiscard]] constexpr normal relativePosition() const {
     return static_cast<float>(position) / static_cast<float>(length);
   }
 };
+using FillEffectShader = std::function<Color(Color, const FillEffectShaderParameters&)>;
 
-using FillEffectShader = std::function<void(Color&, const FillEffectShaderParameters&)>;
-
-class PixelList;
-class FillEffect {
-  static auto RainbowShader(Color& pixel, const FillEffectShaderParameters& params) -> void {
-    pixel = rgb::Color::HslToRgb(params.relativePosition()) * Brightness::GetBrightness(1.0f);
+class FillEffect : public Effect {
+  static auto RainbowShader(Color pixel, const FillEffectShaderParameters& params) -> Color {
+    return rgb::Color::HslToRgb(params.relativePosition()) * Brightness::GetBrightness(1.0f);
   }
 
 public:
-  auto draw(PixelList& chain) -> void;
-
+  auto draw(Timestamp now, PixelList& pixels) -> void override;
   FillEffectShader shader{RainbowShader};
 private:
 
