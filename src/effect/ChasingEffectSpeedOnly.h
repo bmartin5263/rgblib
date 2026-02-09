@@ -1,9 +1,9 @@
 //
-// Created by Brandon on 8/17/25.
+// Created by Brandon on 2/2/26.
 //
 
-#ifndef RGBLIB_CHASINGEFFECT_H
-#define RGBLIB_CHASINGEFFECT_H
+#ifndef RGBLIB_CHASINGEFFECTSPEEDONLY_H
+#define RGBLIB_CHASINGEFFECTSPEEDONLY_H
 
 #include <optional>
 #include "Types.h"
@@ -16,30 +16,30 @@
 
 namespace rgb {
 
-/*
- * Length Modes:
- *   Absolute  - Trail length is defined in absolute units
- *   Relative* - Trail length is defined as a ratio of the length of the LED strip
- *
- * Progress Modes:
- *   StepBased   - The trail moves at the same speed no matter the length of the LED strip
- *   ChainBased* - The trail moves at a speed that depends on how long the effect should take
- */
-class ChasingEffect : public Effect {
+// Only permits speed-based progression
+class ChasingEffectSpeedOnly : public Effect {
 public:
   struct ShaderParameters {
     Timestamp now{};
-    Duration duration{};
+    Duration delay{};
     uint trailLength{};
     uint pixelPosition{};
     uint trailPosition{};
     float positionRatio{};
-    float brightness{};
   };
   using Shader = std::function<Color(Color, const ShaderParameters&)>;
   static constexpr auto DefaultShader = [](auto color, auto& params){
     return Color::MAGENTA() * .3f;
   };
+
+  // Reset the state of the effect
+  auto reset(Timestamp now) -> void override;
+
+  // Update the effect (call every frame)
+  auto update(Timestamp now) -> void override;
+
+  // Step the effect by a single frame
+  auto step() -> void;
 
   // Draw the effect onto a pixel buffer
   auto draw(Timestamp now, PixelList& pixels) -> void override;
@@ -47,18 +47,24 @@ public:
   // How to color the pixels lit up by this effect
   Shader shader{DefaultShader};
 
-  // Time it takes for the effect to complete a full cycle
-  EffectProgression progression{EffectProgression::ConstantSpeed(Duration::Milliseconds(100))};
+  // Time between position updates
+  Duration delay{Duration::Milliseconds(100)};
 
+private: // TODO - see if this organization affected the memory size
+  // When do we move the effect next
+  rgb::Timestamp nextMoveTime{0};
+
+  // Where is the head of the effect
+  u64 effectPosition{0};
+
+public:
   // How much the effect should be shifted
   i64 shift{0};
-
-  BrightnessLevels brightness{};
 
   // Length of the chase trail, in absolute units or relative to the length of the pixel buffer
   Length trailLength{.2f};
 
-  // Does the trail enter from "off-screen"?
+  // Does the trail have to first enter from "off-screen"
   bool buildup{false};
 
 };
@@ -66,4 +72,4 @@ public:
 
 }
 
-#endif //RGBLIB_CHASINGEFFECT_H
+#endif //RGBLIB_CHASINGEFFECTSPEEDONLY_H

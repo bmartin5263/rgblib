@@ -107,7 +107,7 @@ auto Timer::continuouslyWhile(const Predicate& function) -> TimerHandle {
   timer->handleId = nextHandleId++;
   timer->startedAt = now;
 
-  TRACE("Assigning Timer '%i'. startedAt=%lu, finishAt=%llu", timer->id, timer->startedAt.value, timer->finishAt.value);
+  TRACE("Assigning Timer '%i'. startedAt=%llu, finishAt=%llu", timer->id, timer->startedAt.value, timer->finishAt.value);
   ASSERT(timer->next == nullptr, "Timer.Next is not nullptr");
   ASSERT(timer->prev == nullptr, "Timer.Prev is not nullptr");
 
@@ -129,7 +129,7 @@ auto Timer::continuouslyFor(Duration duration, const TimerFunction& function) ->
   timer->startedAt = now;
   timer->handleId = nextHandleId++;
 
-  TRACE("Assigning Timer '%i'. startedAt=%lu, finishAt=%llu", timer->id, timer->startedAt.value, timer->finishAt.value);
+  TRACE("Assigning Timer '%i'. startedAt=%llu, finishAt=%llu", timer->id, timer->startedAt.value, timer->finishAt.value);
   ASSERT(timer->next == nullptr, "Timer.Next is not nullptr");
   ASSERT(timer->prev == nullptr, "Timer.Prev is not nullptr");
 
@@ -274,7 +274,7 @@ auto Timer::executeRegularTimer(TimerNode* timer, Timestamp now) -> bool {
   TRACE("Running Timer '%i'", timer->id);
   timer->timerFunction(context);
   if (context.repeatIn) {
-    TRACE("Repeating Timer '%i'", timer->id);
+    INFO("Repeating Timer '%i' in '%llu'", timer->id, context.repeatIn.value().value);
     timer->repeat(now + context.repeatIn.value());
     enqueueForAdding(timer);
     return false;

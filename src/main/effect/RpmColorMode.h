@@ -9,14 +9,14 @@
 #include "rgb/Color.h"
 #include "RpmGaugeCalculations.h"
 
-class RpmEffect;
+class RpmGauge;
 class RpmColorMode {
 public:
   static auto PARTITIONED() -> const RpmColorMode*;
   static auto SINGLE() -> const RpmColorMode*;
   static auto BLENDED() -> const RpmColorMode*;
 
-  virtual auto calculateColor(const RpmGaugeCalculations& calculations, const RpmEffect& effect) const -> rgb::Color = 0;
+  virtual auto calculateColor(const RpmGaugeCalculations& calculations, const RpmGauge& effect) const -> rgb::Color = 0;
 
   RpmColorMode() = default;
   RpmColorMode(const RpmColorMode& rhs) = default;
@@ -25,12 +25,12 @@ public:
   RpmColorMode& operator=(RpmColorMode&& rhs) noexcept = default;
   virtual ~RpmColorMode() = default;
 
-  friend class RpmEffect;
+  friend class RpmGauge;
 };
 
 class PartitionedRpmColorMode : public RpmColorMode {
 public:
-  auto calculateColor(const RpmGaugeCalculations& calculations, const RpmEffect& effect) const -> rgb::Color override;
+  auto calculateColor(const RpmGaugeCalculations& calculations, const RpmGauge& effect) const -> rgb::Color override;
 
   static auto Instance() -> PartitionedRpmColorMode& {
     static PartitionedRpmColorMode instance;
@@ -48,7 +48,7 @@ private:
 
 class SingleRpmColorMode : public RpmColorMode {
 public:
-  auto calculateColor(const RpmGaugeCalculations& calculations, const RpmEffect& effect) const -> rgb::Color override;
+  auto calculateColor(const RpmGaugeCalculations& calculations, const RpmGauge& effect) const -> rgb::Color override;
 
   static auto Instance() -> SingleRpmColorMode& {
     static SingleRpmColorMode instance;
@@ -66,7 +66,7 @@ private:
 
 class BlendedRpmColorMode : public RpmColorMode {
 public:
-  auto calculateColor(const RpmGaugeCalculations& calculations, const RpmEffect& effect) const -> rgb::Color override;
+  auto calculateColor(const RpmGaugeCalculations& calculations, const RpmGauge& effect) const -> rgb::Color override;
 
   static auto Instance() -> BlendedRpmColorMode& {
     static BlendedRpmColorMode instance;

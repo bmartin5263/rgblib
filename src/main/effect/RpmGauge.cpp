@@ -2,9 +2,10 @@
 // Created by Brandon on 1/31/26.
 //
 
-#include "RpmEffect.h"
+#include "RpmGauge.h"
 #include "Brightness.h"
-#include "Brightness.h"
+#include "Timer.h"
+#include "lincoln/LincolnTownCar.h"
 
 using namespace rgb;
 
@@ -21,57 +22,79 @@ auto mapToPixelPosition(uint level, uint ledCount, uint offset = 0) -> u16 {
   return (level + offset) % ledCount;
 }
 
-RpmEffect::RpmEffect() = default;
+RpmGauge::RpmGauge() = default;
 
-auto RpmEffect::update(Timestamp now) -> void {
+auto RpmGauge::reset(rgb::Timestamp now) -> void {
+}
+
+
+auto RpmGauge::update(Timestamp now) -> void {
 
 }
 
-auto RpmEffect::draw(Timestamp now, PixelList& pixels) -> void {
-  auto& vehicle = Vehicle::Instance();
+auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
+  auto& vehicle = LincolnTownCar::Instance();
   auto calcs = RpmGaugeCalculations();
   calcs.now = Clock::Now();
   calcs.coolantPercent = PercentBetween(getCoolantTemp(vehicle), minCoolantLevel, maxCoolantLevel);
   calcs.effectiveYellowLineStart = static_cast<u16>(static_cast<float>(yellowLineStart) * LerpClamp(.6f, 1.0f, calcs.coolantPercent));
   calcs.effectiveRedLineStart = static_cast<u16>(static_cast<float>(redLineStart) * LerpClamp(.8f, 1.0f, calcs.coolantPercent));
   calcs.effectiveDimBrightness = Brightness::GetBrightness({
-    .dim = rgb::ByteToFloat(1),
-    .medium = rgb::ByteToFloat(2),
+    .dim = rgb::ByteToFloat(0),
+    .medium = rgb::ByteToFloat(1),
     .bright = rgb::ByteToFloat(4)
   });
-  calcs.effectiveDimBrightness = Brightness::GetBrightness({
+  calcs.effectiveBrightBrightness = Brightness::GetBrightness({
     .dim = rgb::ByteToFloat(6),
-    .medium = rgb::ByteToFloat(20),
+    .medium = rgb::ByteToFloat(6),
     .bright = rgb::ByteToFloat(40)
   });
 
+
   auto ledCount = pixels.length();
   auto levelCount = shape == RpmShape::LINE ? ledCount : layout->calculateLevels(ledCount);
-  calcs.rpmPerLevel = limit / levelCount;
-  calcs.yellowLevel = calcs.effectiveYellowLineStart / calcs.rpmPerLevel;
-  calcs.redLevel = calcs.effectiveRedLineStart / calcs.rpmPerLevel;
+  calcs.rpmPerLevel = (limit - rpmStart) / levelCount;
+  calcs.yellowLevel = (calcs.effectiveYellowLineStart - rpmStart) / calcs.rpmPerLevel;
+  calcs.redLevel = (calcs.effectiveRedLineStart - rpmStart) / calcs.rpmPerLevel;
 
-  RunningAverage(rpm, vehicle.rpm(), RPM_SMOOTHING_FACTOR);
+  rpm = vehicle.smoothRpm();
+  calcs.rpmLevelAchieved = (rpm - min(rpm, rpmStart)) / calcs.rpmPerLevel;
 
-  calcs.rpmLevelAchieved = static_cast<uint>(rpm / calcs.rpmPerLevel);
   if (calcs.rpmLevelAchieved == 0 && rpm > 100) {
     ++calcs.rpmLevelAchieved;
   }
   calcs.glow = calcs.rpmLevelAchieved > calcs.yellowLevel;
 
+  TRACE("rpmPerLevel=%i, yellowLevel=%i, redLevel=%i, achieved=%i, glow=%i", calcs.rpmPerLevel, calcs.yellowLevel, calcs.redLevel, calcs.rpmLevelAchieved, calcs.glow);
+
   auto offset = shape == RpmShape::LINE ? 0 : layout->calculateOffset(ledCount);
-  for (int level = 0; level < levelCount; ++level) {
-    calcs.level = level;
-    auto color = colorMode->calculateColor(calcs, *this);
 
-    auto brightness = calculateNextBrightness(calcs);
+  auto time = now.percentOf(Timestamp::Milliseconds(200));
+  auto activeLevel = static_cast<int>(static_cast<float>(levelCount) * time);
 
-    color *= brightness;
-    pixels.set(mapToPixelPosition(level, ledCount, offset), color);
+  if (rainbow) {
+    auto t = Clock::Now().percentOfWrapped(Duration::Seconds(1));
+    auto color = Color::HslToRgb(t) * calcs.effectiveBrightBrightness * 1.5f;
+    pixels.fill(color, levelCount);
+  }
+  else {
+    for (int level = 0; level < levelCount && level < activeLevel; ++level) {
+      calcs.level = level;
+      auto color = colorMode->calculateColor(calcs, *this);
+
+      auto brightness = calculateNextBrightness(calcs);
+
+      color *= brightness;
+      pixels.set(mapToPixelPosition(level, ledCount, offset), color);
+    }
+  }
+
+  if (now < Duration::Milliseconds(200)) {
+    pixels.set(activeLevel, Color::WHITE() * calcs.effectiveBrightBrightness * 2);
   }
 }
 
-auto RpmEffect::getCoolantTemp(Vehicle& vehicle) -> fahrenheit {
+auto RpmGauge::getCoolantTemp(LincolnTownCar& vehicle) -> fahrenheit {
   if (dynamicRedLine && vehicle.isConnected()) {
     return vehicle.coolantTemp();
   }
@@ -80,7 +103,7 @@ auto RpmEffect::getCoolantTemp(Vehicle& vehicle) -> fahrenheit {
   }
 }
 
-auto RpmEffect::calculateNextBrightness(const RpmGaugeCalculations& calculations) -> rgb::normal {
+auto RpmGauge::calculateNextBrightness(const RpmGaugeCalculations& calculations) -> rgb::normal {
   if (calculations.level >= calculations.rpmLevelAchieved) {
     return calculations.effectiveDimBrightness;
   }
@@ -105,4 +128,13 @@ auto RpmEffect::calculateNextBrightness(const RpmGaugeCalculations& calculations
       return calculations.effectiveBrightBrightness;
     }
   }
+}
+
+auto RpmGauge::startRainbow() -> void {
+  rainbow = true;
+}
+
+auto RpmGauge::stopRainbow() -> void {
+  INFO("stopping rainbow");
+  rainbow = false;
 }

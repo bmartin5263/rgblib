@@ -45,6 +45,16 @@ struct IRButtonPressed : public BaseEvent {
   IRButtonType button{};
 };
 
+struct CarMoving : public BaseEvent {
+  revs_per_minute rpm{};
+};
+
+struct CarStopped : public BaseEvent {};
+
+struct RainbowModeEntered : public BaseEvent {};
+
+struct RainbowModeExited : public BaseEvent {};
+
 }
 
 #endif //RGBLIB_SYSTEMEVENTS_H

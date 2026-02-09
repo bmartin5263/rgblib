@@ -2,13 +2,23 @@
 
 ## Effects
 
-- Single (1 color for the entire strip)
 - Solid (basic shader for address-specific coloring)
 - Chase (segment of LEDs lit up and move from one end to other on repeat)
-- Scan (back and forth chase)
 - Wipe (color fills up completely, then another 'overlaps' it)
 
 ## Debugging Tools
+
+### Built-in LED (todo)
+
+| Color  | Meaning              |
+|--------|----------------------|
+| Red    |                      |
+| Yellow |                      |
+| Green  | Connected to Vehicle |
+| Cyan   |                      |
+| Blue   | Connected to WiFi    |
+| Purple |                      |
+
 
 ### Logs
 Macros such as `INFO()` and `ERROR()` can be used to print logs to the Serial output. The library makes
@@ -17,7 +27,7 @@ use of these macros for reporting issues at runtime
 | Logging Macro      | Description                                                                                |
 |--------------------|--------------------------------------------------------------------------------------------|
 | `PRINTF(msg, ...)` | Print a log message without any header/timestamp. Always enabled, intended for real output |
-| `TRACE(msg, ...)`  | Print a log message with level _Trace_. Intended for low-level or repeated messages        |
+| `TRACE(msg, ...)`  | Print a log message with level _Trace_. Intended for low-level or frequent messages        |
 | `INFO(msg, ...)`   | Print a log message with level _Info_. Intended for high-level messages                    |
 | `ERROR(msg, ...)`  | Print a log message with level _Error_. Intended for abnormal events                       |
 

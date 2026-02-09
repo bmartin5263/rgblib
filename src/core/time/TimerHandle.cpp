@@ -38,6 +38,7 @@ TimerHandle::TimerHandle(TimerHandle&& rhs) noexcept {
 }
 
 TimerHandle& TimerHandle::operator=(TimerHandle&& rhs) noexcept {
+  cancel();
   this->node = rhs.node;
   this->handleId = rhs.handleId;
   rhs.detach();

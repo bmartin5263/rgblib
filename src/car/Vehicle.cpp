@@ -42,7 +42,7 @@ auto Vehicle::connect(PinNumber rx, PinNumber tx) -> bool {
   }
 
   INFO("Vehicle ready");
-  digitalWrite(15, LOW);
+  digitalWrite(LED_GREEN, LOW);
   mConnected = true;
   mLastResponse = Clock::Now();
 
@@ -61,13 +61,13 @@ auto Vehicle::update() -> void {
   auto lock = std::unique_lock { mu };
 
   if (!mConnected) { return; }
-  readPID(PID_RPM, mRpm, ToUint);
+  readPID(PID_RPM, mRpm, NoRemapping);
 
   if (!mConnected) { return; }
   readPID(PID_COOLANT_TEMP, mCoolantTemp, ToFahrenheit);
 
   if (!mConnected) { return; }
-  readPID(PID_SPEED, mSpeed, ToUint);
+  readPID(PID_SPEED, mSpeed, NoRemapping);
 }
 
 auto Vehicle::rpm() const -> revs_per_minute {

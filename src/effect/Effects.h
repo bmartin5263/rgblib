@@ -24,6 +24,13 @@ public:
   [[nodiscard]]
   static auto Start(Effect& effect, ManyPixelLists pixels) -> EffectHandle;
   static auto Stop(Effect& effect) -> void;
+
+  template<typename... Args>
+  static auto Stop(Effect& first, Args&... rest) -> void {
+    auto& instance = Instance();
+    instance.stop(first);
+    (instance.stop(rest), ...);
+  }
   static auto Update() -> void;
   static auto Draw() -> void;
   static auto Count();

@@ -67,7 +67,6 @@ private:
 //  auto readPID(byte pid, atomic_float& result, Timestamp now) -> void;
 
   constexpr static auto NoRemapping(int value) -> int { return value; }
-  constexpr static auto ToUint(int value) -> uint { return static_cast<uint>(value); }
   constexpr static auto ToPercent(int value) -> percent { return static_cast<float>(value) / 100.f; }
   constexpr static auto ToFloat(int value) -> float { return static_cast<float>(value); }
   constexpr static auto ToFahrenheit(int value) -> float { return CToF(static_cast<float>(value)); }

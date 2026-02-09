@@ -6,7 +6,6 @@
 *************************************************************************/
 
 #include <Arduino.h>
-#include <freertos/task.h>
 
 #define OBD_MODEL_UART 0
 #define OBD_MODEL_I2C 1
@@ -95,22 +94,22 @@
 #define PID_TRIP_DISTANCE 0x30
 
 typedef enum {
-    PROTO_AUTO = 0,
-    PROTO_ISO_9141_2 = 3,
-    PROTO_KWP2000_5KBPS = 4,
-    PROTO_KWP2000_FAST = 5,
-    PROTO_CAN_11B_500K = 6,
-    PROTO_CAN_29B_500K = 7,
-    PROTO_CAN_29B_250K = 8,
-    PROTO_CAN_11B_250K = 9,
+  PROTO_AUTO = 0,
+  PROTO_ISO_9141_2 = 3,
+  PROTO_KWP2000_5KBPS = 4,
+  PROTO_KWP2000_FAST = 5,
+  PROTO_CAN_11B_500K = 6,
+  PROTO_CAN_29B_500K = 7,
+  PROTO_CAN_29B_250K = 8,
+  PROTO_CAN_11B_250K = 9,
 } OBD_PROTOCOLS;
 
 // states
 typedef enum {
-    OBD_DISCONNECTED = 0,
-    OBD_CONNECTING = 1,
-    OBD_CONNECTED = 2,
-	OBD_FAILED = 3
+  OBD_DISCONNECTED = 0,
+  OBD_CONNECTING = 1,
+  OBD_CONNECTED = 2,
+  OBD_FAILED = 3
 } OBD_STATES;
 
 constexpr uint16_t hex2uint16(const char *p)
@@ -157,78 +156,78 @@ constexpr byte hex2uint8(const char *p)
 class COBD
 {
 public:
-	COBD():dataMode(1),errors(0),m_state(OBD_DISCONNECTED) {}
-	// begin serial UART, return the version number on success and 0 on failure
-	byte begin(int8_t rxPin, int8_t txPin);
-	// initialize OBD-II connection
-	bool init(OBD_PROTOCOLS protocol = PROTO_AUTO);
-	// un-initialize OBD-II connection
-	void end();
-	// set serial baud rate
-	bool setBaudRate(unsigned long baudrate);
-	// get connection state
-	OBD_STATES getState() { return m_state; }
-	// read specified OBD-II PID value
-	bool readPID(byte pid, int& result, int timeout);
-	// read multiple (up to 8) OBD-II PID values, return number of values obtained
-	byte readPID(const byte pid[], byte count, int result[], int timeout);
-	// set device into low power mode
-	void enterLowPowerMode();
-	// wake up device from low power mode
-	void leaveLowPowerMode();
-	// send AT command and receive response
-	byte sendCommand(const char* cmd, char* buf, byte bufsize, int timeout = OBD_TIMEOUT_LONG);
-	// read diagnostic trouble codes (return number of DTCs read)
-	byte readDTC(uint16_t codes[], byte maxCodes = 1);
-	// clear diagnostic trouble code
-	void clearDTC();
-	// get battery voltage (works without ECU)
-	float getVoltage();
-	// get VIN as a string, buffer length should be >= OBD_RECV_BUF_SIZE
-	bool getVIN(char* buffer, byte bufsize);
-	// initialize MEMS sensor
-	bool memsInit();
-	// read out MEMS data (acc for accelerometer, gyr for gyroscope, temp in 0.1 celcius degree)
-	bool memsRead(int16_t* acc, int16_t* gyr = 0, int16_t* mag = 0, int16_t* temp = 0);
-	// send query for specified PID
-	void sendQuery(byte pid);
-	// retrive and parse the response of specifie PID
-	bool getResult(byte& pid, int& result, int timeout);
-	// determine if the PID is supported
-	bool isValidPID(byte pid);
-	// get adapter firmware version
-	byte getVersion();
-	// set current PID mode
-	byte dataMode;
-	// number of subsequent errors
-	byte errors;
-	// bit map of supported PIDs
-	byte pidmap[4 * 4];
+  COBD():dataMode(1),errors(0),m_state(OBD_DISCONNECTED) {}
+  // begin serial UART, return the version number on success and 0 on failure
+  byte begin(int8_t rxPin, int8_t txPin);
+  // initialize OBD-II connection
+  bool init(OBD_PROTOCOLS protocol = PROTO_AUTO);
+  // un-initialize OBD-II connection
+  void end();
+  // set serial baud rate
+  bool setBaudRate(unsigned long baudrate);
+  // get connection state
+  OBD_STATES getState() { return m_state; }
+  // read specified OBD-II PID value
+  bool readPID(byte pid, int& result, int timeout);
+  // read multiple (up to 8) OBD-II PID values, return number of values obtained
+  byte readPID(const byte pid[], byte count, int result[], int timeout);
+  // set device into low power mode
+  void enterLowPowerMode();
+  // wake up device from low power mode
+  void leaveLowPowerMode();
+  // send AT command and receive response
+  byte sendCommand(const char* cmd, char* buf, byte bufsize, int timeout = OBD_TIMEOUT_LONG);
+  // read diagnostic trouble codes (return number of DTCs read)
+  byte readDTC(uint16_t codes[], byte maxCodes = 1);
+  // clear diagnostic trouble code
+  void clearDTC();
+  // get battery voltage (works without ECU)
+  float getVoltage();
+  // get VIN as a string, buffer length should be >= OBD_RECV_BUF_SIZE
+  bool getVIN(char* buffer, byte bufsize);
+  // initialize MEMS sensor
+  bool memsInit();
+  // read out MEMS data (acc for accelerometer, gyr for gyroscope, temp in 0.1 celcius degree)
+  bool memsRead(int16_t* acc, int16_t* gyr = 0, int16_t* mag = 0, int16_t* temp = 0);
+  // send query for specified PID
+  void sendQuery(byte pid);
+  // retrive and parse the response of specifie PID
+  bool getResult(byte& pid, int& result, int timeout);
+  // determine if the PID is supported
+  bool isValidPID(byte pid);
+  // get adapter firmware version
+  byte getVersion();
+  // set current PID mode
+  byte dataMode;
+  // number of subsequent errors
+  byte errors;
+  // bit map of supported PIDs
+  byte pidmap[4 * 4];
 protected:
-	char* getResponse(byte& pid, char* buffer, byte bufsize, int timeout);
-	byte receive(char* buffer, byte bufsize, int timeout = OBD_TIMEOUT_SHORT);
-	void write(const char* s);
-	void dataIdleLoop() { taskYIELD(); }
-	void recover();
-	void debugOutput(const char* s);
-	int normalizeData(byte pid, char* data);
-	OBD_STATES m_state;
+  char* getResponse(byte& pid, char* buffer, byte bufsize, int timeout);
+  byte receive(char* buffer, byte bufsize, int timeout = OBD_TIMEOUT_SHORT);
+  void write(const char* s);
+  void dataIdleLoop() {}
+  void recover();
+  void debugOutput(const char* s);
+  int normalizeData(byte pid, char* data);
+  OBD_STATES m_state;
 private:
-	static constexpr uint8_t getPercentageValue(char* data)
-	{
-		return (uint16_t)hex2uint8(data) * 100 / 255;
-	}
+  static constexpr uint8_t getPercentageValue(char* data)
+  {
+    return (uint16_t)hex2uint8(data) * 100 / 255;
+  }
   static constexpr uint16_t getLargeValue(char* data)
-	{
-		return hex2uint16(data);
-	}
+  {
+    return hex2uint16(data);
+  }
   static constexpr uint8_t getSmallValue(char* data)
-	{
-		return hex2uint8(data);
-	}
+  {
+    return hex2uint8(data);
+  }
   static constexpr int16_t getTemperatureValue(char* data)
-	{
-		return (int)hex2uint8(data) - 40;
-	}
-	char* getResultValue(char* buf);
+  {
+    return (int)hex2uint8(data) - 40;
+  }
+  char* getResultValue(char* buf);
 };

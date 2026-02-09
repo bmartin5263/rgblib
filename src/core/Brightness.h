@@ -38,9 +38,9 @@ public:
   static auto DecreaseLevel(bool includeOff = false) -> void { Instance().decreaseLevel(includeOff); };
 
 private:
-  BrightnessLevel mLevel{BrightnessLevel::DIM};
+  BrightnessLevel mLevel{BrightnessLevel::MEDIUM};
   BrightnessLevel mLastLevel{mLevel};
-  Timestamp mBrightnessSetAt{Timestamp::Max()};
+  Timestamp mBrightnessSetAt{Timestamp::Zero()};
   Duration mFadeDelay{Duration::Milliseconds(500)};
   normal mDefaultBrightness{1.0f};
 

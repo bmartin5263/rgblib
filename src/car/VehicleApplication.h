@@ -52,6 +52,7 @@ protected:
   virtual auto configure(Configurer& app) -> void = 0;
   virtual auto update() -> void = 0;
   virtual auto draw() -> void = 0;
+  virtual auto postDraw() -> void {};
 
 private:
   auto configureApplication() -> void;
@@ -124,9 +125,10 @@ auto VehicleApplication<UserEvents...>::baseUpdate() -> void {
 template<typename ...UserEvents>
 auto VehicleApplication<UserEvents...>::baseDraw() -> void {
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->reset(); });
-  Effects::Draw();
   draw();
+  Effects::Draw();
   Debug::Draw();
+  postDraw();
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->display(); });
   DisplayLEDs();
 }
@@ -177,17 +179,6 @@ auto VehicleApplication<UserEvents...>::PublishEvent(const AnyEvent& event) -> v
     for (auto& handler : it->second) {
       handler(event);
     }
-  }
-}
-
-void connectVehicle(Vehicle* vehicle, Timestamp& connectAgain) {
-  auto TX = PinNumber{42};
-  auto RX = PinNumber{41};
-  if (vehicle->connect(RX, TX)) {
-    connectAgain = Timestamp::Max();
-  }
-  else {
-    connectAgain = Clock::Now() + Duration::Seconds(1);
   }
 }
 

@@ -16,12 +16,19 @@ class Timer {
   static constexpr auto TIMER_COUNT = 10;
 
 public:
+  [[nodiscard]]
   static auto SetTimeout(Duration duration, const Runnable& function) -> TimerHandle;
+  [[nodiscard]]
   static auto SetTimeout(Duration duration, const TimerFunction& function) -> TimerHandle;
+  [[nodiscard]]
   static auto SetImmediateTimeout(const Runnable& function) -> TimerHandle;
+  [[nodiscard]]
   static auto SetImmediateTimeout(const TimerFunction& function) -> TimerHandle;
+  [[nodiscard]]
   static auto ContinuouslyFor(Duration duration, const Runnable& function) -> TimerHandle;
+  [[nodiscard]]
   static auto ContinuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle;
+  [[nodiscard]]
   static auto ContinuouslyWhile(const Predicate& function) -> TimerHandle;
 
   static auto ProcessTimers() -> void;

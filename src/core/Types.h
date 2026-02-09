@@ -29,9 +29,9 @@ using frames_t = u64;
 using fahrenheit = float;
 using percent = float;
 using celsius = float;
-using kph = uint;
-using mph = uint;
-using revs_per_minute = uint;
+using kph = int;
+using mph = int;
+using revs_per_minute = int;
 using cstring = const char*;
 using normal = float; // a float value typically between 0.0 and 1.0
 using time_t = u64;
@@ -144,7 +144,7 @@ struct number_wrapper {
 
 struct Duration : public number_wrapper<time_t, Duration> {
   constexpr explicit Duration() : number_wrapper<time_t, Duration>(0) {}
-  constexpr explicit Duration(time_t milliseconds) : number_wrapper<time_t, Duration>(milliseconds) {}
+  constexpr explicit Duration(time_t microseconds) : number_wrapper<time_t, Duration>(microseconds) {}
   static constexpr auto Seconds(time_t amount) -> Duration { return Duration(amount * 1000000); }
   static constexpr auto Minutes(time_t amount) -> Duration { return Duration(amount * 60000000); }
   static constexpr auto Milliseconds(time_t amount) -> Duration { return Duration(amount * 1000); }
@@ -156,6 +156,10 @@ struct Duration : public number_wrapper<time_t, Duration> {
   [[nodiscard]] constexpr auto asMinutes() const -> time_t { return value / 60000000; }
   [[nodiscard]] constexpr auto asMilliseconds() const -> time_t { return value / 1000; }
   [[nodiscard]] constexpr auto asMicroseconds() const -> time_t { return value; }
+
+  constexpr auto operator*(float rhs) const -> Duration {
+    return Duration { static_cast<time_t>(static_cast<float>(value) * rhs) };
+  }
 };
 
 struct Timestamp : public number_wrapper<time_t, Timestamp> {
@@ -176,7 +180,17 @@ struct Timestamp : public number_wrapper<time_t, Timestamp> {
   }
 
   [[nodiscard]]
+  constexpr auto percentOfWrapped(Timestamp rhs) const -> normal {
+    return static_cast<float>(value % rhs.value) / static_cast<float>(rhs.value);
+  }
+
+  [[nodiscard]]
   constexpr auto percentOf(Duration rhs) const -> normal {
+    return static_cast<float>(value) / static_cast<float>(rhs.value);
+  }
+
+  [[nodiscard]]
+  constexpr auto percentOfWrapped(Duration rhs) const -> normal {
     return static_cast<float>(value % rhs.value) / static_cast<float>(rhs.value);
   }
 
@@ -193,6 +207,10 @@ struct Timestamp : public number_wrapper<time_t, Timestamp> {
   using number_wrapper::operator*;
   constexpr auto operator*(const Duration& rhs) const -> Timestamp {
     return Timestamp { value * rhs.value };
+  }
+
+  constexpr auto operator*(float rhs) const -> Timestamp {
+    return Timestamp { static_cast<time_t>(static_cast<float>(value) * rhs) };
   }
 
   using number_wrapper::operator/;
@@ -240,6 +258,20 @@ struct Timestamp : public number_wrapper<time_t, Timestamp> {
     return *this;
   }
 
+  constexpr friend auto operator==(Timestamp lhs, Duration rhs) -> bool { return lhs.value == rhs.value; }
+  constexpr friend auto operator!=(Timestamp lhs, Duration rhs) -> bool { return lhs.value != rhs.value; }
+  constexpr friend auto operator<(Timestamp lhs, Duration rhs) -> bool { return lhs.value < rhs.value; }
+  constexpr friend auto operator>(Timestamp lhs, Duration rhs) -> bool { return lhs.value > rhs.value; }
+  constexpr friend auto operator<=(Timestamp lhs, Duration rhs) -> bool { return lhs.value <= rhs.value; }
+  constexpr friend auto operator>=(Timestamp lhs, Duration rhs) -> bool { return lhs.value >= rhs.value; }
+
+  constexpr friend auto operator==(Duration lhs, Timestamp rhs) -> bool { return lhs.value == rhs.value; }
+  constexpr friend auto operator!=(Duration lhs, Timestamp rhs) -> bool { return lhs.value != rhs.value; }
+  constexpr friend auto operator<(Duration lhs, Timestamp rhs) -> bool { return lhs.value < rhs.value; }
+  constexpr friend auto operator>(Duration lhs, Timestamp rhs) -> bool { return lhs.value > rhs.value; }
+  constexpr friend auto operator<=(Duration lhs, Timestamp rhs) -> bool { return lhs.value <= rhs.value; }
+  constexpr friend auto operator>=(Duration lhs, Timestamp rhs) -> bool { return lhs.value >= rhs.value; }
+
   constexpr auto timeSince(const Timestamp& earlierTime) -> Duration {
     return Duration { value - earlierTime.value };
   }
@@ -250,6 +282,8 @@ constexpr auto D3_RGB = D6;
 constexpr auto D4_RGB = D7;
 constexpr auto D5_RGB = D8;
 constexpr auto D6_RGB = D9;
+constexpr auto D7_RGB = D10;
+constexpr auto D8_RGB = 17;
 
 constexpr auto A4_RGB = 11;
 constexpr auto A5_RGB = 12;

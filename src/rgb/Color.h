@@ -6,6 +6,7 @@
 #define RGBLIB_COLOR_H
 
 #include <esp_random.h>
+#include <type_traits>
 #include "Types.h"
 #include "Util.h"
 
@@ -101,18 +102,24 @@ struct Color {
     return !(lhs == rhs);
   }
 
+  template<typename T>
   [[nodiscard]]
-  constexpr auto lerp(const Color& to, float time) const -> Color {
+  constexpr auto lerp(const Color& to, T time) const -> Color {
+    static_assert(std::is_floating_point_v<T>, "lerp time parameter must be floating point");
     return Color { Lerp(r, to.r, time), Lerp(g, to.g, time), Lerp(b, to.b, time), Lerp(w, to.w, time) };
   }
 
+  template<typename T>
   [[nodiscard]]
-  constexpr auto lerpWrap(const Color& to, float time) const -> Color {
+  constexpr auto lerpWrap(const Color& to, T time) const -> Color {
+    static_assert(std::is_floating_point_v<T>, "lerpWrap time parameter must be floating point");
     return Color { LerpWrap(r, to.r, time), LerpWrap(g, to.g, time), LerpWrap(b, to.b, time), LerpWrap(w, to.w, time) };
   }
 
+  template<typename T>
   [[nodiscard]]
-  constexpr auto lerpClamp(const Color& to, float time) const -> Color {
+  constexpr auto lerpClamp(const Color& to, T time) const -> Color {
+    static_assert(std::is_floating_point_v<T>, "lerpClamp time parameter must be floating point");
     return Color { LerpClamp(r, to.r, time), LerpClamp(g, to.g, time), LerpClamp(b, to.b, time), LerpClamp(w, to.w, time) };
   }
 
@@ -156,7 +163,7 @@ struct Color {
     return Color {0, 0, 1.0f, 0};
   }
 
-  static constexpr auto VIOLET() -> Color {
+  static constexpr auto PURPLE() -> Color {
     return Color {.5f, 0, 1.0f, 0};
   }
 
@@ -199,7 +206,7 @@ struct Color {
       case 6: return CYAN();
       case 7: return SKY_BLUE();
       case 8: return BLUE();
-      case 9: return VIOLET();
+      case 9: return PURPLE();
       case 10: return MAGENTA();
       default: return PINK();
     }

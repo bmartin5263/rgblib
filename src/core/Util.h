@@ -6,6 +6,7 @@
 #define RGBLIB_UTIL_H
 
 #include <cmath>
+#include <type_traits>
 #include <Arduino.h>
 #include "Types.h"
 
@@ -56,8 +57,9 @@ constexpr auto Sigmoid(u32 t) -> float {
   return (sinf(static_cast<float>(t) * PI / 180) + 1);
 }
 
-template<typename T>
-constexpr auto Lerp(T a, T b, normal t) -> T {
+template<typename T, typename N>
+constexpr auto Lerp(T a, T b, N t) -> T {
+  static_assert(std::is_floating_point_v<N>, "Lerp t parameter must be floating point");
   return a + (b - a) * t;
 }
 
@@ -66,10 +68,11 @@ constexpr auto Lerp(T a, T b, R time, R range) -> T {
   return a + (b - a) * (static_cast<float>(time) / static_cast<float>(range));
 }
 
-template<typename T>
-constexpr auto LerpWrap(T a, T b, normal t) -> T {
+template<typename T, typename N>
+constexpr auto LerpWrap(T a, T b, N t) -> T {
+  static_assert(std::is_floating_point_v<N>, "LerpWrap t parameter must be floating point");
   if (t < 0.0f || t > 1.0f) {
-    t = t - std::floor(t); // Wrap using the fractional part
+    t = t - std::floor(t);
   }
   return a + (b - a) * t;
 }
@@ -83,8 +86,18 @@ constexpr auto LerpWrap(T a, T b, R time, R range) -> T {
   return a + (b - a) * t;
 }
 
-template<typename T>
-constexpr auto LerpClamp(T a, T b, normal t) -> T {
+template<typename T, typename N>
+constexpr auto LerpClamp(T a, T b, N t) -> T {
+  static_assert(std::is_floating_point_v<N>, "LerpClamp t parameter must be floating point");
+  if (t <= 0.f) {
+    return a;
+  } else if (t >= 1.f) {
+    return b;
+  }
+  return a + (b - a) * t;
+}
+
+constexpr auto LerpClamp2(Duration a, Duration b, normal t) -> Duration {
   if (t <= 0.f) {
     return a;
   } else if (t >= 1.f) {
@@ -113,7 +126,13 @@ constexpr auto Pulse(float time, float frequency = .1f) -> float {
 }
 
 constexpr auto FloatToByte(normal f) -> u8 {
-  const u8 range = 255;
+  constexpr u8 range = 255;
+  if (f >= 1.0f) {
+    return range;
+  }
+  if (f <= 0.0f) {
+    return 0;
+  }
   return static_cast<u8>((static_cast<u8>(f * static_cast<float>(range))) % (range + 1));
 }
 
@@ -131,7 +150,7 @@ constexpr auto easeInOutElastic(T x) -> T {
 }
 
 constexpr auto KphToMph(kph value) -> mph {
-  return static_cast<mph>(value * 0.621371f);
+  return static_cast<mph>(static_cast<float>(value) * 0.621371f);
 }
 
 constexpr auto CToF(celsius value) -> fahrenheit {
@@ -195,9 +214,6 @@ constexpr auto PercentBetween(T value, T min, T max) -> normal {
   return (value - min) / diff;
 }
 
-/*
- * Returns the percent value [0.0 to 1.0] that 'value' is between 'min' and 'max'
- */
 template<typename T>
 constexpr auto RunningAverage(T& value, T next, float smoothingFactor) -> void {
   value = static_cast<T>(smoothingFactor * static_cast<float>(next) + (1 - smoothingFactor) * static_cast<float>(value));

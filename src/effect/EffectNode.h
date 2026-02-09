@@ -41,8 +41,9 @@ struct EffectNode {
   }
 
   auto start(Timestamp now) -> void {
-    effect->reset(now);
+    INFO("Starting Effect at %llu", now.asMilliseconds());
     startedAt = now;
+    effect->reset(now - startedAt);
   }
 
   auto update(Timestamp now) -> void {

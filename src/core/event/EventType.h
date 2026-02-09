@@ -64,7 +64,11 @@ using SystemEvent = EventVariant<
   OBDIIDisconnected,
   CarEngineStarted,
   CarEngineStopped,
-  IRButtonPressed
+  IRButtonPressed,
+  CarMoving,
+  CarStopped,
+  RainbowModeEntered,
+  RainbowModeExited
 >;
 
 template<typename ...UserEvents>
