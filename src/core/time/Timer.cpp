@@ -247,7 +247,7 @@ auto Timer::Instance() -> Timer& {
   return timer;
 }
 
-auto Timer::count() {
+auto Timer::activeCount() -> uint {
   auto num = 0;
   auto current = activeHead;
   while (current != nullptr) {
@@ -259,8 +259,8 @@ auto Timer::count() {
   return num;
 }
 
-auto Timer::Count() {
-  return Instance().count();
+auto Timer::ActiveCount() -> uint {
+  return Instance().activeCount();
 }
 
 auto Timer::recycle(TimerNode* timer) -> void {
@@ -274,7 +274,7 @@ auto Timer::executeRegularTimer(TimerNode* timer, Timestamp now) -> bool {
   TRACE("Running Timer '%i'", timer->id);
   timer->timerFunction(context);
   if (context.repeatIn) {
-    INFO("Repeating Timer '%i' in '%llu'", timer->id, context.repeatIn.value().value);
+    TRACE("Repeating Timer '%i' in '%llu'", timer->id, context.repeatIn.value().value);
     timer->repeat(now + context.repeatIn.value());
     enqueueForAdding(timer);
     return false;
@@ -308,6 +308,27 @@ auto Timer::setImmediateTimeout(const Runnable& function) -> TimerHandle {
 
 auto Timer::setImmediateTimeout(const TimerFunction& function) -> TimerHandle {
   return setTimeout(Duration::Zero(), function);
+}
+
+auto Timer::MaxCount() -> uint {
+  return Instance().maxCount();
+}
+
+auto Timer::maxCount() -> uint {
+  // TODO
+  return 0;
+}
+
+auto Timer::stopAll() -> void {
+  auto current = activeHead;
+  while (current != nullptr) {
+    current->cancelled = true;
+    current = current->next;
+  }
+}
+
+auto Timer::StopAll() -> void {
+  Instance().stopAll();
 }
 
 }

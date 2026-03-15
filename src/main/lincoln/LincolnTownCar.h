@@ -38,10 +38,13 @@ public:
   auto smoothRpm() const -> rgb::revs_per_minute;
   auto speed() const -> rgb::kph;
   auto smoothSpeed() const -> rgb::kph;
+  auto throttlePosition() const -> rgb::percent;
+  auto smoothThrottlePosition() const -> rgb::percent;
   auto state() const -> LincolnTownCarState&;
   auto startedMovingAt() const -> rgb::Timestamp;
   auto isConnected() const -> bool;
   auto inRainbowMode() const -> bool;
+  auto isStopped() const -> bool;
 
   static auto Instance() -> LincolnTownCar&;
 
@@ -66,6 +69,9 @@ private:
   rgb::kph mPreviousSpeed{};
   rgb::kph mSpeed{};
   rgb::kph mSmoothSpeed{};
+  rgb::percent mThrottle{};
+  rgb::percent mSmoothThrottle{};
+  rgb::percent mThrottleWhenRainbowStart{};
   rgb::revs_per_minute mPreviousRpm{};
   rgb::revs_per_minute mRpm{};
   rgb::revs_per_minute mSmoothRpm{};

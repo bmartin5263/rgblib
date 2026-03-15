@@ -203,7 +203,7 @@ auto Effects::Instance() -> Effects& {
   return timer;
 }
 
-auto Effects::count() {
+auto Effects::activeCount() -> uint {
   auto num = 0;
   auto current = activeHead;
   while (current != nullptr) {
@@ -215,8 +215,8 @@ auto Effects::count() {
   return num;
 }
 
-auto Effects::Count() {
-  return Instance().count();
+auto Effects::ActiveCount() -> uint {
+  return Instance().activeCount();
 }
 
 auto Effects::recycle(EffectNode* effect) -> EffectNode* {
@@ -245,6 +245,18 @@ auto Effects::stop(Effect& effect) -> void {
     }
     current = current->next;
   }
+}
+
+auto Effects::stopAll() -> void {
+  auto current = activeHead;
+  while (current != nullptr) {
+    current->stopping = true;
+    current = current->next;
+  }
+}
+
+auto Effects::StopAll() -> void {
+  Instance().stopAll();
 }
 
 

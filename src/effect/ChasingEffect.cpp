@@ -31,7 +31,8 @@ auto ChasingEffect::draw(Timestamp now, PixelList& pixels) -> void {
   }
 
   auto headPercent = now.percentOf(Timestamp{duration.value});
-  auto effectPosition = static_cast<uint>(static_cast<float>(pixelLength) * headPercent); // round down
+  auto effectPosition = static_cast<ulong>(static_cast<float>(pixelLength) * headPercent); // round down
+  params.cycle = static_cast<uint>(headPercent);
 
   if (buildup) {
     for (auto trailPosition = 0; trailPosition < actualTrailLength; ++trailPosition) {
@@ -39,10 +40,12 @@ auto ChasingEffect::draw(Timestamp now, PixelList& pixels) -> void {
         // Anything before effectPosition is not drawn
         break;
       }
+      auto cycle = (effectPosition - trailPosition) / pixelLength;
       auto pixelPosition = (effectPosition - trailPosition + shift) % pixelLength; // draw head first
       params.trailPosition = trailPosition;
       params.positionRatio = static_cast<float>(actualTrailLength - trailPosition) / static_cast<float>(actualTrailLength);
       params.pixelPosition = pixelPosition;
+      params.cycle = cycle;
       pixels.set(pixelPosition, shader(pixels.get(pixelPosition), params));
     }
   }

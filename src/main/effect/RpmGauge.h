@@ -17,6 +17,8 @@ public:
   static constexpr auto RPM_SMOOTHING_FACTOR = 0.03f;
   static constexpr auto RED = rgb::Color::RED();
   static constexpr auto GREEN = rgb::Color::GREEN();
+  static constexpr auto BUILD_UP_TIME = rgb::Duration::Milliseconds(200);
+  static constexpr auto RAINBOW_SPEED = rgb::Duration::Seconds(1);
 
   RpmGauge();
 

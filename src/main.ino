@@ -1,14 +1,10 @@
-#include "app/OptimizationApplication.h"
+//#include "lincoln/LincolnApplication.h"
+#include "app/CorvetteMetalArtApplication.h"
 
-auto app = OptimizationApplication{};
-
-#include "System.h"
-#include "Log.h"
+//auto app = LincolnApplication{};
+auto app = CorvetteMetalArtApplication{};
 
 auto setup() -> void {
-  rgb::log::init();
-//  rgb::System::MilliSleep(1000);
-  INFO("Setup");
   app.setup();
 }
 

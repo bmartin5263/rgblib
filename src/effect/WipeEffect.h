@@ -46,7 +46,7 @@ public:
   Shader shader{DefaultShader};
 
   // Time it takes for the effect to complete a full cycle
-  EffectProgression progression{EffectProgression::ConstantSpeed(Duration::Milliseconds(100))};
+  EffectProgression progression{DEFAULT_PROGRESSION};
 
 };
 

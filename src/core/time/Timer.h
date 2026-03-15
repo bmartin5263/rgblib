@@ -33,7 +33,10 @@ public:
 
   static auto ProcessTimers() -> void;
   static auto Cancel(TimerNode* node) -> void;
-  static auto Count();
+  static auto ActiveCount() -> uint;
+  static auto StopAll() -> void;
+  static auto MaxCount() -> uint;
+  static constexpr auto TotalCount() -> uint { return TIMER_COUNT; }
   static auto Instance() -> Timer&;
 
   auto setTimeout(Duration duration, const Runnable& function) -> TimerHandle;
@@ -42,7 +45,8 @@ public:
   auto setImmediateTimeout(const TimerFunction& function) -> TimerHandle;
   auto continuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle;
   auto continuouslyWhile(const Predicate& function) -> TimerHandle;
-  auto count();
+  auto activeCount() -> uint;
+  auto maxCount() -> uint;
   auto cancel(TimerNode* node) -> void;
   auto processTimers() -> void;
 
@@ -65,6 +69,7 @@ private:
   auto enqueueForAdding(TimerNode* node) -> void;
   auto processAdditions() -> void;
   auto reclaimNodes() -> void;
+  auto stopAll() -> void;
   auto recycle(TimerNode* timer) -> void;
   auto executeRegularTimer(TimerNode* timer, Timestamp now) -> bool;
   auto executeContinuousTimer(TimerNode* timer, Timestamp now) -> bool;

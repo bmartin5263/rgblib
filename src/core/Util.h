@@ -118,11 +118,12 @@ constexpr auto LerpClamp(T a, T b, R time, R range) -> T {
 }
 
 constexpr auto SinWave(float t, float frequency = .1f) -> float {
-  return 1.0f * sinf(2.f * PI * frequency * t);
+  return 1.0f * sinf(2.f * static_cast<float>(PI) * frequency * t);
 }
 
-constexpr auto Pulse(float time, float frequency = .1f) -> float {
-  return 0.5f * (1 + sinf(2.f * PI * frequency * time));
+constexpr auto Pulse(Timestamp time, Duration period) -> normal {
+  auto t = static_cast<float>(time.value % period.value) / static_cast<float>(period.value);
+  return 0.5f * (1.0f + sinf(2.0f * static_cast<float>(PI) * t));
 }
 
 constexpr auto FloatToByte(normal f) -> u8 {

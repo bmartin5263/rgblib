@@ -33,6 +33,7 @@ public:
     uint trailLength{};
     uint pixelPosition{};
     uint trailPosition{};
+    uint cycle{};
     float positionRatio{};
     float brightness{};
   };
@@ -48,7 +49,7 @@ public:
   Shader shader{DefaultShader};
 
   // Time it takes for the effect to complete a full cycle
-  EffectProgression progression{EffectProgression::ConstantSpeed(Duration::Milliseconds(100))};
+  EffectProgression progression{DEFAULT_PROGRESSION};
 
   // How much the effect should be shifted
   i64 shift{0};
@@ -59,7 +60,7 @@ public:
   Length trailLength{.2f};
 
   // Does the trail enter from "off-screen"?
-  bool buildup{false};
+  bool buildup{true};
 
 };
 

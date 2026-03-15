@@ -24,6 +24,7 @@ public:
   [[nodiscard]]
   static auto Start(Effect& effect, ManyPixelLists pixels) -> EffectHandle;
   static auto Stop(Effect& effect) -> void;
+  static auto StopAll() -> void;
 
   template<typename... Args>
   static auto Stop(Effect& first, Args&... rest) -> void {
@@ -33,7 +34,8 @@ public:
   }
   static auto Update() -> void;
   static auto Draw() -> void;
-  static auto Count();
+  static auto ActiveCount() -> uint;
+  static constexpr auto TotalCount() -> uint { return EFFECT_COUNT; }
   static auto Instance() -> Effects&;
 
   Effects();
@@ -55,9 +57,10 @@ private:
   auto start(Effect& effect, PixelList& pixels) -> EffectHandle;
   auto start(Effect& effect, ManyPixelLists pixels) -> EffectHandle;
   auto stop(Effect& effect) -> void;
+  auto stopAll() -> void;
   auto update() -> void;
   auto draw() -> void;
-  auto count();
+  auto activeCount() -> uint;
 
   auto nextEffectNode() -> EffectNode*;
   auto enqueueForAdding(EffectNode* node) -> void;

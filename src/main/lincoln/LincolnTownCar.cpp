@@ -26,6 +26,9 @@ auto LincolnTownCar::update() -> void {
 
   mCoolantTemp = vehicle.coolantTemp();
 
+  mThrottle = vehicle.throttlePosition();
+  RunningAverage(mSmoothThrottle, mThrottle, .1f);
+
   mState->update(*this);
 
   mLastUpdate = Clock::Now();
@@ -63,6 +66,16 @@ auto LincolnTownCar::smoothSpeed() const -> rgb::kph {
 }
 
 
+auto LincolnTownCar::throttlePosition() const -> rgb::percent {
+  return mThrottle;
+}
+
+
+auto LincolnTownCar::smoothThrottlePosition() const -> rgb::percent {
+  return mSmoothThrottle;
+}
+
+
 auto LincolnTownCar::transitionToStopped() -> void {
   TRACE("mState = STOPPED");
   mRainbowMode.reset();
@@ -85,6 +98,7 @@ auto LincolnTownCar::enterOrExtendRainbowMode() -> void {
     return;
   }
   mRainbowMode = Clock::Now();
+  mThrottleWhenRainbowStart = mThrottle;
   Application::instance->publishSystemEvent(rgb::RainbowModeEntered{{Clock::Now()}});
 }
 
@@ -106,4 +120,8 @@ auto LincolnTownCar::isConnected() const -> bool {
 
 auto LincolnTownCar::inRainbowMode() const -> bool {
   return mRainbowMode.has_value();
+}
+
+auto LincolnTownCar::isStopped() const -> bool {
+  return mState == &STOPPED_STATE || mState == &COLD_START_STATE;
 }

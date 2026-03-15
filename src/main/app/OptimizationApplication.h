@@ -23,8 +23,7 @@
 
 using namespace rgb;
 
-// LEDs
-auto s1 = FastLEDStrip<150, D2_RGB>();
+auto s1 = FastLEDStrip<100, D2_RGB>();
 
 class OptimizationApplication : public VehicleApplication<> {
 protected:
@@ -33,13 +32,9 @@ protected:
   }
 
   auto update() -> void override {
-
   }
 
   auto draw() -> void override {
-    auto t = Clock::Now().percentOfWrapped(Duration::Seconds(1));
-    auto color = Color::HslToRgb(t);
-    s1.fill(color);
   }
 };
 

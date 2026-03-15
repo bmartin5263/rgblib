@@ -12,6 +12,7 @@
 #include "Timer.h"
 #include "Effects.h"
 #include "LEDCore.h"
+#include "Watchdog.h"
 #include <mutex>
 
 namespace rgb {
@@ -43,6 +44,10 @@ public:
   auto publishSystemEvent(const SystemEvent& event) -> void override;
   auto on(size_t uid, Consumer<const SystemEvent&> action) -> void override;
   auto getVehicle() -> Vehicle* override;
+  auto isSleeping() -> bool;
+  auto goToSleep(Duration time) -> void;
+  auto goToSleep() -> void;
+  auto wakeUp() -> void;
 
   static auto PublishEvent(const AnyEvent& event) -> void;
 
@@ -60,13 +65,13 @@ private:
   auto baseUpdate() -> void;
   auto baseDraw() -> void;
 
-
-  Clock clock{10};
   std::vector<LEDCircuit*> mLeds{};
   std::vector<Sensor*> mSensors{};
   std::unordered_map<uint, std::vector<std::function<void(const AnyEvent&)>>> mEventMap{};
+  Timestamp sleepAt;
   QueueHandle_t commandQueue;
   uint lastWakeTime;
+  bool mSleeping;
 };
 
 template<typename... UserEvents>
@@ -82,6 +87,7 @@ auto VehicleApplication<UserEvents...>::run() -> void {
 
 template<typename ...UserEvents>
 auto VehicleApplication<UserEvents...>::setup() -> void {
+  rgb::log::init();
   configureApplication();
 
   xTaskCreatePinnedToCore(subtask, "Subtask", RGB_OTHER_CORE_STACK_SIZE, this, RGB_OTHER_CORE_PRIORITY, nullptr, 1);
@@ -93,23 +99,24 @@ auto VehicleApplication<UserEvents...>::setup() -> void {
 
 template<typename ...UserEvents>
 auto VehicleApplication<UserEvents...>::loop() -> void {
-  clock.startFrame();
-  clock.printStats();
+  Clock::NextFrame();
   baseUpdate();
-  baseDraw();
-  clock.endFrame();
+  if (!mSleeping) {
+    baseDraw();
+  }
 }
 
 template<typename ...UserEvents>
 auto VehicleApplication<UserEvents...>::initialize() -> void {
-  on<OBDIIDisconnected>([](auto& e){
-    // TODO - go to sleep
-  });
-
   SetupLEDs();
-
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->start(); });
   std::for_each(std::begin(mSensors), std::end(mSensors), [](auto sensor){ sensor->start(); });
+
+  Timer::SetTimeout(Duration::Seconds(1), [](auto& context){
+    static Watchdog watchdog;
+    watchdog.update();
+    context.repeatIn = Duration::Seconds(1);
+  }).detach();
 }
 
 template<typename ...UserEvents>
@@ -180,6 +187,31 @@ auto VehicleApplication<UserEvents...>::PublishEvent(const AnyEvent& event) -> v
       handler(event);
     }
   }
+}
+
+template<typename ...UserEvents>
+auto VehicleApplication<UserEvents...>::isSleeping() -> bool {
+  return mSleeping;
+}
+
+template<typename ...UserEvents>
+auto VehicleApplication<UserEvents...>::goToSleep(rgb::Duration time) -> void {
+  publishSystemEvent(SleepEvent{{Clock::Now()}, time});
+  Timer::SetTimeout(time, [this](){
+    goToSleep();
+  }).detach();
+}
+
+template<typename ...UserEvents>
+auto VehicleApplication<UserEvents...>::goToSleep() -> void {
+  mSleeping = true;
+  Effects::StopAll();
+  Timer::StopAll();
+}
+
+template<typename ...UserEvents>
+auto VehicleApplication<UserEvents...>::wakeUp() -> void {
+  mSleeping = false;
 }
 
 void subtask(void* args) {

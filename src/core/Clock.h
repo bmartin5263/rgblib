@@ -13,16 +13,18 @@ namespace rgb {
 
 class Clock {
 public:
-  explicit Clock(frames_t fps): mTargetFps(fps), mMaxMillisecondsPerFrame(1000 / fps)  {}
+  auto nextFrame() -> void;
 
-  auto startFrame() -> void;
-  auto endFrame() -> void;
-
-  auto printStats() -> void;
-
-  static auto Now() -> Timestamp;
+  static auto NextFrame() -> void { Instance().nextFrame(); }
+  static auto Start(frames_t fps) -> void { Instance().start(fps); }
+  static auto Now() -> Timestamp { return Timestamp{System::MicroTime()}; }
+  static auto Fps() -> uint { return Instance().fps(); }
 
 private:
+
+  static auto Instance() -> Clock&;
+  auto start(frames_t fps) -> void;
+  auto fps() const -> uint;
 
   frames_t mFrames{};
   frames_t mFpsCounter{};

@@ -1,10 +1,32 @@
 # RGBLib
 
-## Effects
+## Rendering
 
-- Solid (basic shader for address-specific coloring)
-- Chase (segment of LEDs lit up and move from one end to other on repeat)
-- Wipe (color fills up completely, then another 'overlaps' it)
+### Effect System
+Effects are one of the ways to color pixels. 
+
+The primary way to customize the coloring behavior of Effects is through a **Shader**.
+A shader is a function that is invoked for each "activated" pixel. 
+It takes in the pixel's current color and a set of parameters that vary depending on the effect and returns a new color for that pixel
+
+Different effects activate pixels in different ways, for example a fill effect will activate all pixels uniformly and has no concept of cycles. Its only shader parameter is the pixel's position.
+In contrast, a Chase effect activates only a subset of Pixels on a given strip based on the position of activated segment. 
+It's Shader has more information about what cycle the effect is in, what position within the segment the pixel is, its overall position in the strip, etc.
+
+#### Builtin
+
+| Effect             | Cycles | Activation Pattern (for a given PixelList)                                |
+|--------------------|--------|---------------------------------------------------------------------------|
+| Fill               | No     | All pixels uniformly                                                      |
+| Chase              | Yes    | Segment of pixels that moves along a linear path                          |
+| Chase (speed only) | Yes    | Chase, but with speed-only restriction optimized for smooth speed changes |
+| Wipe               | Yes    | Overlapping linear fills                                                  |
+
+`TODO`
+
+| Effect   | Activation Pattern (for a given PixelList) | Cycles |
+|----------|--------------------------------------------|--------|
+| Pixelate | All pixels randomly over time              | Yes    |
 
 ## Debugging Tools
 

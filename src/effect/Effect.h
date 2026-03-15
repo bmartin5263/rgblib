@@ -9,6 +9,7 @@
 #include "Types.h"
 #include "Clock.h"
 #include "PixelList.h"
+#include "EffectProgression.h"
 
 namespace rgb {
 
@@ -43,6 +44,9 @@ public:
   Effect& operator=(const Effect& rhs) = default;
   Effect& operator=(Effect&& rhs) noexcept = default;
   virtual ~Effect() = default;
+
+protected:
+  static constexpr auto DEFAULT_PROGRESSION = EffectProgression::ConstantTime(Duration::Seconds(1));
 };
 
 }

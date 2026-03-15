@@ -27,7 +27,7 @@
 using namespace rgb;
 
 static constexpr rgb::u16 FOOT_STRIP_LED_COUNT = 40;
-static constexpr rgb::u16 FIBER_STRIP_LED_COUNT = 146;
+static constexpr rgb::u16 FIBER_STRIP_LED_COUNT = 150;
 static constexpr rgb::u16 HALF_FOOT_STRIP_LED_COUNT = FOOT_STRIP_LED_COUNT / 2;
 
 // LEDs
@@ -47,9 +47,10 @@ auto ringReverse = ReversePixelList{ring};
 auto introRing = PixelStitch{ring, deadHalfRing};
 auto introRingReverse = ReversePixelList{introRing};
 auto heartBeatFiber = PixelStitch{dashFiber1, deadFiberLength};
+auto dashFiber3Reverse = ReversePixelList(dashFiber3);
 
 // Groups
-auto footGroup = std::array<PixelList*, 3> { &leftFoot, &rightFoot, &dashFiber1 };
+auto footGroup = std::array<PixelList*, 5> { &leftFoot, &rightFoot, &dashFiber1, &dashFiber2, &dashFiber3Reverse };
 
 // Sensors
 auto irRemote = IRReceiver{PinNumber{D3}};
@@ -69,10 +70,22 @@ auto fiberChase = ChasingEffectSpeedOnly{};
 
 auto footTimerHandle = TimerHandle{};
 auto footRainbowTimerHandle = TimerHandle{};
+
+// Regular Level
 auto footLevel = 0;
 auto dashFiberLevel = 0;
+
+// Rainbow Level
 auto footRainbowLevel = 0;
 auto dashFiberRainbowLevel = 0;
+
+// Sleep Level
+auto footSleepLevel = 0;
+auto dashFiberSleepLevel = 0;
+
+auto holdMode = false;
+auto rpmGaugeHandle = EffectHandle{};
+auto idleEffectHandle = EffectHandle{};
 
 auto ringDebugColor = Color::OFF();
 
@@ -82,7 +95,6 @@ auto lowRpmColorFoot = FOOT_PURPLE;
 auto lowRpmColorFiber = Color::GREEN();
 
 auto levelUpFn = [](int& footLevel, int& dashFiberLevel){
-  INFO("%i, %i", footLevel, dashFiberLevel);
   if (footLevel < leftFoot.length()) {
     ++footLevel;
   }
@@ -93,7 +105,6 @@ auto levelUpFn = [](int& footLevel, int& dashFiberLevel){
   return footLevel < leftFoot.length() || dashFiberLevel < dashFiber1.length();
 };
 auto levelDownFn = [](int& footLevel, int& dashFiberLevel){
-  INFO("%i, %i", footLevel, dashFiberLevel);
   if (footLevel > 0) {
     --footLevel;
   }
@@ -198,7 +209,9 @@ protected:
 
     app.on<CarMoving>([](auto& event){
       Effects::Stop(introChase1, introChase2);
-      Effects::Start(rpmGauge, ring).detach();
+      if (!rpmGaugeHandle.isRunning()) {
+        rpmGaugeHandle = Effects::Start(rpmGauge, ring);
+      }
 
       TRACE("Detected Car Moving!!");
 
@@ -224,9 +237,11 @@ protected:
       footTimerHandle = Timer::ContinuouslyWhile([](){ return levelUpFn(footLevel, dashFiberLevel); });
     });
     app.on<CarStopped>([](auto& event){
-      Effects::Start(introChase1, ring).detach();
-      Effects::Start(introChase2, ringReverse).detach();
-      Effects::Stop(rpmGauge);
+      if (!holdMode) {
+        idleEffectHandle = Effects::Start(introChase1, ring);
+        Effects::Start(introChase2, ringReverse).detach();
+        rpmGaugeHandle.stop();
+      }
       ringDebugColor = Color::OFF();
       footTimerHandle = Timer::ContinuouslyWhile([](){ return levelDownFn(footLevel, dashFiberLevel); });
     });
@@ -262,10 +277,36 @@ protected:
             lowRpmColorFiber = Color::GREEN();
           }
           break;
+        case IRButtonType::BUTTON_0:
+          INFO("Button LEFT/RIGHT pressed");
+          holdMode = !holdMode;
+          if (holdMode && !rpmGaugeHandle.isRunning()) {
+            rpmGaugeHandle = Effects::Start(rpmGauge, ring);
+            Effects::Stop(introChase1, introChase2);
+          }
+          else if (!holdMode && LincolnTownCar::Instance().isStopped()) {
+            Effects::Stop(rpmGauge);
+            Effects::Start(introChase1, ring).detach();
+            Effects::Start(introChase2, ringReverse).detach();
+          }
+          break;
         default:
           INFO("Unknown Button Pressed");
       }
     });
+
+//    app.on<OBDIIConnected>([this](auto& event){
+//      if (isSleeping()) {
+//        wakeUp();
+//        RunIntroSequence();
+//      }
+//    });
+//    app.on<OBDIIDisconnected>([this](auto& event){
+//      goToSleep(Duration::Seconds(3));
+//    });
+//    app.on<SleepEvent>([](auto& event){
+//      footRainbowTimerHandle = Timer::ContinuouslyWhile([](){ return levelUpFn(footSleepLevel, dashFiberSleepLevel); });
+//    });
   }
 
   auto update() -> void override {
@@ -298,11 +339,32 @@ protected:
     rightFoot.fill(Color::RED());
     dashFiber1.fill(Color::RED() * fiberBrightness);
     dashFiber2.fill(Color::RED() * fiberBrightness);
-    dashFiber3.fill(Color::RED() * fiberBrightness);
+    dashFiber3Reverse.fill(Color::RED() * fiberBrightness);
+
+    auto rpm = townCar.smoothRpm();
+    auto start = 1500.0f;
+    auto max = 2500.0f;
+    auto time = (rpm - start) / (max - start);
+
+    auto footRpmColor = lowRpmColorFoot.lerpClamp(highRpmColor, time);
+    auto fiberRpmColor = lowRpmColorFiber.lerpClamp(highRpmColor, time);
+
+    if (holdMode) {
+      leftFoot.fill(footRpmColor);
+      rightFoot.fill(footRpmColor);
+      dashFiber1.fill(fiberRpmColor * fiberBrightness);
+      dashFiber2.fill(fiberRpmColor * fiberBrightness);
+      dashFiber3Reverse.fill(fiberRpmColor * fiberBrightness);
+    }
+    else {
+      leftFoot.fill(footRpmColor, footLevel);
+      rightFoot.fill(footRpmColor, footLevel);
+      dashFiber1.fill(fiberRpmColor * fiberBrightness, dashFiberLevel);
+      dashFiber2.fill(fiberRpmColor * fiberBrightness, dashFiberLevel);
+      dashFiber3Reverse.fill(fiberRpmColor * fiberBrightness, dashFiberLevel);
+    }
 
     if (townCar.inRainbowMode()) {
-      auto t = Clock::Now().percentOfWrapped(Duration::Seconds(1));
-      auto color = Color::HslToRgb(t);
       auto footLedCount = leftFoot.length();
 
       for (u16 level = 0; level < footLedCount && level < footLevel && level < footRainbowLevel; ++level) {
@@ -321,32 +383,33 @@ protected:
         }
       }
 
-      dashFiber1.fill(color * fiberBrightness);
-      dashFiber2.fill(color * fiberBrightness);
-      dashFiber3.fill(color * fiberBrightness);
-    }
-    else {
-      auto rpm = townCar.smoothRpm();
-      auto start = 1500.0f;
-      auto max = 2500.0f;
-      auto time = (rpm - start) / (max - start);
+      auto dashFiberLedCount = dashFiber1.length();
+      for (u16 level = 0; level < dashFiberLedCount && level < dashFiberLevel && level < dashFiberRainbowLevel; ++level) {
+        auto ratio = static_cast<float>(level) / static_cast<float>(dashFiberLedCount);
+        auto rainbowDashColor = Color::HslToRgb(ratio);
 
-      auto footRpmColor = lowRpmColorFoot.lerpClamp(highRpmColor, time);
-      auto fiberRpmColor = lowRpmColorFiber.lerpClamp(highRpmColor, time);
-
-      leftFoot.fill(footRpmColor, footLevel);
-      rightFoot.fill(footRpmColor, footLevel);
-
-      dashFiber1.fill(fiberRpmColor * fiberBrightness, dashFiberLevel);
-      dashFiber2.fill(fiberRpmColor * fiberBrightness, dashFiberLevel);
-      dashFiber3.fill(fiberRpmColor * fiberBrightness, dashFiberLevel);
+        auto offset = Clock::Now().value / Duration::Milliseconds(10).value;
+        auto index = (level + offset) % dashFiberLedCount;
+        dashFiber1.set(index, rainbowDashColor);
+        dashFiber2.set(index, rainbowDashColor);
+        dashFiber3Reverse.set(index, rainbowDashColor);
+        if (dashFiberRainbowLevel <= dashFiber1.length()) {
+          for (int i = 1; i <= 3 && static_cast<int>(dashFiberRainbowLevel) - i >= 0; ++i) {
+            dashFiber1.set(dashFiberRainbowLevel - i, Color::WHITE());
+            dashFiber2.set(dashFiberRainbowLevel - i, Color::WHITE());
+            dashFiber3Reverse.set(dashFiberRainbowLevel - i, Color::WHITE());
+          }
+        }
+      }
     }
   }
 
   auto postDraw() -> void override {
-//    if (ringDebugColor != Color::OFF()) {
-//      ring.set(10, ringDebugColor * .03f);
-//    }
+    leftFoot.fill(Color::OFF(), leftFoot.length() - footSleepLevel, leftFoot.length());
+    rightFoot.fill(Color::OFF(), rightFoot.length() - footSleepLevel, rightFoot.length());
+    dashFiber1.fill(Color::OFF(), dashFiber1.length() - dashFiberSleepLevel, dashFiber1.length());
+    dashFiber2.fill(Color::OFF(), dashFiber2.length() - dashFiberSleepLevel, dashFiber2.length());
+    dashFiber3Reverse.fill(Color::OFF(), dashFiber3Reverse.length() - dashFiberSleepLevel, dashFiber3Reverse.length());
   }
 };
 

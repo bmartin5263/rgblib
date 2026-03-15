@@ -8,17 +8,18 @@
 #include <Arduino.h>
 #include "Types.h"
 #include "HostSystemBase.h"
+#include "esp_timer.h"
 
 namespace rgb::priv {
 
 class HostSystemArduino : public HostSystemBase {
 public:
   auto microTime() -> microseconds_t {
-    return micros();
+    return esp_timer_get_time();
   }
 
   auto milliTime() -> milliseconds_t {
-    return millis();
+    return esp_timer_get_time() / 1000;
   }
 
   auto microSleep(microseconds_t time) -> void {

@@ -23,7 +23,7 @@ struct WakeEvent : public BaseEvent {};
 
 // System is going to sleep soon
 struct SleepEvent : public BaseEvent {
-  // Duration timeLimit; // how long before the system ACTUALLY goes to sleep
+   Duration timeLimit; // how long before the system ACTUALLY goes to sleep
 };
 
 // Car's engine has started

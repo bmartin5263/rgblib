@@ -7,6 +7,7 @@
 #include "Clock.h"
 #include "Assertions.h"
 #include "Util.h"
+#include "Application.h"
 
 namespace rgb {
 
@@ -24,13 +25,13 @@ auto Vehicle::connect(PinNumber rx, PinNumber tx) -> bool {
     return true;
   }
 
-  INFO("Connecting");
+  // INFO("Connecting");
 
   obdHandle.reset({});
   mConnected = false;
 
   if (!obdHandle->begin(rx.to<i8>(), tx.to<i8>())) {
-    ERROR("Vehicle begin() failed");
+    // ERROR("Vehicle begin() failed");
 //    FAIL("Vehicle begin() failed", Color::MAGENTA(.01f));
     return false;
   }
@@ -46,14 +47,17 @@ auto Vehicle::connect(PinNumber rx, PinNumber tx) -> bool {
   mConnected = true;
   mLastResponse = Clock::Now();
 
+  Application::instance->publishSystemEvent(OBDIIConnected{Clock::Now()});
+
   return true;
 }
 
 auto Vehicle::disconnect() -> void {
   auto lock = std::unique_lock { mu };
   obdHandle.reset({});
-  digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, HIGH);
+  digitalWrite(LED_GREEN, HIGH);
   mConnected = false;
+  Application::instance->publishSystemEvent(OBDIIDisconnected{Clock::Now()});
 }
 
 auto Vehicle::update() -> void {
@@ -68,6 +72,9 @@ auto Vehicle::update() -> void {
 
   if (!mConnected) { return; }
   readPID(PID_SPEED, mSpeed, NoRemapping);
+
+  if (!mConnected) { return; }
+  readPID(PID_THROTTLE, mThrottlePosition, ToPercent);
 }
 
 auto Vehicle::rpm() const -> revs_per_minute {
