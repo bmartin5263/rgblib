@@ -140,6 +140,11 @@ struct number_wrapper {
   constexpr auto isZero() const -> bool {
     return value == 0;
   }
+
+  template<typename result_type>
+  constexpr auto ratio(const Self& rhs) const -> result_type {
+    return static_cast<result_type>(value) / static_cast<result_type>(rhs.value);
+  }
 };
 
 struct Duration : public number_wrapper<time_t, Duration> {

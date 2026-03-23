@@ -8,17 +8,17 @@
 #include "SystemEvents.h"
 
 /**
- * The system detected the car entering highway
+ * Car entered highway
  */
 struct HighwayModeEntered : public rgb::BaseEvent {};
 
 /**
- * The system detected the car leaving highway
+ * Car left highway
  */
 struct HighwayModeExited : public rgb::BaseEvent {};
 
 /**
- * The car accelerated abruptly from a standstill
+ * Car floored it from a standstill
  */
 struct PeelOut : public rgb::BaseEvent {};
 

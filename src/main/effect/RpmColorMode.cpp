@@ -4,7 +4,7 @@
 
 #include "RpmColorMode.h"
 #include "RpmGauge.h"
-#include "rgb/Color.h"
+#include "core/Color.h"
 
 auto RpmColorMode::PARTITIONED() -> const RpmColorMode* {
   return &PartitionedRpmColorMode::Instance();

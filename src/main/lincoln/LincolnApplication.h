@@ -50,7 +50,7 @@ auto heartBeatFiber = PixelStitch{dashFiber1, deadFiberLength};
 auto dashFiber3Reverse = ReversePixelList(dashFiber3);
 
 // Groups
-auto footGroup = std::array<PixelList*, 5> { &leftFoot, &rightFoot, &dashFiber1, &dashFiber2, &dashFiber3Reverse };
+auto footFiberGroup = std::array<PixelList*, 5> { &leftFoot, &rightFoot, &dashFiber1, &dashFiber2, &dashFiber3Reverse };
 
 // Sensors
 auto irRemote = IRReceiver{PinNumber{D3}};
@@ -58,8 +58,8 @@ auto irRemote = IRReceiver{PinNumber{D3}};
 // Effects
 
 // Intro Effects
-auto introChase1 = ChasingEffect{};
-auto introChase2 = ChasingEffect{};
+auto ringChase1 = ChasingEffect{};
+auto ringChase2 = ChasingEffect{};
 auto introWipe = WipeEffect{};
 
 // Rpm Effect
@@ -120,39 +120,35 @@ class LincolnApplication : public VehicleApplication<HighwayModeEntered, Highway
 private:
   static auto RunIntroSequence() {
     INFO("Starting Intro Sequence");
-    Effects::Start(introChase1, ring).detach();
-    Effects::Start(introChase2, ringReverse).detach();
-    Effects::Start(introWipe, footGroup).detach();
+    Effects::Start(ringChase1, ring).detach();
+//    Effects::Start(ringChase2, ringReverse).detach();
+    Effects::Start(introWipe, footFiberGroup).detach();
 
     Timer::SetTimeout(Duration::Seconds(3), [](){
       INFO("Finished Intro Sequence");
       Effects::Stop(introWipe);
-      Effects::Start(fiberChase, heartBeatFiber).detach();
+      Effects::Start(fiberChase, dashFiber1).detach();
 
-      introChase1.shader = [](auto color, auto& params){
-        auto& townCar = LincolnTownCar::Instance();
-        auto rpm = townCar.smoothRpm();
-        auto numerator = static_cast<float>(rpm) - LincolnTownCar::MAX_IDLE_RPM;
-        auto denominator = LincolnTownCar::STARTING_RPM - LincolnTownCar::MAX_IDLE_RPM;
-        auto t = numerator / denominator;
-        auto myColor = Color::RED().lerpClamp(Color::GREEN(), t);
-        return color + (myColor * params.brightness);
+      auto rpmRingChaseShader = [](Color highRpmColor) {
+        return [highRpmColor](auto color, auto& params){
+          auto& townCar = LincolnTownCar::Instance();
+          auto rpm = townCar.smoothRpm();
+          auto numerator = static_cast<float>(rpm) - LincolnTownCar::MAX_IDLE_RPM;
+          constexpr auto denominator = LincolnTownCar::STARTING_RPM - LincolnTownCar::MAX_IDLE_RPM;
+          auto t = numerator / denominator;
+          auto myColor = Color::RED().lerpClamp(highRpmColor, t);
+          return color + (myColor * params.brightness);
+        };
       };
-      introChase2.shader = [](auto color, auto& params){
-        auto& townCar = LincolnTownCar::Instance();
-        auto rpm = townCar.smoothRpm();
-        auto numerator = static_cast<float>(rpm) - LincolnTownCar::MAX_IDLE_RPM;
-        auto denominator = LincolnTownCar::STARTING_RPM - LincolnTownCar::MAX_IDLE_RPM;
-        auto t = numerator / denominator;
-        auto myColor = Color::RED().lerpClamp(FIBER_PURPLE, t);
-        return color + (myColor * params.brightness);
-      };
+
+      ringChase1.shader = rpmRingChaseShader(Color::GREEN());
+      ringChase2.shader = rpmRingChaseShader(FIBER_PURPLE);
 
     }).detach();
   }
 
 protected:
-  auto configure(VehicleApplication::Configurer& app) -> void override {
+  auto configure(Configurer& app) -> void override {
     ring.setOffset(11);
 
     app.addLEDs(ring);
@@ -163,24 +159,28 @@ protected:
     app.addLEDs(dashFiber3);
     app.addSensor(irRemote);
 
-    introChase1.buildup = true;
-    introChase1.shift = 3;
-    introChase1.progression = EffectProgression::ConstantTime(Duration::Milliseconds(1000));
-    introChase1.trailLength = Length::Units(4);
-    introChase1.brightness = BrightnessLevels { .dim = .08f, .medium = .08f, .bright = .3f };
-    introChase1.shader = [](auto color, auto& params){
+    ringChase1.buildup = true;
+    ringChase1.shift = 3;
+    ringChase1.progression = EffectProgression::ConstantTime(Duration::Milliseconds(400));
+    ringChase1.trailLength = Length::Units(4);
+    ringChase1.brightness = BrightnessLevels { .dim = .08f, .medium = .08f, .bright = .3f };
+    ringChase1.shader = [](auto color, auto& params){
       return color + (Color::GREEN() * params.brightness);
     };
-    introChase2 = introChase1;
-    introChase2.shift = 9;
-    introChase2.shader = [](auto color, auto& params){
-      return color + (Color(.3f, 0.0f, 1.0f) * params.brightness);
+
+    ringChase2 = ringChase1;
+    ringChase2.shift = 9;
+    ringChase2.shader = [](auto color, auto& params){
+      return color + (FIBER_PURPLE * params.brightness);
     };
+
     introWipe.progression = EffectProgression::ConstantTime(Duration::Milliseconds(500));
+    introWipe.brightness = BrightnessLevels { .dim = .08f, .medium = .08f, .bright = .3f };
     introWipe.shader = [](auto pixel, auto& params){
       auto colorFunction = [](uint cycle){
-        return (cycle % 2) == 0 ? Color::GREEN() : Color{.2f, .0f, 1.0f};
+        return (cycle % 2) == 0 ? Color::GREEN() : FOOT_PURPLE;
       };
+
       if (params.pixelPosition <= params.wipeLength) {
         return colorFunction(params.wipeCycle);
       }
@@ -190,14 +190,17 @@ protected:
       else {
         return colorFunction(params.wipeCycle - 1);
       }
+
     };
+
     footWipe.progression = EffectProgression::ConstantTime(Duration::Milliseconds(4000));
     footWipe.shader = [](auto pixel, auto& params){
       if (params.pixelPosition <= params.wipeLength || params.wipeCycle > 0) {
-        return Color{.2f, .0f, 1.0f};
+        return FOOT_PURPLE;
       }
       return pixel;
     };
+
     fiberChase.buildup = true;
     fiberChase.delay = Duration::Milliseconds(1);
     fiberChase.trailLength = Length::Units(60);
@@ -208,7 +211,7 @@ protected:
     app.on<WakeEvent>([](auto& event) { RunIntroSequence(); });
 
     app.on<CarMoving>([](auto& event){
-      Effects::Stop(introChase1, introChase2);
+      Effects::Stop(ringChase1, ringChase2);
       if (!rpmGaugeHandle.isRunning()) {
         rpmGaugeHandle = Effects::Start(rpmGauge, ring);
       }
@@ -238,8 +241,8 @@ protected:
     });
     app.on<CarStopped>([](auto& event){
       if (!holdMode) {
-        idleEffectHandle = Effects::Start(introChase1, ring);
-        Effects::Start(introChase2, ringReverse).detach();
+        idleEffectHandle = Effects::Start(ringChase1, ring);
+        Effects::Start(ringChase2, ringReverse).detach();
         rpmGaugeHandle.stop();
       }
       ringDebugColor = Color::OFF();
@@ -282,12 +285,12 @@ protected:
           holdMode = !holdMode;
           if (holdMode && !rpmGaugeHandle.isRunning()) {
             rpmGaugeHandle = Effects::Start(rpmGauge, ring);
-            Effects::Stop(introChase1, introChase2);
+            Effects::Stop(ringChase1, ringChase2);
           }
           else if (!holdMode && LincolnTownCar::Instance().isStopped()) {
             Effects::Stop(rpmGauge);
-            Effects::Start(introChase1, ring).detach();
-            Effects::Start(introChase2, ringReverse).detach();
+            Effects::Start(ringChase1, ring).detach();
+            Effects::Start(ringChase2, ringReverse).detach();
           }
           break;
         default:

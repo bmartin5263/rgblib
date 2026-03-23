@@ -3,7 +3,7 @@
 //
 
 #include "Debug.h"
-#include "rgb/Color.h"
+#include "core/Color.h"
 #include "PixelList.h"
 
 namespace rgb {

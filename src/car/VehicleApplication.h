@@ -231,6 +231,10 @@ void subtask(void* args) {
       vehicle->connect(PinNumber{D11}, PinNumber{D12});
     }
 
+    // Write to Buffer
+    // Buffer Full?
+    //    Flush()
+
     vTaskDelay(pdMS_TO_TICKS(100));
   }
 }

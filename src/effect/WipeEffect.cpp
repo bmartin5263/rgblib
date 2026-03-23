@@ -13,7 +13,7 @@ auto WipeEffect::draw(Timestamp now, PixelList& pixels) -> void {
   auto pixelLength = pixels.length();
 
   Duration duration;
-  if (progression.isDelay) {
+  if (progression.durationIsDelay) {
     duration = Duration{progression.duration.value * pixelLength};
   }
   else {
@@ -32,12 +32,7 @@ auto WipeEffect::draw(Timestamp now, PixelList& pixels) -> void {
     .wipeCycle = static_cast<uint>(wipeCycle),
     .pixelPosition = 0,
     .positionRatio = 0.0f,
-    .brightness = Brightness::GetBrightness({
-      .dim = .2f,
-      .medium = .5f,
-      .bright = .8f,
-      .max = 1.0f
-    })
+    .brightness = Brightness::GetBrightness(brightness)
   };
 
   for (auto pixelPosition = 0; pixelPosition < pixels.length(); ++pixelPosition) {

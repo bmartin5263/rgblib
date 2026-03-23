@@ -6,7 +6,7 @@
 #include "Assertions.h"
 #include "PixelList.h"
 #include "PixelSlice.h"
-#include "rgb/Color.h"
+#include "core/Color.h"
 #include "Point.h"
 
 namespace rgb {

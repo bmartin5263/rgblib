@@ -36,7 +36,7 @@ auto RpmGauge::update(Timestamp now) -> void {
   calcs.effectiveYellowLineStart = static_cast<u16>(static_cast<float>(yellowLineStart) * LerpClamp(.6f, 1.0f, calcs.coolantPercent));
   calcs.effectiveRedLineStart = static_cast<u16>(static_cast<float>(redLineStart) * LerpClamp(.8f, 1.0f, calcs.coolantPercent));
   calcs.effectiveDimBrightness = Brightness::GetBrightness({
-    .dim = rgb::ByteToFloat(0),
+    .dim = rgb::ByteToFloat(1),
     .medium = rgb::ByteToFloat(1),
     .bright = rgb::ByteToFloat(4)
   });

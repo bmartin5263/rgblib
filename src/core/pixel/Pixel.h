@@ -5,7 +5,7 @@
 #ifndef RGBLIB_PIXEL_H
 #define RGBLIB_PIXEL_H
 
-#include "rgb/Color.h"
+#include "core/Color.h"
 
 namespace rgb {
 

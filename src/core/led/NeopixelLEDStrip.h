@@ -9,7 +9,7 @@
 #include "Types.h"
 #include "Pin.h"
 #include "Assertions.h"
-#include "rgb/Color.h"
+#include "core/Color.h"
 #include "ContiguousPixelList.h"
 #include "LEDCircuit.h"
 #include "Log.h"

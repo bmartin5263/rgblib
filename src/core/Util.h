@@ -121,6 +121,9 @@ constexpr auto SinWave(float t, float frequency = .1f) -> float {
   return 1.0f * sinf(2.f * static_cast<float>(PI) * frequency * t);
 }
 
+/**
+ * Returns a value between 0 and 1 in a sin wave pattern
+ */
 constexpr auto Pulse(Timestamp time, Duration period) -> normal {
   auto t = static_cast<float>(time.value % period.value) / static_cast<float>(period.value);
   return 0.5f * (1.0f + sinf(2.0f * static_cast<float>(PI) * t));

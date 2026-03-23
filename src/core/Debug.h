@@ -5,7 +5,7 @@
 #ifndef RGBLIB_DEBUG_H
 #define RGBLIB_DEBUG_H
 
-#include "rgb/Color.h"
+#include "core/Color.h"
 
 namespace rgb {
 

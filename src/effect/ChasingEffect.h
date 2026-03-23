@@ -32,6 +32,7 @@ public:
     Duration duration{};
     uint trailLength{};
     uint pixelPosition{};
+    uint pixelsLength{};
     uint trailPosition{};
     uint cycle{};
     float positionRatio{};
@@ -54,10 +55,11 @@ public:
   // How much the effect should be shifted
   i64 shift{0};
 
+  // How bright the effect is under different preset brightness settings
   BrightnessLevels brightness{};
 
   // Length of the chase trail, in absolute units or relative to the length of the pixel buffer
-  Length trailLength{.2f};
+  Length trailLength{.5f};
 
   // Does the trail enter from "off-screen"?
   bool buildup{true};

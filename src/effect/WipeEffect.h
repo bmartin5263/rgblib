@@ -12,6 +12,7 @@
 #include "Length.h"
 #include "EffectProgression.h"
 #include "Effect.h"
+#include "Brightness.h"
 
 namespace rgb {
 
@@ -47,6 +48,9 @@ public:
 
   // Time it takes for the effect to complete a full cycle
   EffectProgression progression{DEFAULT_PROGRESSION};
+
+  // How bright the effect is under different preset brightness settings
+  BrightnessLevels brightness{};
 
 };
 

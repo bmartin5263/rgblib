@@ -6,7 +6,7 @@
 #define RGBLIB_RPMGAUGE_H
 
 #include "Effect.h"
-#include "rgb/Color.h"
+#include "core/Color.h"
 #include "RpmColorMode.h"
 #include "RpmLayout.h"
 #include "RpmShape.h"
