@@ -1,5 +1,7 @@
 # RGBLib
 
+C++ library for complex LED projects
+
 ## Rendering
 
 ### Effect System
@@ -65,3 +67,22 @@ use of these macros for reporting issues at runtime
 - **Pixel** is an abstract representation to usually 1 LED
 - **RGB/W** represent the 3/4 possible color channels for an LED. Not all LEDs have W.
   - App represents them as `float` value between `[0-1]`, but device expects `unsigned char` value (`[0-255]`)
+
+## TODO 
+
+(in no particular order)
+
+- Debug LED Flashes
+  - Make it so that we can blink the debug LED colors depending on system status
+  - Every 3 seconds or so, the LED will blink and cycle through all colors that represent system codes
+    - Second 1 - Nothing
+    - Second 2 - Nothing
+    - Second 3 - Start Debug Flashing, flash the first color, then the next after a fraction of a second, until all codes are displayed
+  - Green Flash = Connected to Vehicle
+  - Blue Flash = Connected to WIFI
+  - etc
+- Extract out Vehicle stuff, make a generic vehicle-less application
+  - Some projects exist outside a vehicle (obviously), shouldn't have to bring in the vehicle connection stuff if not needed
+- Effects should have a delay until they start again, so we don't _need_ DeadPixelLists
+- Unit Tests
+  - Lots of stuff can be unit tested, let's start
