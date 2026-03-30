@@ -6,6 +6,7 @@
 #define RGBLIB_TYPES_H
 
 #include <cstdint>
+#include <cstdint>
 #include <limits>
 #include <pins_arduino.h>
 
@@ -15,6 +16,9 @@ using i8 = int8_t;
 using i16 = int16_t;
 using i32 = int32_t;
 using i64 = int64_t;
+
+using f32 = float;
+using f64 = double;
 
 using u8 = uint8_t;
 using byte = u8;

@@ -34,15 +34,14 @@ It's Shader has more information about what cycle the effect is in, what positio
 
 ### Built-in LED (todo)
 
-| Color  | Meaning              |
-|--------|----------------------|
-| Red    |                      |
-| Yellow |                      |
-| Green  | Connected to Vehicle |
-| Cyan   |                      |
-| Blue   | Connected to WiFi    |
-| Purple |                      |
-
+| Color  | Default Meaning         |
+|--------|-------------------------|
+| Red    | Debug Fault Triggered   |
+| Yellow |                         |
+| Green  | Connected to Vehicle    |
+| Cyan   |                         |
+| Blue   | TODO: Connected to WiFi |
+| Purple | Optional Heartbeat      |
 
 ### Logs
 Macros such as `INFO()` and `ERROR()` can be used to print logs to the Serial output. The library makes
@@ -60,6 +59,16 @@ use of these macros for reporting issues at runtime
 | `RGB_DEBUG`         | Sets `RGB_LOG_LEVEL` to `1`. Meant to do other debug-related things as well |
 | `RGB_LOG_LEVEL`     | `0=ERROR`, `1=INFO`, `2=TRACE`. Defaults to `0`                             |
 
+## Instrumentation
+
+If an SD card is detected, the Vehicle process will log vehicle data at a configurable interval to a log file on the SD card
+
+The format is in binary, use `vlog-to-csv.py` to convert it to CSV for analysis
+
+See Also
+- `class VehicleLogger`
+- `struct VehicleData`
+
 ## Terminology
 
 ### LED vs Pixel vs RGBW
@@ -72,6 +81,9 @@ use of these macros for reporting issues at runtime
 
 (in no particular order)
 
+- Vehicle Data Logging
+  - Log to an SD card for offline analysis
+  - Handle gracefully the presence/absense of SD card
 - Debug LED Flashes
   - Make it so that we can blink the debug LED colors depending on system status
   - Every 3 seconds or so, the LED will blink and cycle through all colors that represent system codes
@@ -79,7 +91,7 @@ use of these macros for reporting issues at runtime
     - Second 2 - Nothing
     - Second 3 - Start Debug Flashing, flash the first color, then the next after a fraction of a second, until all codes are displayed
   - Green Flash = Connected to Vehicle
-  - Blue Flash = Connected to WIFI
+  - Blue Flash = Connected to Wi-Fi
   - etc
 - Extract out Vehicle stuff, make a generic vehicle-less application
   - Some projects exist outside a vehicle (obviously), shouldn't have to bring in the vehicle connection stuff if not needed

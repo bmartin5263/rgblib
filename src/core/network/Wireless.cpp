@@ -7,7 +7,6 @@
 #include "Wireless.h"
 #include "Log.h"
 #include "Stopwatch.h"
-#include "Config.h"
 #include "Timer.h"
 #include "Clock.h"
 
@@ -47,7 +46,6 @@ auto Wifi::update() -> void {
       if (!connected) {
         INFO("Wi-Fi connected to %s", WiFi.localIP().toString().c_str());
         connected = true;
-        digitalWrite(rgb::config::LED_OTA_CONNECTED, LOW);
       }
       break;
     case WL_IDLE_STATUS:

@@ -1,10 +1,11 @@
 //#include "lincoln/LincolnApplication.h"
-#include "app/CorvetteMetalArtApplication.h"
-//#include "app/OptimizationApplication.h"
-
 //auto app = LincolnApplication{};
-auto app = CorvetteMetalArtApplication{};
-//auto app = OptimizationApplication{};
+
+//#include "app/CorvetteMetalArtApplication.h"
+//auto app = CorvetteMetalArtApplication{};
+
+#include "app/OptimizationApplication.h"
+auto app = OptimizationApplication{};
 
 auto setup() -> void {
   app.setup();

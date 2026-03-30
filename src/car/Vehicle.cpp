@@ -43,7 +43,6 @@ auto Vehicle::connect(PinNumber rx, PinNumber tx) -> bool {
   }
 
   INFO("Vehicle ready");
-  digitalWrite(LED_GREEN, LOW);
   mConnected = true;
   mLastResponse = Clock::Now();
 
@@ -55,26 +54,30 @@ auto Vehicle::connect(PinNumber rx, PinNumber tx) -> bool {
 auto Vehicle::disconnect() -> void {
   auto lock = std::unique_lock { mu };
   obdHandle.reset({});
-  digitalWrite(LED_GREEN, HIGH);
   mConnected = false;
   Application::instance->publishSystemEvent(OBDIIDisconnected{Clock::Now()});
 }
 
-auto Vehicle::update() -> void {
-  if (!mConnected) { return; }
+auto Vehicle::update() -> VehicleUpdateCode {
+  if (!mConnected) { return VehicleUpdateCode::NONE; }
   auto lock = std::unique_lock { mu };
 
-  if (!mConnected) { return; }
+  if (!mConnected) { return VehicleUpdateCode::NONE; }
   readPID(PID_RPM, mRpm, NoRemapping);
 
-  if (!mConnected) { return; }
+  if (!mConnected) { return VehicleUpdateCode::PARTIAL; }
   readPID(PID_COOLANT_TEMP, mCoolantTemp, ToFahrenheit);
 
-  if (!mConnected) { return; }
+  if (!mConnected) { return VehicleUpdateCode::PARTIAL; }
   readPID(PID_SPEED, mSpeed, NoRemapping);
 
-  if (!mConnected) { return; }
+  if (!mConnected) { return VehicleUpdateCode::PARTIAL; }
   readPID(PID_THROTTLE, mThrottlePosition, ToPercent);
+
+  if (!mConnected) { return VehicleUpdateCode::PARTIAL; }
+  readPID(PID_FUEL_LEVEL, mFuelLevel, ToPercent);
+
+  return VehicleUpdateCode::FULL;
 }
 
 auto Vehicle::rpm() const -> revs_per_minute {
@@ -108,12 +111,6 @@ auto Vehicle::isConnected() const -> bool {
 auto Vehicle::setLowPowerMode(bool value) -> void {
   auto lock = std::unique_lock { mu };
   mLowPowerMode = value;
-  if (mLowPowerMode) {
-    digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, HIGH);
-  }
-  else {
-    digitalWrite(rgb::config::LED_VEHICLE_CONNECTED, LOW);
-  }
 }
 
 auto Vehicle::setTimeout(Duration timeout) -> void {

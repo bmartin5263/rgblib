@@ -23,20 +23,37 @@
 
 using namespace rgb;
 
-auto s1 = FastLEDStrip<300, D2_RGB>();
+auto s1 = FastLEDStrip<360, D2_RGB>();
+auto wipeEffect = WipeEffect{};
 
 class OptimizationApplication : public VehicleApplication<> {
 protected:
   auto configure(VehicleApplication::Configurer& app) -> void override {
+    s1.setBrightness(.8f);
     app.addLEDs(s1);
+
+    wipeEffect.shader = [](auto color, auto& params){
+      if (params.pixelPosition <= params.wipeLength) {
+        return Color::Sequential12(params.wipeCycle);
+      }
+      if (params.wipeCycle == 0) {
+        return Color::OFF();
+      }
+      else {
+        return Color::Sequential12(params.wipeCycle - 1);
+      }
+    };
+    wipeEffect.progression = EffectProgression::ConstantTime(Duration::Seconds(2));
+    Effects::Start(wipeEffect, s1).detach();
+
+    app.useHeartbeatLED();
   }
 
   auto update() -> void override {
+
   }
 
   auto draw() -> void override {
-    auto t = Clock::Now().percentOfWrapped(Duration::Seconds(3));
-    s1.fill(Color::HslToRgb(t));
   }
 };
 

@@ -15,6 +15,7 @@
 #include "Clock.h"
 #include "Util.h"
 #include "Pin.h"
+#include "VehicleUpdateCode.h"
 
 namespace rgb {
 
@@ -33,7 +34,7 @@ public:
   static constexpr auto DISCONNECT_TIMEOUT = Duration::Seconds(2);
 
   auto setTimeout(Duration timeout) -> void;
-  auto update() -> void;
+  auto update() -> VehicleUpdateCode;
   auto connect(PinNumber rx, PinNumber tx) -> bool;
   auto disconnect() -> void;
   auto setLowPowerMode(bool value) -> void;
@@ -63,8 +64,6 @@ private:
   Timestamp mLastUpdate{0};
   int timeoutMs{25};
   atomic<bool> mLowPowerMode{false};
-
-//  auto readPID(byte pid, atomic_float& result, Timestamp now) -> void;
 
   constexpr static auto NoRemapping(int value) -> int { return value; }
   constexpr static auto ToPercent(int value) -> percent { return static_cast<float>(value) / 100.f; }

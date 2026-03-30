@@ -5,6 +5,14 @@
 #ifndef RGBLIB_VEHICLEAPPLICATION_H
 #define RGBLIB_VEHICLEAPPLICATION_H
 
+#ifndef RGB_VEHICLE_RX
+#define RGB_VEHICLE_RX D11
+#endif
+
+#ifndef RGB_VEHICLE_TX
+#define RGB_VEHICLE_TX D12
+#endif
+
 #include "Application.h"
 #include "VehicleApplicationConfigurer.h"
 #include "Clock.h"
@@ -13,11 +21,13 @@
 #include "Effects.h"
 #include "LEDCore.h"
 #include "Watchdog.h"
+#include "Debug.h"
+#include "VehicleLogger.h"
 #include <mutex>
 
 namespace rgb {
 
-void subtask(void* args);
+void vehicleReader(void* args);
 
 struct SubtaskSharedState {
   Vehicle* vehicle;
@@ -90,7 +100,7 @@ auto VehicleApplication<UserEvents...>::setup() -> void {
   rgb::log::init();
   configureApplication();
 
-  xTaskCreatePinnedToCore(subtask, "Subtask", RGB_OTHER_CORE_STACK_SIZE, this, RGB_OTHER_CORE_PRIORITY, nullptr, 1);
+  xTaskCreatePinnedToCore(vehicleReader, "vehicleReader", RGB_OTHER_CORE_STACK_SIZE, this, RGB_OTHER_CORE_PRIORITY, nullptr, 1);
 
   initialize();
   publishSystemEvent(WakeEvent{Clock::Now()});
@@ -144,6 +154,16 @@ template<typename ...UserEvents>
 auto VehicleApplication<UserEvents...>::configureApplication() -> void {
   instance = this;
   vehicle.instance = &vehicle;
+
+#ifdef RGB_ARDUINO_NANO
+  pinMode(LED_RED, OUTPUT);
+  pinMode(LED_GREEN, OUTPUT);
+  pinMode(LED_BLUE, OUTPUT);
+#endif
+
+  Debug::SetBlinker(BlinkerColor::RED, []() { return Debug::HasFault(); });
+  Debug::SetBlinker(BlinkerColor::GREEN, [this]() { return vehicle.isConnected(); });
+
   auto appConfig = VehicleApplicationConfigurer<UserEvents...>{};
   configure(appConfig);
 
@@ -151,9 +171,9 @@ auto VehicleApplication<UserEvents...>::configureApplication() -> void {
   mSensors = std::move(appConfig.mSensors);
   mEventMap = std::move(appConfig.mEventMap);
 
-  pinMode(14, OUTPUT);
-  pinMode(15, OUTPUT);
-  pinMode(16, OUTPUT);
+  if (appConfig.mHeartbeat) {
+    Debug::SetBlinker(BlinkerColor::PURPLE, [this]() { return true; });
+  }
 }
 
 template<typename... UserEvents>
@@ -214,26 +234,35 @@ auto VehicleApplication<UserEvents...>::wakeUp() -> void {
   mSleeping = false;
 }
 
-void subtask(void* args) {
-  INFO("Subtask Started");
+void vehicleReader(void* args) {
+  INFO("Vehicle Reader Task Started");
 
   auto app = static_cast<Application*>(args);
   auto vehicle = app->getVehicle();
+  auto logger = VehicleLogger{PinNumber{D12}};
+  auto logging = logger.begin();
 
-  INFO("Starting Subtask");
-  vehicle->connect(PinNumber{D11}, PinNumber{D12});
+  vehicle->connect(PinNumber{RGB_VEHICLE_RX}, PinNumber{RGB_VEHICLE_TX});
   while (true) {
-
-    if (vehicle->isConnected()) {
-      vehicle->update();
+    if (!vehicle->isConnected()) {
+      if (logging) {
+        logger.flush();
+      }
+      vehicle->connect(PinNumber{RGB_VEHICLE_RX}, PinNumber{RGB_VEHICLE_TX});
     }
     else {
-      vehicle->connect(PinNumber{D11}, PinNumber{D12});
+      auto result = vehicle->update();
+      if (logging) {
+        logger.record(VehicleData{
+          .lastUpdateResult = result,
+          .rpm = vehicle->rpm(),
+          .speed = vehicle->speed(),
+          .coolantTemp = vehicle->coolantTemp(),
+          .fuelLevel = vehicle->fuelLevel(),
+          .throttlePosition = vehicle->throttlePosition(),
+        });
+      }
     }
-
-    // Write to Buffer
-    // Buffer Full?
-    //    Flush()
 
     vTaskDelay(pdMS_TO_TICKS(100));
   }
