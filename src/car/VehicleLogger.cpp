@@ -5,12 +5,19 @@
 #include "VehicleLogger.h"
 #include "Log.h"
 #include "Clock.h"
+#include <SPI.h>
 
 namespace rgb {
 
 auto VehicleLogger::begin() -> bool {
+  auto alreadyStarted = SPI.bus() != nullptr;
+  SPI.begin(A1, A3, A2, A0);
+
   if (!SD.begin(mCsPin.to<u8>())) {
     ERROR("SD card initialization failed");
+    if (alreadyStarted) {
+      ERROR("SPI was already started");
+    }
     return false;
   }
 
@@ -37,6 +44,9 @@ auto VehicleLogger::record(const VehicleData& data) -> void {
       .data = data,
     };
   }
+  else {
+    ERROR("Cannot record vehicle log, at max capacity");
+  }
 
   if (shouldFlush()) {
     flush();
@@ -47,6 +57,8 @@ auto VehicleLogger::flush() -> void {
   if (!mFile || mCount == 0) {
     return;
   }
+
+  INFO("Flushing %i entries", mCount);
 
   auto dataBuffer = reinterpret_cast<const uint8_t*>(mBuffer.data());
   auto dataSize = sizeof(VehicleLogEntry) * mCount;

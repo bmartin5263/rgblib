@@ -172,7 +172,7 @@ auto VehicleApplication<UserEvents...>::configureApplication() -> void {
   mEventMap = std::move(appConfig.mEventMap);
 
   if (appConfig.mHeartbeat) {
-    Debug::SetBlinker(BlinkerColor::PURPLE, [this]() { return true; });
+    Debug::SetBlinker(BlinkerColor::PURPLE, []() { return true; });
   }
 }
 
@@ -239,7 +239,7 @@ void vehicleReader(void* args) {
 
   auto app = static_cast<Application*>(args);
   auto vehicle = app->getVehicle();
-  auto logger = VehicleLogger{PinNumber{D12}};
+  auto logger = VehicleLogger{PinNumber{A0}};
   auto logging = logger.begin();
 
   vehicle->connect(PinNumber{RGB_VEHICLE_RX}, PinNumber{RGB_VEHICLE_TX});

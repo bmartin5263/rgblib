@@ -9,7 +9,6 @@
 #include "Clock.h"
 #include "Pin.h"
 #include <SD.h>
-#include <SPI.h>
 #include <array>
 
 

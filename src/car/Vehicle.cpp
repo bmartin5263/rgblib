@@ -56,6 +56,8 @@ auto Vehicle::disconnect() -> void {
   obdHandle.reset({});
   mConnected = false;
   Application::instance->publishSystemEvent(OBDIIDisconnected{Clock::Now()});
+
+  INFO("Vehicle Disconnected");
 }
 
 auto Vehicle::update() -> VehicleUpdateCode {
