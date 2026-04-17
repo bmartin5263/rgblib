@@ -12,7 +12,6 @@
 #include "FastLEDStrip.h"
 #include "NeopixelLEDStrip.h"
 #include "GPIO.h"
-#include "CustomEvents.h"
 #include "PixelStitch.h"
 #include "ReversePixelList.h"
 #include "ChasingEffect.h"

@@ -4,7 +4,7 @@
 
 #include "LincolnTownCar.h"
 #include "Vehicle.h"
-#include "Application.h"
+#include "LincolnAppEvents.h"
 #include "Timer.h"
 
 using namespace rgb;
@@ -79,14 +79,14 @@ auto LincolnTownCar::smoothThrottlePosition() const -> rgb::percent {
 auto LincolnTownCar::transitionToStopped() -> void {
   TRACE("mState = STOPPED");
   mRainbowMode.reset();
-  Application::instance->publishSystemEvent(rgb::CarStopped{{Clock::Now()}});
+  Application::PublishSystemEvent(rgb::CarStopped{{Clock::Now()}});
   mState = &STOPPED_STATE;
   mStoppedAt = Clock::Now();
 }
 
 auto LincolnTownCar::transitionToMoving() -> void {
   TRACE("mState = MOVING");
-  Application::instance->publishSystemEvent(rgb::CarMoving{{Clock::Now()}, mRpm});
+  LincolnApp::PublishEvent(rgb::CarMoving{{Clock::Now()}, mRpm});
   mState = &MOVING_STATE;
   mStoppedAt = Clock::Now();
 }
@@ -99,7 +99,7 @@ auto LincolnTownCar::enterOrExtendRainbowMode() -> void {
   }
   mRainbowMode = Clock::Now();
   mThrottleWhenRainbowStart = mThrottle;
-  Application::instance->publishSystemEvent(rgb::RainbowModeEntered{{Clock::Now()}});
+  LincolnApp::PublishEvent(RainbowModeEntered{{Clock::Now()}});
 }
 
 auto LincolnTownCar::exitRainbowMode() -> void {
@@ -107,7 +107,7 @@ auto LincolnTownCar::exitRainbowMode() -> void {
     return;
   }
   mRainbowMode = std::nullopt;
-  Application::instance->publishSystemEvent(rgb::RainbowModeExited{{Clock::Now()}});
+  LincolnApp::PublishEvent(RainbowModeExited{{Clock::Now()}});
 }
 
 auto LincolnTownCar::coolantTemp() const -> rgb::fahrenheit {

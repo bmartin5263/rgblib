@@ -20,26 +20,26 @@
 #include "Timer.h"
 #include "Effects.h"
 #include "LEDCore.h"
-#include "Watchdog.h"
+#include "Monitor.h"
 #include "Debug.h"
 #include "VehicleLogger.h"
 #include <mutex>
 
 namespace rgb {
 
-void vehicleReader(void* args);
+static void vehicleReader(void* args);
 
 struct SubtaskSharedState {
   Vehicle* vehicle;
 };
 
-template<typename ...UserEvents>
+template<typename EventVariantT = SystemEvent>
 class VehicleApplication : public Application {
   using Application::on;
 
 public:
-  using AnyEvent = Event<UserEvents...>;
-  using Configurer = VehicleApplicationConfigurer<UserEvents...>;
+  using AnyEvent = EventVariantT;
+  using Configurer = VehicleApplicationConfigurer<EventVariantT>;
 
   VehicleApplication() = default;
   virtual ~VehicleApplication() = default;
@@ -78,25 +78,22 @@ private:
   std::vector<LEDCircuit*> mLeds{};
   std::vector<Sensor*> mSensors{};
   std::unordered_map<uint, std::vector<std::function<void(const AnyEvent&)>>> mEventMap{};
-  Timestamp sleepAt;
-  QueueHandle_t commandQueue;
-  uint lastWakeTime;
   bool mSleeping;
 };
 
-template<typename... UserEvents>
-auto VehicleApplication<UserEvents...>::getVehicle() -> Vehicle* {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::getVehicle() -> Vehicle* {
   return &vehicle;
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::run() -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::run() -> void {
   setup();
   loop();
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::setup() -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::setup() -> void {
   rgb::log::init();
   configureApplication();
 
@@ -107,8 +104,8 @@ auto VehicleApplication<UserEvents...>::setup() -> void {
   INFO("Setup Application");
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::loop() -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::loop() -> void {
   Clock::NextFrame();
   baseUpdate();
   if (!mSleeping) {
@@ -116,21 +113,15 @@ auto VehicleApplication<UserEvents...>::loop() -> void {
   }
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::initialize() -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::initialize() -> void {
   SetupLEDs();
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->start(); });
   std::for_each(std::begin(mSensors), std::end(mSensors), [](auto sensor){ sensor->start(); });
-
-  Timer::SetTimeout(Duration::Seconds(1), [](auto& context){
-    static Watchdog watchdog;
-    watchdog.update();
-    context.repeatIn = Duration::Seconds(1);
-  }).detach();
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::baseUpdate() -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::baseUpdate() -> void {
   for (auto& sensor : mSensors) {
     sensor->read();
   }
@@ -139,8 +130,8 @@ auto VehicleApplication<UserEvents...>::baseUpdate() -> void {
   update();
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::baseDraw() -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::baseDraw() -> void {
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->reset(); });
   draw();
   Effects::Draw();
@@ -150,8 +141,8 @@ auto VehicleApplication<UserEvents...>::baseDraw() -> void {
   DisplayLEDs();
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::configureApplication() -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::configureApplication() -> void {
   instance = this;
   vehicle.instance = &vehicle;
 
@@ -164,7 +155,7 @@ auto VehicleApplication<UserEvents...>::configureApplication() -> void {
   Debug::SetBlinker(BlinkerColor::RED, []() { return Debug::HasFault(); });
   Debug::SetBlinker(BlinkerColor::GREEN, [this]() { return vehicle.isConnected(); });
 
-  auto appConfig = VehicleApplicationConfigurer<UserEvents...>{};
+  auto appConfig = Configurer{};
   configure(appConfig);
 
   mLeds = std::move(appConfig.mLeds);
@@ -174,10 +165,19 @@ auto VehicleApplication<UserEvents...>::configureApplication() -> void {
   if (appConfig.mHeartbeat) {
     Debug::SetBlinker(BlinkerColor::PURPLE, []() { return true; });
   }
+
+#if defined(RGB_DEBUG)
+  // Monitoring only enabled for Debug configurations since Debug does logging and the monitor relies on that
+  Timer::SetTimeout(Duration::Seconds(1), [](auto& context){
+    static Monitor monitor;
+    monitor.update();
+    context.repeatIn = Duration::Seconds(1);
+  }).detach();
+#endif
 }
 
-template<typename... UserEvents>
-auto VehicleApplication<UserEvents...>::publishSystemEvent(const SystemEvent& systemEvent) -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::publishSystemEvent(const SystemEvent& systemEvent) -> void {
   auto event = std::visit([](auto&& e) {
     return AnyEvent{e};
   }, systemEvent);
@@ -189,8 +189,8 @@ auto VehicleApplication<UserEvents...>::publishSystemEvent(const SystemEvent& sy
   }
 }
 
-template<typename... UserEvents>
-auto VehicleApplication<UserEvents...>::on(size_t uid, Consumer<const SystemEvent&> action) -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::on(size_t uid, Consumer<const SystemEvent&> action) -> void {
   mEventMap[uid].push_back([action](auto& anyEvent) {
     if (auto systemEvent = narrow_variant<SystemEvent>(anyEvent)) {
       action(systemEvent.value());
@@ -198,9 +198,9 @@ auto VehicleApplication<UserEvents...>::on(size_t uid, Consumer<const SystemEven
   });
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::PublishEvent(const AnyEvent& event) -> void {
-  auto self = static_cast<VehicleApplication<UserEvents...>*>(Application::instance);
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::PublishEvent(const AnyEvent& event) -> void {
+  auto self = static_cast<VehicleApplication<EventVariantT>*>(Application::instance);
   auto uid = event.index();
   if (auto it = self->mEventMap.find(uid); it != self->mEventMap.end()) {
     for (auto& handler : it->second) {
@@ -209,28 +209,28 @@ auto VehicleApplication<UserEvents...>::PublishEvent(const AnyEvent& event) -> v
   }
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::isSleeping() -> bool {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::isSleeping() -> bool {
   return mSleeping;
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::goToSleep(rgb::Duration time) -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::goToSleep(rgb::Duration time) -> void {
   publishSystemEvent(SleepEvent{{Clock::Now()}, time});
   Timer::SetTimeout(time, [this](){
     goToSleep();
   }).detach();
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::goToSleep() -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::goToSleep() -> void {
   mSleeping = true;
   Effects::StopAll();
   Timer::StopAll();
 }
 
-template<typename ...UserEvents>
-auto VehicleApplication<UserEvents...>::wakeUp() -> void {
+template<typename EventVariantT>
+auto VehicleApplication<EventVariantT>::wakeUp() -> void {
   mSleeping = false;
 }
 
@@ -239,7 +239,7 @@ void vehicleReader(void* args) {
 
   auto app = static_cast<Application*>(args);
   auto vehicle = app->getVehicle();
-  auto logger = VehicleLogger{PinNumber{A0}};
+  auto logger = VehicleLogger{PinNumber{A3}};
   auto logging = logger.begin();
 
   vehicle->connect(PinNumber{RGB_VEHICLE_RX}, PinNumber{RGB_VEHICLE_TX});
@@ -264,7 +264,7 @@ void vehicleReader(void* args) {
       }
     }
 
-    vTaskDelay(pdMS_TO_TICKS(100));
+    vTaskDelay(pdMS_TO_TICKS(70));
   }
 }
 

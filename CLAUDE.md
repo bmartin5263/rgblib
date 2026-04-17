@@ -1,9 +1,9 @@
 ## Style
 
 - 2-spaces for indentation
-- `PascalCase` class names, file names
-- `CamelCase` method names and variable names
-- `snake_case` for type aliases
+- `PascalCase` class names, file names, type aliases of class/struct types
+- `camelCase` method names and variable names
+- `snake_case` type aliases of primitive types
 - Split classes into header and implementation files when possible
 
 ## Language
@@ -19,8 +19,8 @@
   - Use them as reference when asked 
   - For example: When asked "Create logging subsystem" then `/templates/subsystem` will be your starting point for class and file structure
 - `#include "SourceHeader.h"` for headers in this codebase, `#include <VendorHeader.h>` for external and system header files
-- Comments should not state the obvious, or refer to historical fixes
+- Comments should not state the obvious, or refer to historical fixes.
 
-## Scripts
+## Refactoring
 
-- Use `./scripts/update-cmake-sources.sh` whenever you need to add/remove source files from CMakeLists.txt
+- Avoid changing explicit class parameter types to `auto` for lambdas unless the type is primitive

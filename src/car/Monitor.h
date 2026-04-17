@@ -2,13 +2,13 @@
 // Created by Brandon on 2/9/26.
 //
 
-#ifndef RGBLIB_WATCHDOG_H
-#define RGBLIB_WATCHDOG_H
+#ifndef RGBLIB_MONITOR_H
+#define RGBLIB_MONITOR_H
 
 
 namespace rgb {
 
-class Watchdog {
+class Monitor {
 public:
   auto update() -> void;
 
@@ -17,4 +17,4 @@ public:
 
 }
 
-#endif //RGBLIB_WATCHDOG_H
+#endif //RGBLIB_MONITOR_H

@@ -23,7 +23,7 @@ class VehicleLogger {
 public:
   static constexpr auto FILENAME_FORMAT = "/vlog_%08u.bin"; // / vlog_00000001.bin
   static constexpr auto MAX_FILE_INDEX = 99999999; // arbitrary limit
-  static constexpr auto SECONDS_BETWEEN_FLUSHES = 10;
+  static constexpr auto SECONDS_BETWEEN_FLUSHES = 5;
   static constexpr auto UPDATES_PER_SECOND = 10;
   static constexpr auto BUFFER_CAPACITY = SECONDS_BETWEEN_FLUSHES * UPDATES_PER_SECOND;
   static constexpr auto FLUSH_INTERVAL = Duration::Seconds(SECONDS_BETWEEN_FLUSHES);

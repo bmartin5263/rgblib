@@ -51,10 +51,6 @@ struct CarMoving : public BaseEvent {
 
 struct CarStopped : public BaseEvent {};
 
-struct RainbowModeEntered : public BaseEvent {};
-
-struct RainbowModeExited : public BaseEvent {};
-
 }
 
 #endif //RGBLIB_SYSTEMEVENTS_H

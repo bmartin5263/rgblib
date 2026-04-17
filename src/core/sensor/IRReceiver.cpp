@@ -69,7 +69,7 @@ auto IRReceiver::doRead() -> void {
 //    }
     auto rawData = IrReceiver.decodedIRData.decodedRawData;
     auto data = static_cast<IRButtonType>(rawData);
-    Application::instance->publishSystemEvent(IRButtonPressed{{Clock::Now()}, data});
+    Application::PublishSystemEvent(IRButtonPressed{{Clock::Now()}, data});
     lastCommand = data;
     IrReceiver.resume();
   }

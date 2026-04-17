@@ -17,6 +17,11 @@ public:
   virtual auto publishSystemEvent(const SystemEvent& event) -> void = 0;
 
   template<typename T>
+  static auto PublishSystemEvent(const T& event) -> void {
+    instance->publishSystemEvent(SystemEvent{event});
+  }
+
+  template<typename T>
   constexpr auto on(Consumer<const T&> action) -> void {
     auto index = EventIndex_v<T, SystemEvent>;
     on(index, [&](auto& eventVariant){

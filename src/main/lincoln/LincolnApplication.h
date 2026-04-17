@@ -11,7 +11,7 @@
 #include "IRReceiver.h"
 #include "Timer.h"
 #include "GPIO.h"
-#include "CustomEvents.h"
+#include "LincolnAppEvents.h"
 #include "PixelStitch.h"
 #include "ReversePixelList.h"
 #include "ChasingEffect.h"
@@ -23,9 +23,15 @@
 #include "Brightness.h"
 #include "effect/RpmGauge.h"
 #include "lincoln/LincolnTownCar.h"
+#include "Carousel.h"
 
 using namespace rgb;
 
+// Colors
+constexpr auto FOOT_PURPLE = Color {0.2f, 0.f, 1.0f};
+constexpr auto FIBER_PURPLE = Color {0.3f, 0.f, 1.0f};
+
+// LED Counts
 static constexpr rgb::u16 FOOT_STRIP_LED_COUNT = 40;
 static constexpr rgb::u16 FIBER_STRIP_LED_COUNT = 150;
 static constexpr rgb::u16 FULL_DASH_FIBER_LENGTH = FIBER_STRIP_LED_COUNT * 3;
@@ -57,7 +63,7 @@ auto dashFiberFull = PixelStitch{dashFiber12, dashFiber3Reverse};
 auto footFiberGroup = std::array<PixelList*, 5> { &leftFoot, &rightFoot, &dashFiber1, &dashFiber2, &dashFiber3Reverse };
 
 // Sensors
-auto irRemote = IRReceiver{PinNumber{D3}};
+auto irRemote = IRReceiver{PinNumber{A4}};
 
 // Effects
 
@@ -90,14 +96,106 @@ auto dashFiberSleepLevel = 0;
 auto holdMode = false;
 auto rainbowMode = false;
 auto rpmGaugeHandle = EffectHandle{};
-auto idleEffectHandle = EffectHandle{};
 
 auto ringDebugColor = Color::OFF();
 
-constexpr auto FOOT_PURPLE = Color {0.2f, 0.f, 1.0f};
-constexpr auto FIBER_PURPLE = Color {0.3f, 0.f, 1.0f};
-auto lowRpmColorFoot = FOOT_PURPLE;
-auto lowRpmColorFiber = Color::GREEN();
+struct ColorPalette {
+  Color idleDashColor;
+  Color idleFootColor;
+  Color idleRingColor;
+  Color lowRpmDashColor;
+  Color highRpmDashColor;
+  Color lowRpmFootColor;
+  Color highRpmFootColor;
+
+  auto lerp(const ColorPalette& to, float t) const -> ColorPalette {
+    return {
+      .idleDashColor = idleDashColor.lerpClamp(to.idleDashColor, t),
+      .idleFootColor = idleFootColor.lerpClamp(to.idleFootColor, t),
+      .idleRingColor = idleRingColor.lerpClamp(to.idleRingColor, t),
+      .lowRpmDashColor = lowRpmDashColor.lerpClamp(to.lowRpmDashColor, t),
+      .highRpmDashColor = highRpmDashColor.lerpClamp(to.highRpmDashColor, t),
+      .lowRpmFootColor = lowRpmFootColor.lerpClamp(to.lowRpmFootColor, t),
+      .highRpmFootColor = highRpmFootColor.lerpClamp(to.highRpmFootColor, t),
+    };
+  }
+};
+
+template<size_t N>
+class FadingCarousel {
+public:
+  static constexpr auto FADE_DURATION = Duration::Seconds(1);
+
+  FadingCarousel(Carousel<ColorPalette, N> carousel)
+    : mCarousel(std::move(carousel)), mPrevious(mCarousel.get()) {}
+
+  auto get() -> ColorPalette {
+    auto elapsed = Clock::Now().timeSince(mChangedAt);
+    if (FADE_DURATION.isZero() || elapsed >= FADE_DURATION) {
+      return mCarousel.get();
+    }
+    auto t = static_cast<float>(elapsed.value) / static_cast<float>(FADE_DURATION.value);
+    return mPrevious.lerp(mCarousel.get(), t);
+  }
+
+  auto next() -> void {
+    recordPrevious();
+    mCarousel.next();
+  }
+
+  auto prev() -> void {
+    recordPrevious();
+    mCarousel.prev();
+  }
+
+private:
+  auto recordPrevious() -> void {
+    mPrevious = get();
+    mChangedAt = Clock::Now();
+  }
+
+  Carousel<ColorPalette, N> mCarousel;
+  ColorPalette mPrevious;
+  Timestamp mChangedAt{};
+};
+
+auto colorPalettes = FadingCarousel{Carousel{std::array{
+  ColorPalette {
+    .idleDashColor = Color::RED(),
+    .idleFootColor = Color::RED(),
+    .idleRingColor = Color::RED(),
+    .lowRpmDashColor = Color::GREEN(), .highRpmDashColor = Color::RED(),
+    .lowRpmFootColor = FOOT_PURPLE, .highRpmFootColor = Color::RED(),
+  },
+  ColorPalette {
+    .idleDashColor = Color::RED(),
+    .idleFootColor = Color::RED(),
+    .idleRingColor = Color::RED(),
+    .lowRpmDashColor = FIBER_PURPLE, .highRpmDashColor = Color::RED(),
+    .lowRpmFootColor = Color::GREEN(), .highRpmFootColor = Color::RED(),
+  },
+  ColorPalette {
+    .idleDashColor = FIBER_PURPLE,
+    .idleFootColor = FOOT_PURPLE,
+    .idleRingColor = Color::GREEN(),
+    .lowRpmDashColor = Color::GREEN(), .highRpmDashColor = Color::RED(),
+    .lowRpmFootColor = FOOT_PURPLE, .highRpmFootColor = FOOT_PURPLE,
+  },
+  ColorPalette {
+    .idleDashColor = Color::BLUE(),
+    .idleFootColor = Color::RED(),
+    .idleRingColor = Color::RED(),
+    .lowRpmDashColor = Color::CYAN(), .highRpmDashColor = Color::BLUE(),
+    .lowRpmFootColor = Color::PINK(), .highRpmFootColor = Color::BLUE(),
+  },
+  ColorPalette {
+    .idleDashColor = Color::BLUE(),
+    .idleFootColor = Color::BLUE(),
+    .idleRingColor = Color::RED(),
+    .lowRpmDashColor = Color::ORANGE(), .highRpmDashColor = Color::ORANGE(),
+    .lowRpmFootColor = Color::PURPLE(), .highRpmFootColor = Color::RED(),
+  }
+}}};
 
 auto levelUpFn = [](int& footLevel, int& dashFiberLevel){
   if (footLevel < leftFoot.length()) {
@@ -131,33 +229,26 @@ auto levelDownFn = [](int& footLevel, int& dashFiberLevel){
   return footLevel > 0 || dashFiberLevel > 0;
 };
 
-class LincolnApplication : public VehicleApplication<HighwayModeEntered, HighwayModeExited> {
+class LincolnApplication : public VehicleApplication<LincolnAppEvents> {
 private:
   static auto RunIntroSequence() {
     INFO("Starting Intro Sequence");
     Effects::Start(ringChase1, ring).detach();
-//    Effects::Start(ringChase2, ringReverse).detach();
+    Effects::Start(ringChase2, ringReverse).detach();
     Effects::Start(introWipe, footFiberGroup).detach();
 
     Timer::SetTimeout(Duration::Seconds(3), [](){
       INFO("Finished Intro Sequence");
       Effects::Stop(introWipe);
-      Effects::Start(fiberChase, dashFiber1).detach();
+      Effects::Start(fiberChase, heartBeatFiber).detach();
 
-      auto rpmRingChaseShader = [](Color highRpmColor) {
-        return [highRpmColor](auto color, auto& params){
-          auto& townCar = LincolnTownCar::Instance();
-          auto rpm = townCar.smoothRpm();
-          auto numerator = static_cast<float>(rpm) - LincolnTownCar::MAX_IDLE_RPM;
-          constexpr auto denominator = LincolnTownCar::STARTING_RPM - LincolnTownCar::MAX_IDLE_RPM;
-          auto t = numerator / denominator;
-          auto myColor = Color::RED().lerpClamp(highRpmColor, t);
-          return color + (myColor * params.brightness);
-        };
+      auto ringChaseShader = [](auto color, auto& params) {
+        auto palette = colorPalettes.get();
+        return color + (palette.idleRingColor * params.brightness);
       };
 
-      ringChase1.shader = rpmRingChaseShader(Color::GREEN());
-      ringChase2.shader = rpmRingChaseShader(FIBER_PURPLE);
+      ringChase1.shader = ringChaseShader;
+      ringChase2.shader = ringChaseShader;
 
     }).detach();
   }
@@ -176,7 +267,7 @@ protected:
 
     ringChase1.buildup = true;
     ringChase1.shift = 3;
-    ringChase1.progression = EffectProgression::ConstantTime(Duration::Milliseconds(400));
+    ringChase1.progression = EffectProgression::ConstantTime(Duration::Milliseconds(1000));
     ringChase1.trailLength = Length::Units(4);
     ringChase1.brightness = BrightnessLevels { .dim = .08f, .medium = .08f, .bright = .3f };
     ringChase1.shader = [](auto color, auto& params){
@@ -258,7 +349,7 @@ protected:
       if (holdMode) {
         return;
       }
-      idleEffectHandle = Effects::Start(ringChase1, ring);
+      Effects::Start(ringChase1, ring).detach();
       Effects::Start(ringChase2, ringReverse).detach();
       rpmGaugeHandle.stop();
       ringDebugColor = Color::OFF();
@@ -285,16 +376,12 @@ protected:
           TRACE("Button DOWN pressed");
           break;
         case IRButtonType::BUTTON_LEFT:
+          colorPalettes.prev();
+          TRACE("Color palette prev");
+          break;
         case IRButtonType::BUTTON_RIGHT:
-          TRACE("Button LEFT/RIGHT pressed");
-          if (lowRpmColorFiber == Color::GREEN()) {
-            lowRpmColorFiber = FIBER_PURPLE;
-            lowRpmColorFoot = Color::GREEN();
-          }
-          else {
-            lowRpmColorFoot = FOOT_PURPLE;
-            lowRpmColorFiber = Color::GREEN();
-          }
+          colorPalettes.next();
+          TRACE("Color palette next");
           break;
         case IRButtonType::BUTTON_0:
           TRACE("Button 0 pressed");
@@ -351,28 +438,28 @@ protected:
   auto draw() -> void override {
     auto& townCar = LincolnTownCar::Instance();
 
-    auto highRpmColor = Color::RED();
+    auto palette = colorPalettes.get();
 
     auto fiberBrightness = Brightness::GetBrightness({
-      .dim = .2f,
-      .medium = .4f,
-      .bright = .7f,
+      .dim = .1f,
+      .medium = .2f,
+      .bright = .5f,
       .max = 1.0f
     });
 
-    leftFoot.fill(Color::RED());
-    rightFoot.fill(Color::RED());
-    dashFiber1.fill(Color::RED() * fiberBrightness);
-    dashFiber2.fill(Color::RED() * fiberBrightness);
-    dashFiber3Reverse.fill(Color::RED() * fiberBrightness);
+    leftFoot.fill(palette.idleFootColor);
+    rightFoot.fill(palette.idleFootColor);
+    dashFiber1.fill(palette.idleDashColor * fiberBrightness);
+    dashFiber2.fill(palette.idleDashColor * fiberBrightness);
+    dashFiber3Reverse.fill(palette.idleDashColor * fiberBrightness);
 
     auto rpm = townCar.smoothRpm();
     auto start = 1500.0f;
     auto max = 2500.0f;
     auto time = (rpm - start) / (max - start);
 
-    auto footRpmColor = lowRpmColorFoot.lerpClamp(highRpmColor, time);
-    auto fiberRpmColor = lowRpmColorFiber.lerpClamp(highRpmColor, time);
+    auto footRpmColor = palette.lowRpmFootColor.lerpClamp(palette.highRpmFootColor, time);
+    auto fiberRpmColor = palette.lowRpmDashColor.lerpClamp(palette.highRpmDashColor, time);
 
     leftFoot.fill(footRpmColor, footLevel);
     rightFoot.fill(footRpmColor, footLevel);
@@ -423,11 +510,7 @@ protected:
   }
 
   auto postDraw() -> void override {
-    leftFoot.fill(Color::OFF(), leftFoot.length() - footSleepLevel, leftFoot.length());
-    rightFoot.fill(Color::OFF(), rightFoot.length() - footSleepLevel, rightFoot.length());
-    dashFiber1.fill(Color::OFF(), dashFiber1.length() - dashFiberSleepLevel, dashFiber1.length());
-    dashFiber2.fill(Color::OFF(), dashFiber2.length() - dashFiberSleepLevel, dashFiber2.length());
-    dashFiber3Reverse.fill(Color::OFF(), dashFiber3Reverse.length() - dashFiberSleepLevel, dashFiber3Reverse.length());
+
   }
 };
 

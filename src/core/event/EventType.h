@@ -66,9 +66,7 @@ using SystemEvent = EventVariant<
   CarEngineStopped,
   IRButtonPressed,
   CarMoving,
-  CarStopped,
-  RainbowModeEntered,
-  RainbowModeExited
+  CarStopped
 >;
 
 template<typename ...UserEvents>

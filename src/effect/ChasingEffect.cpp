@@ -22,15 +22,15 @@ auto ChasingEffect::draw(Timestamp now, PixelList& pixels) -> void {
     .brightness = Brightness::GetBrightness(brightness)
   };
 
-  Duration activeDuration; // 2 seconds
-  Duration idleDuration; // 1 seconds
+  Duration activeDuration;
+  Duration idleDuration;
   if (progression.durationIsDelay) {
     activeDuration = Duration{progression.duration.value * pixelLength};
-    idleDuration = Duration::Seconds(1);
+    idleDuration = progression.idleDuration;
   }
   else {
     activeDuration = progression.duration;
-    idleDuration = Duration::Seconds(1);
+    idleDuration = progression.idleDuration;
   }
   auto totalDuration = activeDuration + idleDuration;
   auto idleRatio = idleDuration.ratio<double>(activeDuration);

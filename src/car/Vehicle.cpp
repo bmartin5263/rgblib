@@ -46,7 +46,7 @@ auto Vehicle::connect(PinNumber rx, PinNumber tx) -> bool {
   mConnected = true;
   mLastResponse = Clock::Now();
 
-  Application::instance->publishSystemEvent(OBDIIConnected{Clock::Now()});
+  Application::PublishSystemEvent(OBDIIConnected{Clock::Now()});
 
   return true;
 }
@@ -55,7 +55,7 @@ auto Vehicle::disconnect() -> void {
   auto lock = std::unique_lock { mu };
   obdHandle.reset({});
   mConnected = false;
-  Application::instance->publishSystemEvent(OBDIIDisconnected{Clock::Now()});
+  Application::PublishSystemEvent(OBDIIDisconnected{Clock::Now()});
 
   INFO("Vehicle Disconnected");
 }

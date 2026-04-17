@@ -11,7 +11,7 @@ namespace rgb {
 
 auto VehicleLogger::begin() -> bool {
   auto alreadyStarted = SPI.bus() != nullptr;
-  SPI.begin(A1, A3, A2, A0);
+  SPI.begin(A2, A0, A1, A3);
 
   if (!SD.begin(mCsPin.to<u8>())) {
     ERROR("SD card initialization failed");

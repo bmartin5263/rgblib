@@ -32,7 +32,7 @@ public:
     if (params.pixelPosition <= params.wipeLength) {
       return Color::Sequential12(params.wipeCycle) * params.brightness;
     }
-    if (params.wipeCycle == 0) {
+    else if (params.wipeCycle == 0) {
       return Color::OFF();
     }
     else {
