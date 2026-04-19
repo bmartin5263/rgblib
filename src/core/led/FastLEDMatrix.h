@@ -93,19 +93,6 @@ public:
     }
     else {
       for (u16 i = 0; i < N; ++i) {
-        auto pixel = pixels[pixelPositionToLEDPosition(i)] * brightness;
-        leds[i] = CRGB(FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b));
-      }
-    }
-
-    if (reversed) {
-      for (u16 i = 0; i < N; ++i) {
-        auto pixel = pixels[pixelPositionToLEDPosition(N - 1 - i)] * brightness;
-        leds[i] = CRGB(FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b));
-      }
-    }
-    else {
-      for (u16 i = 0; i < N; ++i) {
         auto pixel = pixels[i];
         auto ledPosition = pixelPositionToLEDPosition(i);
         if constexpr (STAGGER) {

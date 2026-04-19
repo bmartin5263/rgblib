@@ -10,6 +10,7 @@
 #include "IRReceiver.h"
 #include "Timer.h"
 #include "FastLEDStrip.h"
+#include "FastLEDMatrix.h"
 #include "NeopixelLEDStrip.h"
 #include "GPIO.h"
 #include "PixelStitch.h"
@@ -22,7 +23,7 @@
 
 using namespace rgb;
 
-auto s1 = FastLEDStrip<360, D2_RGB>();
+auto s1 = FastLEDMatrix<8, 8, D2_RGB, RgbwSupport::ENABLE>();
 auto wipeEffect = WipeEffect{};
 
 class OptimizationApplication : public VehicleApplication<> {
@@ -31,28 +32,31 @@ protected:
     s1.setBrightness(.8f);
     app.addLEDs(s1);
 
-    wipeEffect.shader = [](auto color, auto& params){
-      if (params.pixelPosition <= params.wipeLength) {
-        return Color::Sequential12(params.wipeCycle);
-      }
-      if (params.wipeCycle == 0) {
-        return Color::OFF();
-      }
-      else {
-        return Color::Sequential12(params.wipeCycle - 1);
-      }
-    };
-    wipeEffect.progression = EffectProgression::ConstantTime(Duration::Seconds(2));
-    Effects::Start(wipeEffect, s1).detach();
+//    wipeEffect.shader = [](auto color, auto& params){
+//      if (params.pixelPosition <= params.wipeLength) {
+//        return Color::Sequential12(params.wipeCycle);
+//      }
+//      if (params.wipeCycle == 0) {
+//        return Color::OFF();
+//      }
+//      else {
+//        return Color::Sequential12(params.wipeCycle - 1);
+//      }
+//    };
+//    wipeEffect.progression = EffectProgression::ConstantTime(Duration::Seconds(2));
+//    Effects::Start(wipeEffect, s1).detach();
 
     app.useHeartbeatLED();
   }
 
   auto update() -> void override {
-
   }
 
   auto draw() -> void override {
+    for (int i = 0; i < 64; ++i) {
+      auto f = i / 64.0f;
+      s1.set(i, Color::HslToRgb(f));
+    }
   }
 };
 
