@@ -13,22 +13,13 @@
 #include "ContiguousPixelList.h"
 #include "LEDCircuit.h"
 #include "Log.h"
+#include "RgbwSupport.h"
 
 namespace rgb {
-
-enum class RgbwSupport {
-  ENABLE,
-  DISABLE
-};
 
 /**
  * Represents a physical LED Strip, also functions as a PixelList with a 1:1 mapping
  * between pixel and LED
- *
- * @tparam N number of physical LEDs
- * @tparam FORMAT type of LEDs (i.e RGBW)
- * @tparam MODEL model of LEDs (i.e WS2812)
- * @tparam BACKEND hardware backend (RMT or SPI)
  */
 template <u16 N, uint PIN, RgbwSupport WHITE_SUPPORT=RgbwSupport::DISABLE>
 class FastLEDStrip : public ContiguousPixelList, public LEDCircuit {

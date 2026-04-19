@@ -13,13 +13,14 @@ namespace rgb {
 class PixelGrid : public PixelList {
 public:
   using PixelList::get;
-  [[nodiscard]] virtual auto get(uint column, uint row) const -> const Pixel* = 0;
+  using PixelList::set;
 
-  [[nodiscard]] auto get(Point point) -> Pixel*;
-  [[nodiscard]] auto get(Point point) const -> const Pixel*;
-  [[nodiscard]] auto get(uint column, uint row) -> Pixel*;
-  [[nodiscard]] auto operator[](Point point) -> Pixel&;
-  [[nodiscard]] auto operator[](Point point) const -> const Pixel&;
+  [[nodiscard]] virtual auto rows() const -> uint = 0;
+  [[nodiscard]] virtual auto columns() const -> uint = 0;
+  [[nodiscard]] virtual auto get(uint column, uint row) const -> const Pixel* = 0;
+  [[nodiscard]] virtual auto get(Point position) const -> const Pixel* = 0;
+  virtual auto set(uint column, uint row, const Color& color) -> void = 0;
+  virtual auto set(Point position, const Color& color) -> void = 0;
 };
 
 }
