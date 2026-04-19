@@ -26,8 +26,8 @@ is_header() {
   esac
 }
 
-# Find and copy files, skipping "user" directories
-find "$INPUT_DIR" -type d -name "user" -prune -o -type f ! -name "main.ino" -print | while read -r file; do
+# Find and copy files, skipping directories intended for test-only or experimentation
+find "$INPUT_DIR" -type d -name "main" -prune -o -type f ! -name "main.ino" -print | while read -r file; do
   base_name=$(basename "$file")
 
   if is_header "$base_name"; then

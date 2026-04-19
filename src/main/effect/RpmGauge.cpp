@@ -5,7 +5,6 @@
 #include "RpmGauge.h"
 #include "Brightness.h"
 #include "Timer.h"
-#include "lincoln/LincolnTownCar.h"
 
 using namespace rgb;
 
