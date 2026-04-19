@@ -6,7 +6,7 @@
 #define RGBLIB_FILLEFFECT_H
 
 #include <functional>
-#include "core/Color.h"
+#include "RgbColor.h"
 #include "Brightness.h"
 #include "Effect.h"
 

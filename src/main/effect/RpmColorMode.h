@@ -6,7 +6,7 @@
 #define RGBLIB_COLORMODE_H
 
 #include "Types.h"
-#include "core/Color.h"
+#include "RgbColor.h"
 #include "RpmGaugeCalculations.h"
 
 class RpmGauge;

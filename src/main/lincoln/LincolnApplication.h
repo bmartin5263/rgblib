@@ -45,6 +45,7 @@ auto rightFoot = FastLEDStrip<FOOT_STRIP_LED_COUNT, D5_RGB>();
 auto dashFiber1 = FastLEDStrip<FIBER_STRIP_LED_COUNT, D6_RGB>();
 auto dashFiber2 = FastLEDStrip<FIBER_STRIP_LED_COUNT, D7_RGB>();
 auto dashFiber3 = FastLEDStrip<FIBER_STRIP_LED_COUNT, D8_RGB>();
+auto grid = rgb::FastLEDMatrix<1, 1, rgb::D2_RGB>();
 
 // "Dead" Segments
 auto deadHalfRing = DeadPixelList{ring.length() / 2};

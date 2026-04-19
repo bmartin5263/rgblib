@@ -2,8 +2,8 @@
 // Created by Brandon on 1/5/25.
 //
 
-#ifndef RGBLIB_COLOR_H
-#define RGBLIB_COLOR_H
+#ifndef RGBLIB_RGBCOLOR_H
+#define RGBLIB_RGBCOLOR_H
 
 #include <esp_random.h>
 #include <type_traits>
@@ -245,4 +245,4 @@ private:
 }
 
 
-#endif //RGBLIB_COLOR_H
+#endif //RGBLIB_RGBCOLOR_H
