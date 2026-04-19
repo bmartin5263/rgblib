@@ -33,10 +33,10 @@ constexpr auto FOOT_PURPLE = Color {0.2f, 0.f, 1.0f};
 constexpr auto FIBER_PURPLE = Color {0.3f, 0.f, 1.0f};
 
 // LED Counts
-static constexpr rgb::u16 FOOT_STRIP_LED_COUNT = 40;
-static constexpr rgb::u16 FIBER_STRIP_LED_COUNT = 150;
-static constexpr rgb::u16 FULL_DASH_FIBER_LENGTH = FIBER_STRIP_LED_COUNT * 3;
-static constexpr rgb::u16 HALF_FOOT_STRIP_LED_COUNT = FOOT_STRIP_LED_COUNT / 2;
+static constexpr u16 FOOT_STRIP_LED_COUNT = 40;
+static constexpr u16 FIBER_STRIP_LED_COUNT = 150;
+static constexpr u16 FULL_DASH_FIBER_LENGTH = FIBER_STRIP_LED_COUNT * 3;
+static constexpr u16 HALF_FOOT_STRIP_LED_COUNT = FOOT_STRIP_LED_COUNT / 2;
 
 // LEDs
 auto ring = FastLEDStrip<12, D2_RGB, RgbwSupport::ENABLE>();
@@ -45,7 +45,7 @@ auto rightFoot = FastLEDStrip<FOOT_STRIP_LED_COUNT, D5_RGB>();
 auto dashFiber1 = FastLEDStrip<FIBER_STRIP_LED_COUNT, D6_RGB>();
 auto dashFiber2 = FastLEDStrip<FIBER_STRIP_LED_COUNT, D7_RGB>();
 auto dashFiber3 = FastLEDStrip<FIBER_STRIP_LED_COUNT, D8_RGB>();
-auto grid = rgb::FastLEDMatrix<1, 1, rgb::D2_RGB>();
+auto grid = FastLEDMatrix<1, 1, 11>();
 
 // "Dead" Segments
 auto deadHalfRing = DeadPixelList{ring.length() / 2};
@@ -265,6 +265,7 @@ protected:
     app.addLEDs(dashFiber1);
     app.addLEDs(dashFiber2);
     app.addLEDs(dashFiber3);
+    app.addLEDs(grid);
     app.addSensor(irRemote);
 
     ringChase1.buildup = true;
