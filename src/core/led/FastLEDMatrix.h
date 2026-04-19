@@ -2,8 +2,8 @@
 // Created by Brandon on 1/19/25.
 //
 
-#ifndef RGBLIB_LEDMATRIX_H
-#define RGBLIB_LEDMATRIX_H
+#ifndef RGBLIB_FASTLEDMATRIX_H
+#define RGBLIB_FASTLEDMATRIX_H
 
 #include <FastLED.h>
 #include "Types.h"
@@ -19,12 +19,12 @@
 namespace rgb {
 
 template <uint COLUMNS, uint ROWS, uint PIN, RgbwSupport WHITE_SUPPORT=RgbwSupport::DISABLE, bool STAGGER = false>
-class LEDMatrix : public ContiguousPixelGrid, public LEDCircuit {
+class FastLEDMatrix : public ContiguousPixelGrid, public LEDCircuit {
 public:
   static constexpr auto N = COLUMNS * ROWS;
 
-  constexpr explicit LEDMatrix(u16 offset = 0):
-    pixels{}, leds{}, offset{offset}, reversed{false}, started{false}
+  constexpr explicit FastLEDMatrix(u16 offset = 0):
+    leds{}, pixels{}, offset{offset}, reversed{false}, started{false}
   {
   }
 
@@ -54,6 +54,14 @@ public:
 
   auto length() const -> uint override {
     return N;
+  }
+
+  auto rows() const -> uint override {
+    return ROWS;
+  }
+
+  auto columns() const -> uint override {
+    return COLUMNS;
   }
 
   auto getOffset() const -> int {
@@ -149,4 +157,4 @@ private:
 }
 
 
-#endif //RGBLIB_LEDMATRIX_H
+#endif //RGBLIB_FASTLEDMATRIX_H

@@ -27,7 +27,7 @@ public:
   constexpr explicit FastLEDStrip(
     u16 offset = 0
   ):
-    pixels{}, offset{offset}, brightness(1.0f), reversed{false}, started{false}
+    leds{}, pixels{}, offset{offset}, brightness(1.0f), reversed{false}, started{false}
   {
   }
 
