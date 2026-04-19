@@ -4,7 +4,6 @@
 
 #include "DebugScreen.h"
 #include "Clock.h"
-#include "Config.h"
 #include "Assertions.h"
 
 namespace rgb {

@@ -6,7 +6,6 @@
 #define RGBLIB_WEBSERVER_H
 
 #include "WebServerFwd.h"
-#include "Config.h"
 #include "Types.h"
 #include "Log.h"
 

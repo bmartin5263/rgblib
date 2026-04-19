@@ -7,7 +7,6 @@
 #include "ArduinoOTA.h"
 #include "Stopwatch.h"
 #include "Log.h"
-#include "Config.h"
 
 namespace rgb {
 

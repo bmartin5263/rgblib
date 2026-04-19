@@ -5,7 +5,6 @@
 #ifndef RGBLIB_TIMER_H
 #define RGBLIB_TIMER_H
 
-#include "Config.h"
 #include "Types.h"
 #include "TimerNode.h"
 #include "TimerHandle.h"

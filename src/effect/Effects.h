@@ -5,7 +5,6 @@
 #ifndef RGBLIB_EFFECTS_H
 #define RGBLIB_EFFECTS_H
 
-#include "Config.h"
 #include "Types.h"
 #include "Func.h"
 #include "EffectHandle.h"

@@ -3,9 +3,7 @@
 //
 
 #include "Vehicle.h"
-#include "Config.h"
 #include "Clock.h"
-#include "Assertions.h"
 #include "Util.h"
 #include "Application.h"
 
