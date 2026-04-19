@@ -13,13 +13,13 @@
 #include "ContiguousPixelList.h"
 #include "LEDCircuit.h"
 #include "Log.h"
-#include "PixelGrid.h"
+#include "ContiguousPixelGrid.h"
 #include "RgbwSupport.h"
 
 namespace rgb {
 
 template <uint COLUMNS, uint ROWS, uint PIN, RgbwSupport WHITE_SUPPORT=RgbwSupport::DISABLE, bool STAGGER = false>
-class LEDMatrix : public PixelGrid, public LEDCircuit {
+class LEDMatrix : public ContiguousPixelGrid, public LEDCircuit {
 public:
   static constexpr auto N = COLUMNS * ROWS;
 
@@ -79,14 +79,31 @@ public:
   auto display() -> void override {
     if (reversed) {
       for (u16 i = 0; i < N; ++i) {
-        auto pixel = pixels[mapPixelToLED(N - 1 - i)] * brightness;
+        auto pixel = pixels[pixelPositionToLEDPosition(N - 1 - i)] * brightness;
         leds[i] = CRGB(FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b));
       }
     }
     else {
       for (u16 i = 0; i < N; ++i) {
-        auto pixel = pixels[mapPixelToLED(i)] * brightness;
+        auto pixel = pixels[pixelPositionToLEDPosition(i)] * brightness;
         leds[i] = CRGB(FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b));
+      }
+    }
+
+    if (reversed) {
+      for (u16 i = 0; i < N; ++i) {
+        auto pixel = pixels[pixelPositionToLEDPosition(N - 1 - i)] * brightness;
+        leds[i] = CRGB(FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b));
+      }
+    }
+    else {
+      for (u16 i = 0; i < N; ++i) {
+        auto pixel = pixels[i];
+        auto ledPosition = pixelPositionToLEDPosition(i);
+        if constexpr (STAGGER) {
+          ledPosition = zigzagToLinearIndex(ledPosition);
+        }
+        leds[ledPosition] = pixel;
       }
     }
   }
@@ -116,68 +133,8 @@ public:
     }
   }
 
-  auto display() -> void override {
-    if (reversed) {
-      for (u16 i = 0; i < N; ++i) {
-        auto& c = pixels[mapPixelToLED(N - 1 - i)];
-        FORMAT.writer(leds, i, c);
-      }
-    }
-    else {
-      if constexpr (STAGGER) {
-        for (u16 i = 0; i < N; ++i) {
-          auto pixel = pixels[i];
-          auto led = mapPixelToLED(i);
-          FORMAT.writer(leds, zigzagToLinearIndex(led), pixel);
-        }
-      }
-      else {
-        for (u16 i = 0; i < N; ++i) {
-          auto pixel = pixels[i];
-          auto led = mapPixelToLED(i);
-          FORMAT.writer(leds, led, pixel);
-        }
-      }
-    }
-    led_strip_refresh(leds);
-  }
-
-  auto setOffset(int amount) -> void {
-    offset = amount;
-  }
-
-  auto setReversed(bool value) -> void {
-    reversed = value;
-  }
-
-  auto isReversed() const -> bool {
-    return reversed;
-  }
-
-  auto toggleReversed() -> bool {
-    auto previous = reversed;
-    setReversed(!reversed);
-    return previous;
-  }
-
-  auto mapPixelToLED(u16 pixel) -> u16 {
+  auto pixelPositionToLEDPosition(u16 pixel) -> u16 {
     return (pixel + offset) % N;
-  }
-
-  auto get(Point point) -> Pixel* override {
-    ASSERT(point.x >= 0, "Point.X is negative");
-    ASSERT(point.y >= 0, "Pixel.Y is negative");
-    ASSERT(point.x < COLUMNS, "Pixel.X is out of bounds");
-    ASSERT(point.y < ROWS, "Pixel.Y is out of bounds");
-    return data() + ((point.y * COLUMNS) + point.x);
-  }
-
-  auto set(Point point, const Color& color) -> void override {
-    *(data() + ((point.y * COLUMNS) + point.x)) = color;
-  }
-
-  auto operator[](uint column, uint row) -> Color& override {
-    return *(data() + ((row * COLUMNS) + column));
   }
 
 private:

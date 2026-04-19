@@ -17,8 +17,8 @@ public:
 
   [[nodiscard]] virtual auto rows() const -> uint = 0;
   [[nodiscard]] virtual auto columns() const -> uint = 0;
-  [[nodiscard]] virtual auto get(uint column, uint row) const -> const Pixel* = 0;
-  [[nodiscard]] virtual auto get(Point position) const -> const Pixel* = 0;
+  [[nodiscard]] virtual auto get(uint column, uint row) const -> Pixel = 0;
+  [[nodiscard]] virtual auto get(Point position) const -> Pixel = 0;
   virtual auto set(uint column, uint row, const Color& color) -> void = 0;
   virtual auto set(Point position, const Color& color) -> void = 0;
 };

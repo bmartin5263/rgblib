@@ -11,7 +11,7 @@ namespace rgb {
 
 struct Point {
 
-  [[nodiscard]] constexpr auto flatten(u16 columns) const -> size_t {
+  [[nodiscard]] constexpr auto flatten(uint columns) const -> uint {
     return (y * columns) + x;
   }
 
