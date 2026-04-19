@@ -111,7 +111,7 @@ public:
         if constexpr (STAGGER) {
           ledPosition = zigzagToLinearIndex(ledPosition);
         }
-        leds[ledPosition] = pixel;
+        leds[ledPosition] = CRGB(FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b));
       }
     }
   }
