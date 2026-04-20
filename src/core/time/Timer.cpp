@@ -228,16 +228,21 @@ auto Timer::nextTimerNode() -> TimerNode* {
   auto next = TimerNode::Pop(unusedHead);
   ASSERT(next->next == nullptr, "Next is not a nullptr");
   ASSERT(next->prev == nullptr, "Prev is not a nullptr");
+  ++usedCount;
+  if (usedCount > maxUsedCount) {
+    maxUsedCount = usedCount;
+  }
   return next;
 }
 
 auto Timer::reclaimNodes() -> void {
   INFO("Reclaiming Timer Nodes");
-  for (auto& node : nodes) {
-    if (node.cancelled) {
-      TimerNode::Remove(activeHead, &node);
-      node.cancelled = false;
-      TimerNode::InsertFront(unusedHead, &node);
+  for (auto& timer : nodes) {
+    if (timer.cancelled) {
+      TimerNode::Remove(activeHead, &timer);
+      timer.clean();
+      TimerNode::InsertFront(unusedHead, &timer);
+      --usedCount;
     }
   }
 }
@@ -247,16 +252,8 @@ auto Timer::Instance() -> Timer& {
   return timer;
 }
 
-auto Timer::activeCount() -> uint {
-  auto num = 0;
-  auto current = activeHead;
-  while (current != nullptr) {
-    if (!current->cancelled) {
-      ++num;
-    }
-    current = current->next;
-  }
-  return num;
+auto Timer::activeCount() const -> uint {
+  return usedCount;
 }
 
 auto Timer::ActiveCount() -> uint {
@@ -267,6 +264,7 @@ auto Timer::recycle(TimerNode* timer) -> void {
   TRACE("Recycling Timer '%i'", timer->id);
   timer->clean();
   TimerNode::InsertFront(unusedHead, timer);
+  --usedCount;
 }
 
 auto Timer::executeRegularTimer(TimerNode* timer, Timestamp now) -> bool {
@@ -314,9 +312,8 @@ auto Timer::MaxCount() -> uint {
   return Instance().maxCount();
 }
 
-auto Timer::maxCount() -> uint {
-  // TODO
-  return 0;
+auto Timer::maxCount() const -> uint {
+  return maxUsedCount;
 }
 
 auto Timer::stopAll() -> void {

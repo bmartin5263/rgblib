@@ -44,8 +44,8 @@ public:
   auto setImmediateTimeout(const TimerFunction& function) -> TimerHandle;
   auto continuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle;
   auto continuouslyWhile(const Predicate& function) -> TimerHandle;
-  auto activeCount() -> uint;
-  auto maxCount() -> uint;
+  auto activeCount() const -> uint;
+  auto maxCount() const -> uint;
   auto cancel(TimerNode* node) -> void;
   auto processTimers() -> void;
 
@@ -62,6 +62,8 @@ private:
   TimerNode* toAddHead{nullptr};
   TimerNode* activeHead{nullptr};
   uint nextHandleId{1};
+  uint usedCount{0};
+  uint maxUsedCount{0};
 
   auto executeTimer(TimerNode* node, Timestamp now) -> void;
   auto nextTimerNode() -> TimerNode*;

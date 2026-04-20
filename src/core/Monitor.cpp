@@ -14,10 +14,11 @@ namespace rgb {
 auto Monitor::update() -> void {
   auto timers = Timer::ActiveCount();
   auto totalTimers = Timer::TotalCount();
+  auto maxTimers = Timer::MaxCount();
   auto effects = Effects::ActiveCount();
   auto totalEffects = Effects::TotalCount();
   auto fps = Clock::Fps();
-  INFO("FPS: %i   Timers: %i / %i (%i)   Effects: %i / %i", fps, timers, totalTimers, effects, totalEffects);
+  INFO("FPS: %i   Timers: %i / %i (max=%i)   Effects: %i / %i", fps, timers, totalTimers, maxTimers, effects, totalEffects);
 }
 
 }
