@@ -5,7 +5,7 @@
 #ifndef RGBLIB_GPIO_H
 #define RGBLIB_GPIO_H
 
-#include "priv/GPIOImpl.h"
+#include "GPIOImpl.h"
 #include "Types.h"
 #include "Pin.h"
 
