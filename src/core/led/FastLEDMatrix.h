@@ -38,7 +38,7 @@ public:
   static constexpr auto N = EFFECTIVE_COLUMNS * EFFECTIVE_ROWS;
 
   constexpr explicit FastLEDMatrix(int offset = 0):
-    leds{}, pixels{}, offset{offset}, reversed{false}, started{false}
+    leds{}, pixels{}, offset{offset}, brightness{1.0f}, reversed{false}, started{false}
   {
   }
 
