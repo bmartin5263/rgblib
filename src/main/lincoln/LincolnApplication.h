@@ -6,7 +6,7 @@
 #define RGBLIB_LINCOLNAPPLICATION_H
 
 #include "FastLEDStrip.h"
-#include "VehicleApplication.h"
+#include "UserApplication.h"
 #include "Pin.h"
 #include "IRReceiver.h"
 #include "Timer.h"
@@ -231,7 +231,7 @@ auto levelDownFn = [](int& footLevel, int& dashFiberLevel){
   return footLevel > 0 || dashFiberLevel > 0;
 };
 
-class LincolnApplication : public VehicleApplication<LincolnAppEvents> {
+class LincolnApplication : public UserApplication<LincolnAppEvents> {
 private:
   static auto RunIntroSequence() {
     INFO("Starting Intro Sequence");

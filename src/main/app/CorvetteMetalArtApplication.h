@@ -5,7 +5,7 @@
 #ifndef RGBLIB_CORVETTEMETALARTAPPLICATION_H
 #define RGBLIB_CORVETTEMETALARTAPPLICATION_H
 
-#include "VehicleApplication.h"
+#include "UserApplication.h"
 #include "Pin.h"
 #include "IRReceiver.h"
 #include "Timer.h"
@@ -51,9 +51,9 @@ auto leftSegment = PixelStitch{leftSegmentTemp, deadLongPixelList};
 auto rightSegment = PixelStitch{rightSegmentTemp, deadLongPixelList};
 auto wipeGroup = std::array<PixelList*, 2> { &leftSegment, &rightSegment };
 
-class CorvetteMetalArtApplication : public VehicleApplication<> {
+class CorvetteMetalArtApplication : public UserApplication<> {
 protected:
-  auto configure(VehicleApplication::Configurer& app) -> void override {
+  auto configure(UserApplication::Configurer& app) -> void override {
     s1.setBrightness(.8f);
     app.addLEDs(s1);
     app.addSensor(irRemote);

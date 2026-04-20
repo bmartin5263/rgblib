@@ -6,7 +6,7 @@
 #define RGBLIB_LINCOLNAPPEVENTS_H
 
 #include "EventType.h"
-#include "VehicleApplication.h"
+#include "UserApplication.h"
 
 /**
  * Car entered highway
@@ -28,6 +28,6 @@ struct RainbowModeEntered : public rgb::BaseEvent {};
 struct RainbowModeExited : public rgb::BaseEvent {};
 
 using LincolnAppEvents = rgb::Event<HighwayModeEntered, HighwayModeExited, PeelOut, RainbowModeEntered, RainbowModeExited>;
-using LincolnApp = rgb::VehicleApplication<LincolnAppEvents>;
+using LincolnApp = rgb::UserApplication<LincolnAppEvents>;
 
 #endif //RGBLIB_LINCOLNAPPEVENTS_H

@@ -14,7 +14,7 @@
 #endif
 
 #include "Application.h"
-#include "VehicleApplicationConfigurer.h"
+#include "UserApplicationConfigurer.h"
 #include "Clock.h"
 #include "Vehicle.h"
 #include "Timer.h"
@@ -34,19 +34,19 @@ struct SubtaskSharedState {
 };
 
 template<typename EventVariantT = SystemEvent>
-class VehicleApplication : public Application {
+class UserApplication : public Application {
   using Application::on;
 
 public:
   using AnyEvent = EventVariantT;
-  using Configurer = VehicleApplicationConfigurer<EventVariantT>;
+  using Configurer = UserApplicationConfigurer<EventVariantT>;
 
-  VehicleApplication() = default;
-  virtual ~VehicleApplication() = default;
-  VehicleApplication(const VehicleApplication& rhs) = delete;
-  VehicleApplication(VehicleApplication&& rhs) noexcept = delete;
-  VehicleApplication& operator=(const VehicleApplication& rhs) = delete;
-  VehicleApplication& operator=(VehicleApplication&& rhs) noexcept = delete;
+  UserApplication() = default;
+  virtual ~UserApplication() = default;
+  UserApplication(const UserApplication& rhs) = delete;
+  UserApplication(UserApplication&& rhs) noexcept = delete;
+  UserApplication& operator=(const UserApplication& rhs) = delete;
+  UserApplication& operator=(UserApplication&& rhs) noexcept = delete;
 
   auto run() -> void;
   auto setup() -> void;
@@ -82,18 +82,18 @@ private:
 };
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::getVehicle() -> Vehicle* {
+auto UserApplication<EventVariantT>::getVehicle() -> Vehicle* {
   return &vehicle;
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::run() -> void {
+auto UserApplication<EventVariantT>::run() -> void {
   setup();
   loop();
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::setup() -> void {
+auto UserApplication<EventVariantT>::setup() -> void {
   rgb::log::init();
   configureApplication();
 
@@ -105,7 +105,7 @@ auto VehicleApplication<EventVariantT>::setup() -> void {
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::loop() -> void {
+auto UserApplication<EventVariantT>::loop() -> void {
   Clock::NextFrame();
   baseUpdate();
   if (!mSleeping) {
@@ -114,14 +114,14 @@ auto VehicleApplication<EventVariantT>::loop() -> void {
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::initialize() -> void {
+auto UserApplication<EventVariantT>::initialize() -> void {
   SetupLEDs();
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->start(); });
   std::for_each(std::begin(mSensors), std::end(mSensors), [](auto sensor){ sensor->start(); });
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::baseUpdate() -> void {
+auto UserApplication<EventVariantT>::baseUpdate() -> void {
   for (auto& sensor : mSensors) {
     sensor->read();
   }
@@ -131,7 +131,7 @@ auto VehicleApplication<EventVariantT>::baseUpdate() -> void {
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::baseDraw() -> void {
+auto UserApplication<EventVariantT>::baseDraw() -> void {
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->reset(); });
   draw();
   Effects::Draw();
@@ -142,7 +142,7 @@ auto VehicleApplication<EventVariantT>::baseDraw() -> void {
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::configureApplication() -> void {
+auto UserApplication<EventVariantT>::configureApplication() -> void {
   instance = this;
   vehicle.instance = &vehicle;
 
@@ -177,7 +177,7 @@ auto VehicleApplication<EventVariantT>::configureApplication() -> void {
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::publishSystemEvent(const SystemEvent& systemEvent) -> void {
+auto UserApplication<EventVariantT>::publishSystemEvent(const SystemEvent& systemEvent) -> void {
   auto event = std::visit([](auto&& e) {
     return AnyEvent{e};
   }, systemEvent);
@@ -190,7 +190,7 @@ auto VehicleApplication<EventVariantT>::publishSystemEvent(const SystemEvent& sy
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::on(size_t uid, Consumer<const SystemEvent&> action) -> void {
+auto UserApplication<EventVariantT>::on(size_t uid, Consumer<const SystemEvent&> action) -> void {
   mEventMap[uid].push_back([action](auto& anyEvent) {
     if (auto systemEvent = narrow_variant<SystemEvent>(anyEvent)) {
       action(systemEvent.value());
@@ -199,8 +199,8 @@ auto VehicleApplication<EventVariantT>::on(size_t uid, Consumer<const SystemEven
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::PublishEvent(const AnyEvent& event) -> void {
-  auto self = static_cast<VehicleApplication<EventVariantT>*>(Application::instance);
+auto UserApplication<EventVariantT>::PublishEvent(const AnyEvent& event) -> void {
+  auto self = static_cast<UserApplication<EventVariantT>*>(Application::instance);
   auto uid = event.index();
   if (auto it = self->mEventMap.find(uid); it != self->mEventMap.end()) {
     for (auto& handler : it->second) {
@@ -210,12 +210,12 @@ auto VehicleApplication<EventVariantT>::PublishEvent(const AnyEvent& event) -> v
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::isSleeping() -> bool {
+auto UserApplication<EventVariantT>::isSleeping() -> bool {
   return mSleeping;
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::goToSleep(rgb::Duration time) -> void {
+auto UserApplication<EventVariantT>::goToSleep(rgb::Duration time) -> void {
   publishSystemEvent(SleepEvent{{Clock::Now()}, time});
   Timer::SetTimeout(time, [this](){
     goToSleep();
@@ -223,14 +223,14 @@ auto VehicleApplication<EventVariantT>::goToSleep(rgb::Duration time) -> void {
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::goToSleep() -> void {
+auto UserApplication<EventVariantT>::goToSleep() -> void {
   mSleeping = true;
   Effects::StopAll();
   Timer::StopAll();
 }
 
 template<typename EventVariantT>
-auto VehicleApplication<EventVariantT>::wakeUp() -> void {
+auto UserApplication<EventVariantT>::wakeUp() -> void {
   mSleeping = false;
 }
 

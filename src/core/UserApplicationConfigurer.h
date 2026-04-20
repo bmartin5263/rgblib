@@ -17,14 +17,14 @@ namespace rgb {
 class LEDCircuit;
 
 template<typename EventVariantT = SystemEvent>
-struct VehicleApplicationConfigurer {
-  constexpr auto addLEDs(LEDCircuit& circuit) -> VehicleApplicationConfigurer&;
-  constexpr auto addSensor(Sensor& sensor) -> VehicleApplicationConfigurer&;
+struct UserApplicationConfigurer {
+  constexpr auto addLEDs(LEDCircuit& circuit) -> UserApplicationConfigurer&;
+  constexpr auto addSensor(Sensor& sensor) -> UserApplicationConfigurer&;
 
-  constexpr auto useHeartbeatLED() -> VehicleApplicationConfigurer&;
+  constexpr auto useHeartbeatLED() -> UserApplicationConfigurer&;
 
   template<typename T>
-  constexpr auto on(std::function<void(const T&)> action) -> VehicleApplicationConfigurer&;
+  constexpr auto on(std::function<void(const T&)> action) -> UserApplicationConfigurer&;
 
   std::vector<LEDCircuit*> mLeds{};
   std::vector<Sensor*> mSensors{};
@@ -33,26 +33,26 @@ struct VehicleApplicationConfigurer {
 };
 
 template<typename EventVariantT>
-constexpr auto VehicleApplicationConfigurer<EventVariantT>::useHeartbeatLED() -> VehicleApplicationConfigurer& {
+constexpr auto UserApplicationConfigurer<EventVariantT>::useHeartbeatLED() -> UserApplicationConfigurer& {
   mHeartbeat = true;
   return *this;
 }
 
 template<typename EventVariantT>
-constexpr auto VehicleApplicationConfigurer<EventVariantT>::addLEDs(rgb::LEDCircuit& circuit) -> VehicleApplicationConfigurer& {
+constexpr auto UserApplicationConfigurer<EventVariantT>::addLEDs(rgb::LEDCircuit& circuit) -> UserApplicationConfigurer& {
   mLeds.push_back(&circuit);
   return *this;
 }
 
 template<typename EventVariantT>
-constexpr auto VehicleApplicationConfigurer<EventVariantT>::addSensor(Sensor& sensor) -> VehicleApplicationConfigurer& {
+constexpr auto UserApplicationConfigurer<EventVariantT>::addSensor(Sensor& sensor) -> UserApplicationConfigurer& {
   mSensors.push_back(&sensor);
   return *this;
 }
 
 template<typename EventVariantT>
 template<typename T>
-constexpr auto VehicleApplicationConfigurer<EventVariantT>::on(std::function<void(const T&)> action) -> VehicleApplicationConfigurer& {
+constexpr auto UserApplicationConfigurer<EventVariantT>::on(std::function<void(const T&)> action) -> UserApplicationConfigurer& {
   auto index = EventIndex_v<T, EventVariantT>;
   mEventMap[index].push_back([action = std::move(action)](auto& e) {
     action(std::get<T>(e));
