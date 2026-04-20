@@ -15,7 +15,7 @@
 #include "Log.h"
 #include "ContiguousPixelGrid.h"
 #include "RgbwSupport.h"
-#include "PixelRowMatrixColumn.h"
+#include "MatrixStrategy.h"
 
 namespace rgb {
 
