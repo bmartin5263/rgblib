@@ -23,13 +23,13 @@
 
 using namespace rgb;
 
-auto s1 = FastLEDMatrix<8, 8, D2_RGB, RgbwSupport::ENABLE>();
+auto s1 = FastLEDMatrix<8, 8, D2_RGB, RgbwSupport::ENABLE, 3, 2>();
 auto wipeEffect = WipeEffect{};
 
 class OptimizationApplication : public VehicleApplication<> {
 protected:
   auto configure(VehicleApplication::Configurer& app) -> void override {
-    s1.setBrightness(.8f);
+    s1.setBrightness(.1f);
     app.addLEDs(s1);
 
 //    wipeEffect.shader = [](auto color, auto& params){
@@ -53,9 +53,13 @@ protected:
   }
 
   auto draw() -> void override {
-    for (int i = 0; i < 64; ++i) {
-      auto f = i / 64.0f;
-      s1.set(i, Color::HslToRgb(f));
+    for (int row = 0; row < s1.rows(); ++row) {
+      for (int col = 0; col < s1.columns(); ++col) {
+        auto position = s1.columns() * row + col;
+        auto f = position / static_cast<float>(s1.length());
+        INFO("pos = %i", position);
+        s1.set(position, Color::HslToRgb(f));
+      }
     }
   }
 };

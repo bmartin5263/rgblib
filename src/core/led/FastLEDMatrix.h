@@ -15,15 +15,29 @@
 #include "Log.h"
 #include "ContiguousPixelGrid.h"
 #include "RgbwSupport.h"
+#include "PixelRowMatrixColumn.h"
 
 namespace rgb {
 
-template <uint COLUMNS, uint ROWS, uint PIN, RgbwSupport WHITE_SUPPORT=RgbwSupport::DISABLE, bool STAGGER = false>
+template <
+  uint COLUMNS,
+  uint ROWS,
+  uint PIN,
+  RgbwSupport WHITE_SUPPORT = RgbwSupport::DISABLE,
+  uint MULTI_MATRIX_ROWS = 1,
+  uint MULTI_MATRIX_COLS = 1,
+  typename MULTI_MATRIX_STRATEGY = PixelRowMatrixColumn
+>
 class FastLEDMatrix : public ContiguousPixelGrid, public LEDCircuit {
 public:
-  static constexpr auto N = COLUMNS * ROWS;
+  static_assert(MULTI_MATRIX_ROWS > 0, "MULTI_MATRIX_ROWS must be greater than 0");
+  static_assert(MULTI_MATRIX_COLS > 0, "MULTI_MATRIX_COLS must be greater than 0");
 
-  constexpr explicit FastLEDMatrix(u16 offset = 0):
+  static constexpr auto EFFECTIVE_COLUMNS = COLUMNS * MULTI_MATRIX_COLS;
+  static constexpr auto EFFECTIVE_ROWS = ROWS * MULTI_MATRIX_ROWS;
+  static constexpr auto N = EFFECTIVE_COLUMNS * EFFECTIVE_ROWS;
+
+  constexpr explicit FastLEDMatrix(int offset = 0):
     leds{}, pixels{}, offset{offset}, reversed{false}, started{false}
   {
   }
@@ -57,11 +71,11 @@ public:
   }
 
   auto rows() const -> uint override {
-    return ROWS;
+    return EFFECTIVE_ROWS;
   }
 
   auto columns() const -> uint override {
-    return COLUMNS;
+    return EFFECTIVE_COLUMNS;
   }
 
   auto getOffset() const -> int {
@@ -86,18 +100,21 @@ public:
 
   auto display() -> void override {
     if (reversed) {
-      for (u16 i = 0; i < N; ++i) {
+      for (uint i = 0; i < N; ++i) {
         auto pixel = pixels[pixelPositionToLEDPosition(N - 1 - i)] * brightness;
         leds[i] = CRGB(FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b));
       }
     }
     else {
-      for (u16 i = 0; i < N; ++i) {
-        auto pixel = pixels[i];
+      for (uint i = 0; i < N; ++i) {
+        auto pixel = pixels[i] * brightness;
         auto ledPosition = pixelPositionToLEDPosition(i);
-        if constexpr (STAGGER) {
-          ledPosition = zigzagToLinearIndex(ledPosition);
+        if (ledPosition >= N) {
+          break;
         }
+//        if constexpr (STAGGER) {
+//          ledPosition = zigzagToLinearIndex(ledPosition);
+//        }
         leds[ledPosition] = CRGB(FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b));
       }
     }
@@ -128,8 +145,13 @@ public:
     }
   }
 
-  auto pixelPositionToLEDPosition(u16 pixel) -> u16 {
-    return (pixel + offset) % N;
+  auto pixelPositionToLEDPosition(uint pixel) -> uint {
+    const auto rotated = (pixel + offset) % N;
+    const auto logicalRow = rotated / EFFECTIVE_COLUMNS;
+    const auto logicalColumn = rotated % EFFECTIVE_COLUMNS;
+    return MULTI_MATRIX_STRATEGY::indexOf(
+      logicalColumn, logicalRow, COLUMNS, ROWS, MULTI_MATRIX_COLS, MULTI_MATRIX_ROWS
+    );
   }
 
 private:
