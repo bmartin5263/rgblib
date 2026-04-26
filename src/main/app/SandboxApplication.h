@@ -32,7 +32,7 @@ protected:
         return Color::Sequential12(params.wipeCycle - 1);
       }
     };
-    wipeEffect.progression = EffectProgression::ConstantTime(Duration::Seconds(5));
+    wipeEffect.progression = EffectProgression::ConstantTime(Duration::Seconds(3));
     Effects::Start(wipeEffect, grid).detach();
   }
 

@@ -13,6 +13,10 @@
 #define RGB_VEHICLE_TX D12
 #endif
 
+#ifndef RGB_VEHICLE_CORE_ENABLED
+#define RGB_VEHICLE_CORE_ENABLED 1
+#endif
+
 #include "Application.h"
 #include "UserApplicationConfigurer.h"
 #include "Clock.h"
@@ -97,7 +101,9 @@ auto UserApplication<EventVariantT>::setup() -> void {
   rgb::log::init();
   configureApplication();
 
-  xTaskCreatePinnedToCore(vehicleReader, "vehicleReader", RGB_OTHER_CORE_STACK_SIZE, this, RGB_OTHER_CORE_PRIORITY, nullptr, 1);
+#if RGB_VEHICLE_CORE_ENABLED
+  xTaskCreatePinnedToCore(vehicleReader, "vehicleReader", RGB_VEHICLE_CORE_STACK_SIZE, this, RGB_VEHICLE_CORE_PRIORITY, nullptr, 1);
+#endif
 
   initialize();
   publishSystemEvent(WakeEvent{Clock::Now()});
