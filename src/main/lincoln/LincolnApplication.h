@@ -513,7 +513,9 @@ protected:
   }
 
   auto postDraw() -> void override {
-
+    dashFiber1.set(dashFiber1.length() - 1, Color::BLUE());
+    dashFiber2.set(dashFiber1.length() - 1, Color::BLUE());
+    dashFiber3.set(dashFiber1.length() - 1, Color::BLUE());
   }
 };
 

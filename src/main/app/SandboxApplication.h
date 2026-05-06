@@ -2,21 +2,31 @@
 // Created by Brandon on 10/11/25.
 //
 
-#ifndef RGBLIB_OPTIMIZATIONAPPLICATION_H
-#define RGBLIB_OPTIMIZATIONAPPLICATION_H
+#ifndef RGBLIB_SANDBOXAPPLICATION_H
+#define RGBLIB_SANDBOXAPPLICATION_H
 
 #include "UserApplication.h"
 #include "FastLEDMatrix.h"
 #include "WipeEffect.h"
+#include "Every.h"
+#include <Wire.h>
+#include "RTClib.h"
 
 using namespace rgb;
 
 auto grid = FastLEDMatrix<8, 8, D2_RGB, RgbwSupport::ENABLE, 3, 2>();
 auto wipeEffect = WipeEffect{};
+auto rtc = RTC_DS3231{};
+auto lastUpdate = Timestamp{};
 
-class OptimizationApplication : public UserApplication<> {
+class SandboxApplication : public UserApplication<> {
 protected:
   auto configure(UserApplication::Configurer& app) -> void override {
+    Wire.begin();
+    rtc.begin();
+
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+
     grid.setBrightness(.2f);
     app.addLEDs(grid);
     app.useHeartbeatLED();
@@ -37,9 +47,20 @@ protected:
   }
 
   auto update() -> void override {
+
   }
 
   auto draw() -> void override {
+    if (Clock::Now().timeSince(lastUpdate) > Duration::Seconds(1)) {
+      auto now = rtc.now();
+      Serial.print(now.year());  Serial.print('/');
+      Serial.print(now.month()); Serial.print('/');
+      Serial.print(now.day());   Serial.print(" ");
+      Serial.print(now.hour());  Serial.print(':');
+      Serial.print(now.minute());Serial.print(':');
+      Serial.println(now.second());
+      lastUpdate = Clock::Now();
+    }
   }
 
   auto postDraw() -> void override {
@@ -50,4 +71,4 @@ protected:
 };
 
 
-#endif //RGBLIB_OPTIMIZATIONAPPLICATION_H
+#endif //RGBLIB_SANDBOXAPPLICATION_H

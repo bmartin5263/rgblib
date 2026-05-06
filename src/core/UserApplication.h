@@ -240,6 +240,7 @@ auto UserApplication<EventVariantT>::wakeUp() -> void {
   mSleeping = false;
 }
 
+#if RGB_VEHICLE_CORE_ENABLED
 void vehicleReader(void* args) {
   INFO("Vehicle Reader Task Started");
 
@@ -273,6 +274,7 @@ void vehicleReader(void* args) {
     vTaskDelay(pdMS_TO_TICKS(70));
   }
 }
+#endif
 
 }
 

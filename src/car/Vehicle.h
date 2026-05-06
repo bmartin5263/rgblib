@@ -27,7 +27,7 @@ class Vehicle {
 public:
   template<typename T>
   using TypeRemapper = T(*)(int);
-  using mutex = std::recursive_mutex;
+  using recursive_mutex = std::recursive_mutex;
   template<class T>
   using atomic = std::atomic<T>;
 
@@ -53,7 +53,7 @@ public:
 private:
 
   Handle<COBD, OBDDestroyer> obdHandle{{}};
-  mutable mutex mu{};
+  mutable recursive_mutex mu{};
   atomic<revs_per_minute> mRpm{};
   atomic<kph> mSpeed{};
   atomic<fahrenheit> mCoolantTemp{};

@@ -20,6 +20,8 @@
   - For example: When asked "Create logging subsystem" then `/templates/subsystem` will be your starting point for class and file structure
 - `#include "SourceHeader.h"` for headers in this codebase, `#include <VendorHeader.h>` for external and system header files
 - Comments should not state the obvious, or refer to historical fixes.
+- Follow the Rule of 5
+  - Meaning, if any 1 of the 5 compiler generated functions are overridden/defaulted, the rest should be declared
 
 ## Refactoring
 
