@@ -1,7 +1,7 @@
 ## Style
 
 - 2-spaces for indentation
-- `PascalCase` class names, file names, type aliases of class/struct types
+- `PascalCase` class names, file names, type aliases of class/struct types, static methods
 - `camelCase` method names and variable names
 - `snake_case` type aliases of primitive types
 - Split classes into header and implementation files when possible

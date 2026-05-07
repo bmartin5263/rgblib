@@ -5,38 +5,20 @@
 #include "VehicleLogger.h"
 #include "Log.h"
 #include "Clock.h"
-#include <SPI.h>
-
-#ifndef RGB_SPI_SCK
-#define RGB_SPI_SCK A2
-#endif
-
-#ifndef RGB_SPI_MISO
-#define RGB_SPI_MISO A0
-#endif
-
-#ifndef RGB_SPI_MOSI
-#define RGB_SPI_MOSI A1
-#endif
-
-#ifndef RGB_SPI_CS
-#define RGB_SPI_CS A3
-#endif
+#include "RgbSPI.h"
 
 namespace rgb {
 
 auto VehicleLogger::begin() -> bool {
-  auto alreadyStarted = SPI.bus() != nullptr;
-  SPI.begin(RGB_SPI_SCK, RGB_SPI_MISO, RGB_SPI_MOSI, RGB_SPI_CS);
-
-  if (!SD.begin(RGB_SPI_CS)) {
-    ERROR("SD card initialization failed");
-    if (alreadyStarted) {
-      ERROR("SPI was already started");
-    }
+  if (!SPI::Start()) {
+    ERROR("SPI failed to start");
     return false;
   }
 
+  if (!SD.begin(SPI::CSPin().value)) {
+    ERROR("SD card initialization failed");
+    return false;
+  }
 
   auto fileNum = openNextFile();
   if (!fileNum) {

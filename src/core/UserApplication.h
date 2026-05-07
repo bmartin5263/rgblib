@@ -82,7 +82,6 @@ private:
   std::vector<LEDCircuit*> mLeds{};
   std::vector<Sensor*> mSensors{};
   std::unordered_map<uint, std::vector<std::function<void(const AnyEvent&)>>> mEventMap{};
-  bool mSleeping;
 };
 
 template<typename EventVariantT>
@@ -114,9 +113,7 @@ template<typename EventVariantT>
 auto UserApplication<EventVariantT>::loop() -> void {
   Clock::NextFrame();
   baseUpdate();
-  if (!mSleeping) {
-    baseDraw();
-  }
+  baseDraw();
 }
 
 template<typename EventVariantT>
@@ -216,28 +213,11 @@ auto UserApplication<EventVariantT>::PublishEvent(const AnyEvent& event) -> void
 }
 
 template<typename EventVariantT>
-auto UserApplication<EventVariantT>::isSleeping() -> bool {
-  return mSleeping;
-}
-
-template<typename EventVariantT>
 auto UserApplication<EventVariantT>::goToSleep(rgb::Duration time) -> void {
   publishSystemEvent(SleepEvent{{Clock::Now()}, time});
   Timer::SetTimeout(time, [this](){
     goToSleep();
   }).detach();
-}
-
-template<typename EventVariantT>
-auto UserApplication<EventVariantT>::goToSleep() -> void {
-  mSleeping = true;
-  Effects::StopAll();
-  Timer::StopAll();
-}
-
-template<typename EventVariantT>
-auto UserApplication<EventVariantT>::wakeUp() -> void {
-  mSleeping = false;
 }
 
 #if RGB_VEHICLE_CORE_ENABLED
