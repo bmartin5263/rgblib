@@ -23,7 +23,7 @@ template <
   uint COLUMNS,
   uint ROWS,
   uint PIN,
-  RgbwSupport WHITE_SUPPORT = RgbwSupport::DISABLE,
+  RgbwSupport RGBW_SUPPORT = RgbwSupport::DISABLE,
   uint MULTI_MATRIX_ROWS = 1,
   uint MULTI_MATRIX_COLS = 1,
   typename MULTI_MATRIX_STRATEGY = PixelRowMatrixColumn
@@ -47,7 +47,7 @@ public:
       return;
     }
 
-    if constexpr (WHITE_SUPPORT == RgbwSupport::ENABLE) {
+    if constexpr (RGBW_SUPPORT == RgbwSupport::ENABLE) {
       FastLED.addLeds<WS2812B, PIN, GRB>(leds, N).setRgbw();
     }
     else {

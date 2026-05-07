@@ -38,8 +38,6 @@ struct BrightnessLevels {
 class Brightness {
 public:
   static auto GetBrightness(const BrightnessLevels& levels) -> float { return Instance().getBrightness(levels); };
-  static auto GetIlluminationBrightness() -> float { return Instance().getIlluminationBrightness(); };
-  static auto GetIndicatorBrightness() -> float { return Instance().getIndicatorBrightness(); };
   static auto GetLevel() -> BrightnessLevel { return Instance().getLevel(); };
 
   static auto TurnOff() -> void { Instance().turnOff(); };
@@ -55,17 +53,12 @@ private:
   Duration mFadeDelay{Duration::Milliseconds(500)};
   normal mDefaultBrightness{1.0f};
 
-  BrightnessLevels illuminationBrightness{BrightnessLevels::DefaultIlluminationBrightness()};
-  BrightnessLevels indicatorBrightness{BrightnessLevels::DefaultIndicatorBrightness()};
-
   static auto Instance() -> Brightness& {
     static Brightness instance;
     return instance;
   }
 
   auto getBrightness(const BrightnessLevels& levels) const -> float;
-  auto getIlluminationBrightness() const -> float;
-  auto getIndicatorBrightness() const -> float;
   auto turnOff() -> void;
   auto turnOn() -> void;
   auto setLevel(BrightnessLevel level) -> void;

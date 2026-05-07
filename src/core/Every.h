@@ -11,27 +11,14 @@
 
 namespace rgb {
 
-struct Every {
-  Every(Duration duration, Runnable action) :
-    duration(duration), action(action), lastExecution()
-  {}
-
-  auto update() -> void {
-    auto now = Clock::Now();
-    if (Clock::Now().timeSince(lastExecution) >= duration) {
-      action();
-      lastExecution = now;
-    }
+auto every(Duration duration, Timestamp& lastExecutedAt) -> bool {
+  auto now = Clock::Now();
+  if (now.timeSince(lastExecutedAt) >= duration) {
+    lastExecutedAt = now;
+    return true;
   }
-
-  auto reset() -> void {
-    lastExecution = Clock::Now();
-  }
-
-  Duration duration;
-  Runnable action;
-  Timestamp lastExecution;
-};
+  return false;
+}
 
 }
 

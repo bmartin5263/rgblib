@@ -93,34 +93,4 @@ auto Brightness::getLevel() const -> BrightnessLevel {
   return mLevel;
 }
 
-auto Brightness::getIlluminationBrightness() const -> float {
-  switch (mLevel) {
-    case BrightnessLevel::OFF:
-      return 0.0f;
-    case BrightnessLevel::DIM:
-      return illuminationBrightness.dim;
-    case BrightnessLevel::MEDIUM:
-      return illuminationBrightness.medium;
-    case BrightnessLevel::BRIGHT:
-      return illuminationBrightness.bright;
-    case BrightnessLevel::MAX:
-      return illuminationBrightness.max;
-  }
-}
-
-auto Brightness::getIndicatorBrightness() const -> float {
-  switch (mLevel) {
-    case BrightnessLevel::OFF:
-      return 0.0f;
-    case BrightnessLevel::DIM:
-      return indicatorBrightness.dim;
-    case BrightnessLevel::MEDIUM:
-      return indicatorBrightness.medium;
-    case BrightnessLevel::BRIGHT:
-      return indicatorBrightness.bright;
-    case BrightnessLevel::MAX:
-      return indicatorBrightness.max;
-  }
-}
-
 }

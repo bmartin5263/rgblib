@@ -10,22 +10,19 @@
 #include "WipeEffect.h"
 #include "Every.h"
 #include "RgbIIC.h"
-#include "RTClib.h"
+#include "RTC.h"
 
 using namespace rgb;
 
 auto grid = FastLEDMatrix<8, 8, D2_RGB, RgbwSupport::ENABLE, 3, 2>();
 auto wipeEffect = WipeEffect{};
-auto rtc = RTC_DS3231{};
 auto lastUpdate = Timestamp{};
 
 class SandboxApplication : public UserApplication<> {
 protected:
   auto configure(UserApplication::Configurer& app) -> void override {
-    IIC::Start();
-
-    rtc.begin();
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    RTC::Start();
+    RTC::Adjust(DateTime(F(__DATE__), F(__TIME__)));
 
     grid.setBrightness(.2f);
     app.addLEDs(grid);
@@ -51,15 +48,14 @@ protected:
   }
 
   auto draw() -> void override {
-    if (Clock::Now().timeSince(lastUpdate) > Duration::Seconds(1)) {
-      auto now = rtc.now();
-      Serial.print(now.year());  Serial.print('/');
-      Serial.print(now.month()); Serial.print('/');
-      Serial.print(now.day());   Serial.print(" ");
-      Serial.print(now.hour());  Serial.print(':');
-      Serial.print(now.minute());Serial.print(':');
-      Serial.println(now.second());
-      lastUpdate = Clock::Now();
+    if (every(Duration::Seconds(1), lastUpdate)) {
+      auto rtcNow = RTC::Now();
+      Serial.print(rtcNow.year());  Serial.print('/');
+      Serial.print(rtcNow.month()); Serial.print('/');
+      Serial.print(rtcNow.day());   Serial.print(" ");
+      Serial.print(rtcNow.hour());  Serial.print(':');
+      Serial.print(rtcNow.minute());Serial.print(':');
+      Serial.println(rtcNow.second());
     }
   }
 

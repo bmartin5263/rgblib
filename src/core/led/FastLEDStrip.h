@@ -21,7 +21,7 @@ namespace rgb {
  * Represents a physical LED Strip, also functions as a PixelList with a 1:1 mapping
  * between pixel and LED
  */
-template <u16 N, uint PIN, RgbwSupport WHITE_SUPPORT=RgbwSupport::DISABLE>
+template <u16 N, uint PIN, RgbwSupport RGBW_SUPPORT=RgbwSupport::DISABLE>
 class FastLEDStrip : public ContiguousPixelList, public LEDCircuit {
 public:
   constexpr explicit FastLEDStrip(
@@ -36,7 +36,7 @@ public:
       return;
     }
 
-    if constexpr (WHITE_SUPPORT == RgbwSupport::ENABLE) {
+    if constexpr (RGBW_SUPPORT == RgbwSupport::ENABLE) {
       FastLED.addLeds<WS2812B, PIN, GRB>(leds, N).setRgbw();
     }
     else {
