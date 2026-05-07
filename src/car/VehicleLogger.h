@@ -28,8 +28,6 @@ public:
   static constexpr auto BUFFER_CAPACITY = SECONDS_BETWEEN_FLUSHES * UPDATES_PER_SECOND;
   static constexpr auto FLUSH_INTERVAL = Duration::Seconds(SECONDS_BETWEEN_FLUSHES);
 
-  explicit VehicleLogger(PinNumber csPin) : mCsPin(csPin) {}
-
   auto begin() -> bool;
   auto record(const VehicleData& data) -> void;
   auto flush() -> void;
@@ -39,7 +37,6 @@ private:
   auto openNextFile() -> uint;
   auto shouldFlush() const -> bool;
 
-  PinNumber mCsPin;
   std::array<VehicleLogEntry, BUFFER_CAPACITY> mBuffer{};
   size_t mCount{0};
   Timestamp mLastFlush{};

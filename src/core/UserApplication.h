@@ -246,7 +246,7 @@ void vehicleReader(void* args) {
 
   auto app = static_cast<Application*>(args);
   auto vehicle = app->getVehicle();
-  auto logger = VehicleLogger{PinNumber{A3}};
+  auto logger = VehicleLogger{};
   auto logging = logger.begin();
 
   vehicle->connect(PinNumber{RGB_VEHICLE_RX}, PinNumber{RGB_VEHICLE_TX});
