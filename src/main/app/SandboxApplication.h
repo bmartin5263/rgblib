@@ -9,7 +9,7 @@
 #include "FastLEDMatrix.h"
 #include "WipeEffect.h"
 #include "Every.h"
-#include <Wire.h>
+#include "RgbIIC.h"
 #include "RTClib.h"
 
 using namespace rgb;
@@ -22,9 +22,9 @@ auto lastUpdate = Timestamp{};
 class SandboxApplication : public UserApplication<> {
 protected:
   auto configure(UserApplication::Configurer& app) -> void override {
-    Wire.begin();
-    rtc.begin();
+    IIC::Start();
 
+    rtc.begin();
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 
     grid.setBrightness(.2f);
