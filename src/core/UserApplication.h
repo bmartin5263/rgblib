@@ -17,6 +17,10 @@
 #define RGB_VEHICLE_CORE_ENABLED 1
 #endif
 
+#ifndef RGB_OTA
+#define RGB_OTA 0
+#endif
+
 #include "Application.h"
 #include "UserApplicationConfigurer.h"
 #include "Clock.h"
@@ -28,6 +32,11 @@
 #include "Debug.h"
 #include "VehicleLogger.h"
 #include <mutex>
+
+#if RGB_OTA
+#include "Wireless.h"
+#include "OTASupport.h"
+#endif
 
 namespace rgb {
 
@@ -107,6 +116,12 @@ auto UserApplication<EventVariantT>::setup() -> void {
   rgb::log::init();
   configureApplication();
 
+#if RGB_OTA
+  Wifi::SetMode(WIFI_STA);
+  Wifi::Start();
+  OTASupport::Start();
+#endif
+
 #if RGB_VEHICLE_CORE_ENABLED
   xTaskCreatePinnedToCore(vehicleReader, "vehicleReader", RGB_VEHICLE_CORE_STACK_SIZE, this, RGB_VEHICLE_CORE_PRIORITY, nullptr, 1);
 #endif
@@ -137,6 +152,10 @@ auto UserApplication<EventVariantT>::baseUpdate() -> void {
   for (auto& sensor : mSensors) {
     sensor->read();
   }
+#if RGB_OTA
+  Wifi::Update();
+  OTASupport::Update();
+#endif
   Timer::ProcessTimers();
   Effects::Update();
   update();
