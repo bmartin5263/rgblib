@@ -9,7 +9,11 @@
 
 namespace rgb {
 
-auto VehicleLogger::begin() -> bool {
+auto VehicleLogger::start() -> bool {
+  if (started) {
+    return true;
+  }
+
   if (!SPI::Start()) {
     ERROR("SPI failed to start");
     return false;
@@ -28,7 +32,13 @@ auto VehicleLogger::begin() -> bool {
 
   INFO("SD card vehicle logging initialized with file index '%u'", fileNum);
   mLastFlush = Clock::Now();
+  started = true;
+
   return true;
+}
+
+auto VehicleLogger::isStarted() -> bool {
+  return started;
 }
 
 auto VehicleLogger::record(const VehicleData& data) -> void {
@@ -68,11 +78,12 @@ auto VehicleLogger::flush() -> void {
   mLastFlush = Clock::Now();
 }
 
-auto VehicleLogger::end() -> void {
+auto VehicleLogger::stop() -> void {
   flush();
   if (mFile) {
     mFile.close();
   }
+  started = false;
 }
 
 auto VehicleLogger::shouldFlush() const -> bool {

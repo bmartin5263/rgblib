@@ -36,6 +36,7 @@ public:
   rgb::Color greenColor{rgb::Color::GREEN()};
   rgb::Color yellowColor{rgb::Color::YELLOW()};
   rgb::Color redColor{rgb::Color::RED()};
+  rgb::flag redAchievedAt{};
   rgb::fahrenheit minCoolantLevel{70.f};
   rgb::fahrenheit maxCoolantLevel{150.f};
   const RpmLayout* layout{RpmLayout::TRADITIONAL()};

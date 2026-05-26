@@ -86,7 +86,7 @@ auto LincolnTownCar::transitionToStopped() -> void {
 
 auto LincolnTownCar::transitionToMoving() -> void {
   TRACE("mState = MOVING");
-  LincolnApp::PublishEvent(rgb::CarMoving{{Clock::Now()}, mRpm});
+  LincolnApp::PublishEvent(rgb::CarMoving{{Clock::Now()}});
   mState = &MOVING_STATE;
   mStoppedAt = Clock::Now();
 }

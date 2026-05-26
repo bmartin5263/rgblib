@@ -28,10 +28,11 @@ public:
   static constexpr auto BUFFER_CAPACITY = SECONDS_BETWEEN_FLUSHES * UPDATES_PER_SECOND;
   static constexpr auto FLUSH_INTERVAL = Duration::Seconds(SECONDS_BETWEEN_FLUSHES);
 
-  auto begin() -> bool;
+  auto start() -> bool;
+  auto isStarted() -> bool;
   auto record(const VehicleData& data) -> void;
   auto flush() -> void;
-  auto end() -> void;
+  auto stop() -> void;
 
 private:
   auto openNextFile() -> uint;
@@ -41,6 +42,7 @@ private:
   size_t mCount{0};
   Timestamp mLastFlush{};
   File mFile{};
+  bool started{};
 };
 
 }

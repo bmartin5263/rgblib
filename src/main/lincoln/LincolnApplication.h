@@ -34,38 +34,44 @@ constexpr auto FIBER_PURPLE = Color {0.3f, 0.f, 1.0f};
 
 // LED Counts
 static constexpr u16 FOOT_STRIP_LED_COUNT = 40;
-static constexpr u16 FIBER_STRIP_LED_COUNT = 150;
-static constexpr u16 FULL_DASH_FIBER_LENGTH = FIBER_STRIP_LED_COUNT * 3;
+static constexpr u16 FIBER_STRIP1_LED_COUNT = 147;
+static constexpr u16 FIBER_STRIP2_LED_COUNT = 147;
+static constexpr u16 FIBER_STRIP3_LED_COUNT = 120;
+static constexpr u16 LONGEST_STRIP_LENGTH = Max(FIBER_STRIP1_LED_COUNT, FIBER_STRIP2_LED_COUNT, FIBER_STRIP3_LED_COUNT);
 static constexpr u16 HALF_FOOT_STRIP_LED_COUNT = FOOT_STRIP_LED_COUNT / 2;
+static constexpr u16 RAINBOW_WHITE_LENGTH = 5;
 
 // LEDs
 auto ring = FastLEDStrip<12, D2_RGB, RgbwSupport::ENABLE>();
 auto leftFoot = FastLEDStrip<FOOT_STRIP_LED_COUNT, D4_RGB>();
 auto rightFoot = FastLEDStrip<FOOT_STRIP_LED_COUNT, D5_RGB>();
-auto dashFiber1 = FastLEDStrip<FIBER_STRIP_LED_COUNT, D6_RGB>();
-auto dashFiber2 = FastLEDStrip<FIBER_STRIP_LED_COUNT, D7_RGB>();
-auto dashFiber3 = FastLEDStrip<FIBER_STRIP_LED_COUNT, D8_RGB>();
-auto grid = FastLEDMatrix<1, 1, 11>();
+auto dashFiber1 = FastLEDStrip<FIBER_STRIP1_LED_COUNT, D6_RGB>();
+auto dashFiber2 = FastLEDStrip<FIBER_STRIP2_LED_COUNT, D7_RGB>();
+auto dashFiber3 = FastLEDStrip<FIBER_STRIP3_LED_COUNT, D8_RGB>();
 
 // "Dead" Segments
 auto deadHalfRing = DeadPixelList{ring.length() / 2};
-auto deadFiberLength = DeadPixelList(dashFiber1.length());
+auto deadFiberLength1 = DeadPixelList(FIBER_STRIP1_LED_COUNT);
+auto deadFiberLength2 = DeadPixelList(FIBER_STRIP1_LED_COUNT + 27);
 
 // Segments
 auto ringReverse = ReversePixelList{ring};
 auto introRing = PixelStitch{ring, deadHalfRing};
 auto introRingReverse = ReversePixelList{introRing};
-auto heartBeatFiber = PixelStitch{dashFiber1, deadFiberLength};
 auto dashFiber3Reverse = ReversePixelList(dashFiber3);
+auto heartBeatFiber1 = PixelStitch{dashFiber1, deadFiberLength1};
+auto heartBeatFiber2 = PixelStitch{dashFiber2, deadFiberLength1};
+auto heartBeatFiber3 = PixelStitch{dashFiber3Reverse, deadFiberLength2};
 
 auto dashFiber12 = PixelStitch{dashFiber1, dashFiber2};
 auto dashFiberFull = PixelStitch{dashFiber12, dashFiber3Reverse};
 
 // Groups
 auto footFiberGroup = std::array<PixelList*, 5> { &leftFoot, &rightFoot, &dashFiber1, &dashFiber2, &dashFiber3Reverse };
+auto heartbeatFiberGroup = std::array<PixelList*, 3> { &heartBeatFiber1, &heartBeatFiber2, &heartBeatFiber3 };
 
 // Sensors
-auto irRemote = IRReceiver{PinNumber{A4}};
+auto irRemote = IRReceiver{PinNumber{A7}};
 
 // Effects
 
@@ -98,8 +104,6 @@ auto dashFiberSleepLevel = 0;
 auto holdMode = false;
 auto rainbowMode = false;
 auto rpmGaugeHandle = EffectHandle{};
-
-auto ringDebugColor = Color::OFF();
 
 struct ColorPalette {
   Color idleDashColor;
@@ -174,7 +178,7 @@ auto colorPalettes = FadingCarousel{Carousel{std::array{
     .idleFootColor = Color::RED(),
     .idleRingColor = Color::RED(),
     .lowRpmDashColor = FIBER_PURPLE, .highRpmDashColor = Color::RED(),
-    .lowRpmFootColor = Color::GREEN(), .highRpmFootColor = Color::RED(),
+    .lowRpmFootColor = Color(0.0f, 0.5f, 1.0f), .highRpmFootColor = Color::RED(),
   },
   ColorPalette {
     .idleDashColor = FIBER_PURPLE,
@@ -185,17 +189,17 @@ auto colorPalettes = FadingCarousel{Carousel{std::array{
   },
   ColorPalette {
     .idleDashColor = Color::BLUE(),
-    .idleFootColor = Color::RED(),
-    .idleRingColor = Color::RED(),
-    .lowRpmDashColor = Color::CYAN(), .highRpmDashColor = Color::BLUE(),
-    .lowRpmFootColor = Color::PINK(), .highRpmFootColor = Color::BLUE(),
+    .idleFootColor = Color::BLUE(),
+    .idleRingColor = Color::BLUE(),
+    .lowRpmDashColor = Color(1.0f, 0.0f, 0.4f), .highRpmDashColor = Color::RED(),
+    .lowRpmFootColor = Color::ORANGE(), .highRpmFootColor = Color::RED(),
   },
   ColorPalette {
-    .idleDashColor = Color::BLUE(),
+    .idleDashColor = Color::RED(),
     .idleFootColor = Color::BLUE(),
-    .idleRingColor = Color::RED(),
-    .lowRpmDashColor = Color::ORANGE(), .highRpmDashColor = Color::ORANGE(),
-    .lowRpmFootColor = Color::PURPLE(), .highRpmFootColor = Color::RED(),
+    .idleRingColor = Color::BLUE(),
+    .lowRpmDashColor = Color::CYAN(), .highRpmDashColor = Color::BLUE(),
+    .lowRpmFootColor = Color::PINK(), .highRpmFootColor = Color::BLUE(),
   }
 }}};
 
@@ -204,20 +208,20 @@ auto levelUpFn = [](int& footLevel, int& dashFiberLevel){
     ++footLevel;
   }
   ++dashFiberLevel;
-  if (dashFiberLevel < dashFiber1.length()) {
+  if (dashFiberLevel < LONGEST_STRIP_LENGTH) {
     ++dashFiberLevel;
   }
-  return footLevel < leftFoot.length() || dashFiberLevel < dashFiber1.length();
+  return footLevel < leftFoot.length() || dashFiberLevel < LONGEST_STRIP_LENGTH;
 };
 auto levelUpFn2 = [](int& footLevel, int& dashFiberLevel){
   if (footLevel < leftFoot.length()) {
     ++footLevel;
   }
   ++dashFiberLevel;
-  if (dashFiberLevel < FULL_DASH_FIBER_LENGTH) {
+  if (dashFiberLevel < dashFiberFull.length()) {
     ++dashFiberLevel;
   }
-  return footLevel < leftFoot.length() || dashFiberLevel < FULL_DASH_FIBER_LENGTH;
+  return footLevel < leftFoot.length() + RAINBOW_WHITE_LENGTH || dashFiberLevel < dashFiberFull.length() + RAINBOW_WHITE_LENGTH;
 };
 auto levelDownFn = [](int& footLevel, int& dashFiberLevel){
   if (footLevel > 0) {
@@ -242,7 +246,7 @@ private:
     Timer::SetTimeout(Duration::Seconds(3), [](){
       INFO("Finished Intro Sequence");
       Effects::Stop(introWipe);
-      Effects::Start(fiberChase, heartBeatFiber).detach();
+      Effects::Start(fiberChase, heartbeatFiberGroup).detach();
 
       auto ringChaseShader = [](auto color, auto& params) {
         auto palette = colorPalettes.get();
@@ -265,7 +269,6 @@ protected:
     app.addLEDs(dashFiber1);
     app.addLEDs(dashFiber2);
     app.addLEDs(dashFiber3);
-    app.addLEDs(grid);
     app.addSensor(irRemote);
 
     ringChase1.buildup = true;
@@ -324,28 +327,6 @@ protected:
       if (!rpmGaugeHandle.isRunning()) {
         rpmGaugeHandle = Effects::Start(rpmGauge, ring);
       }
-
-      TRACE("Detected Car Moving!!");
-
-      if (event.rpm < LincolnTownCar::STARTING_RPM + 500) {
-        ringDebugColor = Color::RED();
-      }
-      else if (event.rpm < LincolnTownCar::STARTING_RPM + 700) {
-        ringDebugColor = Color::ORANGE();
-      }
-      else if (event.rpm < LincolnTownCar::STARTING_RPM + 900) {
-        ringDebugColor = Color::YELLOW();
-      }
-      else if (event.rpm < LincolnTownCar::STARTING_RPM + 1100) {
-        ringDebugColor = Color::GREEN();
-      }
-      else if (event.rpm < LincolnTownCar::STARTING_RPM + 1300) {
-        ringDebugColor = Color::BLUE();
-      }
-      else {
-        ringDebugColor = Color::MAGENTA();
-      }
-
       footTimerHandle = Timer::ContinuouslyWhile([](){ return levelUpFn(footLevel, dashFiberLevel); });
     });
     app.on<CarStopped>([](auto& event){
@@ -355,7 +336,6 @@ protected:
       Effects::Start(ringChase1, ring).detach();
       Effects::Start(ringChase2, ringReverse).detach();
       rpmGaugeHandle.stop();
-      ringDebugColor = Color::OFF();
       footTimerHandle = Timer::ContinuouslyWhile([](){ return levelDownFn(footLevel, dashFiberLevel); });
     });
     app.on<RainbowModeEntered>([](auto& event) {
@@ -364,7 +344,9 @@ protected:
     });
     app.on<RainbowModeExited>([](auto& event) {
       rpmGauge.stopRainbow();
-      footRainbowTimerHandle = Timer::ContinuouslyWhile([](){ return levelDownFn(footRainbowLevel, dashFiberRainbowLevel); });
+      footRainbowTimerHandle.cancel();
+      footRainbowLevel = 0;
+      dashFiberRainbowLevel = 0;
     });
 
 
@@ -390,7 +372,7 @@ protected:
           TRACE("Button 0 pressed");
           holdMode = !holdMode;
           if (holdMode && LincolnTownCar::Instance().isStopped()) {
-            LincolnApplication::PublishEvent(CarMoving{{Clock::Now()}, 0});
+            LincolnApplication::PublishEvent(CarMoving{{Clock::Now()}});
           }
           else if (!holdMode && LincolnTownCar::Instance().isStopped()) {
             LincolnApplication::PublishEvent(CarStopped{{Clock::Now()}});
@@ -400,7 +382,7 @@ protected:
           TRACE("Button 9 pressed");
           rainbowMode = !rainbowMode;
           if (rainbowMode) {
-            dashFiberRainbowLevel = FULL_DASH_FIBER_LENGTH;
+            dashFiberRainbowLevel = dashFiberFull.length() + RAINBOW_WHITE_LENGTH;
             footRainbowLevel = FOOT_STRIP_LED_COUNT;
           }
           else {
@@ -470,52 +452,45 @@ protected:
     dashFiber2.fill(fiberRpmColor * fiberBrightness, dashFiberLevel);
     dashFiber3Reverse.fill(fiberRpmColor * fiberBrightness, dashFiberLevel);
 
+    auto now = Clock::Now();
+
     if (townCar.inRainbowMode() || rainbowMode) {
       auto footLedCount = leftFoot.length();
 
-      for (u16 level = 0; level < footLedCount && level < footLevel && level < footRainbowLevel; ++level) {
-        auto ratio = static_cast<float>(level) / static_cast<float>(footLedCount);
-        auto rainbowFootColor = Color::HslToRgb(ratio);
+      for (u16 index = 0; index < footLedCount && index < footLevel && index < footRainbowLevel; ++index) {
+        auto ratio = static_cast<float>(index) / static_cast<float>(footLedCount);
+        auto offset = now.percentOf(Duration::Seconds(2));
+        auto hue = ratio + offset;
+        if (hue > 1.0f) {
+          hue = hue - floorf(hue);
+        }
+        auto rainbowFootColor = Color::HslToRgb(hue);
 
-        auto offset = Clock::Now().value / Duration::Milliseconds(50).value;
-        auto index = (level + offset) % footLedCount;
         leftFoot.set(index, rainbowFootColor);
         rightFoot.set(index, rainbowFootColor);
-        if (footRainbowLevel <= leftFoot.length()) {
-          for (int i = 1; i <= 3 && static_cast<int>(footRainbowLevel) - i >= 0; ++i) {
-            leftFoot.set(footRainbowLevel - i, Color::FAKE_WHITE());
-            rightFoot.set(footRainbowLevel - i, Color::FAKE_WHITE());
-          }
-        }
       }
 
-      auto dashFiberLedCount = FULL_DASH_FIBER_LENGTH;
-      for (u16 level = 0; level < dashFiberLedCount && level < dashFiberRainbowLevel; ++level) {
-        auto ratio = static_cast<float>(level) / static_cast<float>(dashFiberLedCount);
-        auto rainbowDashColor = Color::HslToRgb(ratio);
 
-        auto offset = Clock::Now().value / Duration::Milliseconds(10).value;
-        auto index = (level + offset) % dashFiberLedCount;
-//        dashFiber1.set(index, rainbowDashColor);
-//        dashFiber2.set(index, rainbowDashColor);
-//        dashFiber3Reverse.set(index, rainbowDashColor);
-        dashFiberFull.set(index, rainbowDashColor);
-        if (dashFiberRainbowLevel <= FULL_DASH_FIBER_LENGTH) {
-          for (int i = 1; i <= 3 && static_cast<int>(dashFiberRainbowLevel) - i >= 0; ++i) {
-//            dashFiber1.set(dashFiberRainbowLevel - i, Color::WHITE());
-//            dashFiber2.set(dashFiberRainbowLevel - i, Color::WHITE());
-//            dashFiber3Reverse.set(dashFiberRainbowLevel - i, Color::WHITE());
-            dashFiberFull.set(dashFiberRainbowLevel - i, Color::WHITE());
+      for (int i = 0; i < dashFiberFull.length() && i < dashFiberRainbowLevel; ++i) {
+        if (i < dashFiberRainbowLevel - RAINBOW_WHITE_LENGTH) {
+          auto ratio = static_cast<float>(i) / static_cast<float>(dashFiberFull.length());
+          auto offset = now.percentOf(Duration::Seconds(2));
+          auto hue = ratio + offset;
+          if (hue > 1.0f) {
+            hue = hue - floorf(hue);
           }
+          auto rainbowDashColor = Color::HslToRgb(hue);
+          dashFiberFull.set(i, rainbowDashColor);
+        }
+        else {
+          dashFiberFull.set(i, Color::WHITE());
         }
       }
     }
   }
 
   auto postDraw() -> void override {
-    dashFiber1.set(dashFiber1.length() - 1, Color::BLUE());
-    dashFiber2.set(dashFiber1.length() - 1, Color::BLUE());
-    dashFiber3.set(dashFiber1.length() - 1, Color::BLUE());
+
   }
 };
 

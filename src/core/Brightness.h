@@ -23,16 +23,6 @@ struct BrightnessLevels {
   float medium{-1.0f};
   float bright{-1.0f};
   float max{-1.0f};
-
-  static constexpr auto DefaultIndicatorBrightness() -> BrightnessLevels {
-    using rgb::ByteToFloat;
-    return { .dim = ByteToFloat(1), .medium = ByteToFloat(6), .bright = ByteToFloat(20), .max = ByteToFloat(40) };
-  }
-
-  static constexpr auto DefaultIlluminationBrightness() -> BrightnessLevels {
-    using rgb::ByteToFloat;
-    return { .dim = .4f, .medium = .6f, .bright = .8f, .max = 1.0f };
-  }
 };
 
 class Brightness {

@@ -46,7 +46,6 @@ struct IRButtonPressed : public BaseEvent {
 };
 
 struct CarMoving : public BaseEvent {
-  revs_per_minute rpm{};
 };
 
 struct CarStopped : public BaseEvent {};

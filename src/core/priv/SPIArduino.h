@@ -15,7 +15,7 @@
 #endif
 
 #ifndef RGB_SPI_MISO
-#define RGB_SPI_MISO A0
+#define RGB_SPI_MISO A3
 #endif
 
 #ifndef RGB_SPI_MOSI
@@ -23,7 +23,7 @@
 #endif
 
 #ifndef RGB_SPI_CS
-#define RGB_SPI_CS A3
+#define RGB_SPI_CS A0
 #endif
 
 namespace rgb::priv {

@@ -188,7 +188,7 @@ public:
   // initialize MEMS sensor
   bool memsInit();
   // read out MEMS data (acc for accelerometer, gyr for gyroscope, temp in 0.1 celcius degree)
-  bool memsRead(int16_t* acc, int16_t* gyr = 0, int16_t* mag = 0, int16_t* temp = 0);
+  bool memsRead(int16_t* acc, int16_t* gyr = nullptr, int16_t* mag = nullptr, int16_t* temp = nullptr);
   // send query for specified PID
   void sendQuery(byte pid);
   // retrive and parse the response of specifie PID

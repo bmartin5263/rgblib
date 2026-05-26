@@ -11,6 +11,7 @@
 namespace rgb {
 
 class Vehicle;
+class VehicleLogger;
 class Application {
 public:
   static Application* instance;
@@ -31,6 +32,7 @@ public:
 
   virtual auto on(size_t uid, Consumer<const SystemEvent&> action) -> void = 0;
   virtual auto getVehicle() -> Vehicle* = 0;
+  virtual auto getVehicleLogger() -> VehicleLogger* = 0;
 };
 
 }

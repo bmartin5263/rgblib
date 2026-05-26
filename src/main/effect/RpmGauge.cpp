@@ -28,22 +28,7 @@ auto RpmGauge::reset(rgb::Timestamp now) -> void {
 
 
 auto RpmGauge::update(Timestamp now) -> void {
-  auto& vehicle = LincolnTownCar::Instance();
-  auto calcs = RpmGaugeCalculations();
-  calcs.now = Clock::Now();
-  calcs.coolantPercent = PercentBetween(getCoolantTemp(vehicle), minCoolantLevel, maxCoolantLevel);
-  calcs.effectiveYellowLineStart = static_cast<u16>(static_cast<float>(yellowLineStart) * LerpClamp(.6f, 1.0f, calcs.coolantPercent));
-  calcs.effectiveRedLineStart = static_cast<u16>(static_cast<float>(redLineStart) * LerpClamp(.8f, 1.0f, calcs.coolantPercent));
-  calcs.effectiveDimBrightness = Brightness::GetBrightness({
-    .dim = rgb::ByteToFloat(1),
-    .medium = rgb::ByteToFloat(1),
-    .bright = rgb::ByteToFloat(4)
-  });
-  calcs.effectiveBrightBrightness = Brightness::GetBrightness({
-    .dim = rgb::ByteToFloat(6),
-    .medium = rgb::ByteToFloat(6),
-    .bright = rgb::ByteToFloat(40)
-  });
+
 }
 
 auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
@@ -54,16 +39,13 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
   calcs.effectiveYellowLineStart = static_cast<u16>(static_cast<float>(yellowLineStart) * LerpClamp(.6f, 1.0f, calcs.coolantPercent));
   calcs.effectiveRedLineStart = static_cast<u16>(static_cast<float>(redLineStart) * LerpClamp(.8f, 1.0f, calcs.coolantPercent));
   calcs.effectiveDimBrightness = Brightness::GetBrightness({
-    .dim = rgb::ByteToFloat(0),
     .medium = rgb::ByteToFloat(1),
     .bright = rgb::ByteToFloat(4)
   });
   calcs.effectiveBrightBrightness = Brightness::GetBrightness({
-    .dim = rgb::ByteToFloat(6),
-    .medium = rgb::ByteToFloat(6),
+    .medium = rgb::ByteToFloat(7),
     .bright = rgb::ByteToFloat(40)
   });
-
 
   auto ledCount = pixels.length();
   auto levelCount = shape == RpmShape::LINE ? ledCount : layout->calculateLevels(ledCount);
@@ -78,6 +60,14 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
     ++calcs.rpmLevelAchieved;
   }
   calcs.glow = calcs.rpmLevelAchieved > calcs.yellowLevel;
+  if (calcs.rpmLevelAchieved > calcs.redLevel) {
+    if (!redAchievedAt) {
+      redAchievedAt = now;
+    }
+  }
+  else {
+    redAchievedAt.reset();
+  }
 
   TRACE("rpmPerLevel=%i, yellowLevel=%i, redLevel=%i, achieved=%i, glow=%i", calcs.rpmPerLevel, calcs.yellowLevel, calcs.redLevel, calcs.rpmLevelAchieved, calcs.glow);
 
@@ -86,7 +76,7 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
   auto time = now.percentOf(BUILD_UP_TIME);
   auto activeLevel = static_cast<int>(static_cast<float>(levelCount) * time);
 
-  if (rainbow) {
+  if (rainbow && now.timeSince(redAchievedAt.value_or(now)) > Duration::Milliseconds(100)) {
     auto t = Clock::Now().percentOfWrapped(RAINBOW_SPEED);
     auto color = Color::HslToRgb(t) * calcs.effectiveBrightBrightness * 1.5f;
     pixels.fill(color, levelCount);

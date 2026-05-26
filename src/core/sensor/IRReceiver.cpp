@@ -8,7 +8,6 @@
 #undef LOCAL_DEBUG
 #undef DEBUG
 #undef TRACE
-#define SEND_PWM_BY_TIMER       // the best and default method for ESP32 etc.
 #include <IRremote.hpp>
 #include "Application.h"
 #include "Clock.h"

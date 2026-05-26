@@ -34,7 +34,7 @@ auto MovingState::update(LincolnTownCar& vehicle) -> void {
   else if (
     vehicle.mRainbowMode
     && Clock::Now() >= vehicle.mRainbowMode.value() + LincolnTownCar::RAINBOW_DURATION
-    && vehicle.mThrottleWhenRainbowStart - vehicle.mThrottle > .1f
+    && (vehicle.mThrottleWhenRainbowStart < .1f || vehicle.mThrottleWhenRainbowStart - vehicle.mThrottle > .1f)
   ) {
     vehicle.exitRainbowMode();
   }

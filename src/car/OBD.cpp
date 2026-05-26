@@ -374,6 +374,10 @@ void COBD::recover()
 
 bool COBD::init(OBD_PROTOCOLS protocol)
 {
+  // ATZ  - initialize adapter, clearing previous settings
+  // ATE0 - echo off
+  // ATH0 - headers off
+
   const char *initcmd[] = {"ATZ\r", "ATE0\r", "ATH0\r"};
   char buffer[64];
 
@@ -385,6 +389,7 @@ bool COBD::init(OBD_PROTOCOLS protocol)
     }
   }
   if (protocol != PROTO_AUTO) {
+    // ATSP - Auto-detect protocol
     sprintf_P(buffer, PSTR("ATSP %u\r"), protocol);
     write(buffer);
     if (receive(buffer, sizeof(buffer), OBD_TIMEOUT_LONG) == 0 && !strstr(buffer, "OK")) {

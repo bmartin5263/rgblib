@@ -223,6 +223,13 @@ constexpr auto RunningAverage(T& value, T next, float smoothingFactor) -> void {
   value = static_cast<T>(smoothingFactor * static_cast<float>(next) + (1 - smoothingFactor) * static_cast<float>(value));
 }
 
+template<typename... Ts>
+constexpr auto Max(Ts... args) {
+  unsigned result = 0;
+  ((result = args > result ? args : result), ...);
+  return result;
+}
+
 }
 
 #endif //RGBLIB_UTIL_H

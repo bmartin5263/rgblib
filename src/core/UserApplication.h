@@ -58,6 +58,7 @@ public:
   auto publishSystemEvent(const SystemEvent& event) -> void override;
   auto on(size_t uid, Consumer<const SystemEvent&> action) -> void override;
   auto getVehicle() -> Vehicle* override;
+  auto getVehicleLogger() -> VehicleLogger* override;
   auto isSleeping() -> bool;
   auto goToSleep(Duration time) -> void;
   auto goToSleep() -> void;
@@ -66,6 +67,7 @@ public:
   static auto PublishEvent(const AnyEvent& event) -> void;
 
   Vehicle vehicle{};
+  VehicleLogger vehicleLogger{};
 
 protected:
   virtual auto configure(Configurer& app) -> void = 0;
@@ -87,6 +89,11 @@ private:
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::getVehicle() -> Vehicle* {
   return &vehicle;
+
+}
+template<typename EventVariantT>
+auto UserApplication<EventVariantT>::getVehicleLogger() -> VehicleLogger* {
+  return &vehicleLogger;
 }
 
 template<typename EventVariantT>
@@ -121,6 +128,8 @@ auto UserApplication<EventVariantT>::initialize() -> void {
   SetupLEDs();
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->start(); });
   std::for_each(std::begin(mSensors), std::end(mSensors), [](auto sensor){ sensor->start(); });
+
+  vehicleLogger.start();
 }
 
 template<typename EventVariantT>
@@ -226,21 +235,21 @@ void vehicleReader(void* args) {
 
   auto app = static_cast<Application*>(args);
   auto vehicle = app->getVehicle();
-  auto logger = VehicleLogger{};
-  auto logging = logger.begin();
+  auto logger = app->getVehicleLogger();
 
   vehicle->connect(PinNumber{RGB_VEHICLE_RX}, PinNumber{RGB_VEHICLE_TX});
   while (true) {
     if (!vehicle->isConnected()) {
-      if (logging) {
-        logger.flush();
+      if (logger->isStarted()) {
+        logger->flush();
       }
       vehicle->connect(PinNumber{RGB_VEHICLE_RX}, PinNumber{RGB_VEHICLE_TX});
+      logger->start();
     }
     else {
       auto result = vehicle->update();
-      if (logging) {
-        logger.record(VehicleData{
+      if (logger->isStarted()) {
+        logger->record(VehicleData{
           .lastUpdateResult = result,
           .rpm = vehicle->rpm(),
           .speed = vehicle->speed(),
