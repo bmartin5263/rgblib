@@ -137,8 +137,10 @@ public:
 
   auto get() -> ColorPalette {
     auto elapsed = Clock::Now().timeSince(mChangedAt);
-    if (FADE_DURATION.isZero() || elapsed >= FADE_DURATION) {
-      return mCarousel.get();
+    if constexpr (!FADE_DURATION.isZero()) {
+      if (elapsed >= FADE_DURATION) {
+        return mCarousel.get();
+      }
     }
     auto t = static_cast<float>(elapsed.value) / static_cast<float>(FADE_DURATION.value);
     return mPrevious.lerp(mCarousel.get(), t);

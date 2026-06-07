@@ -12,7 +12,7 @@
 
 namespace rgb {
 
-static constexpr auto Length(const char* string) -> size_t {
+static constexpr auto StrLength(const char* string) -> size_t {
   size_t length = 0;
   if (string == nullptr) {
     return length;
@@ -35,7 +35,7 @@ class Wifi {
 #else
   static constexpr const char* PASSWORD = "";
 #endif
-static constexpr auto ENABLED = rgb::Length(SSID) > 0;
+static constexpr auto ENABLED = StrLength(SSID) > 0;
 
 public:
   constexpr static auto Enabled() -> bool {
@@ -69,6 +69,7 @@ private:
   auto update() -> void;
   auto getStatus() const -> int;
   auto getAddress() const -> String;
+  auto restartWifi(const char* reason) -> void;
 };
 
 }

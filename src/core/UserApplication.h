@@ -7,6 +7,8 @@
 
 #ifndef RGB_VEHICLE_RX
 #define RGB_VEHICLE_RX D11
+#include <WiFi.h>
+#include <WiFiType.h>
 #endif
 
 #ifndef RGB_VEHICLE_TX
@@ -90,7 +92,7 @@ private:
   auto baseUpdate() -> void;
   auto baseDraw() -> void;
 
-  std::vector<LEDCircuit*> mLeds{};
+  std::vector<LEDDevice*> mLeds{};
   std::vector<Sensor*> mSensors{};
   std::unordered_map<uint, std::vector<std::function<void(const AnyEvent&)>>> mEventMap{};
 };
@@ -113,7 +115,7 @@ auto UserApplication<EventVariantT>::run() -> void {
 
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::setup() -> void {
-  rgb::log::init();
+  log::init();
   configureApplication();
 
 #if RGB_OTA
@@ -183,8 +185,12 @@ auto UserApplication<EventVariantT>::configureApplication() -> void {
   pinMode(LED_BLUE, OUTPUT);
 #endif
 
-  Debug::SetBlinker(BlinkerColor::RED, []() { return Debug::HasFault(); });
-  Debug::SetBlinker(BlinkerColor::GREEN, [this]() { return vehicle.isConnected(); });
+  Debug::SetBlinker(BlinkerColor::RED, [] { return Debug::HasFault(); });
+  Debug::SetBlinker(BlinkerColor::GREEN, [this] { return vehicle.isConnected(); });
+#if RGB_OTA
+  Debug::SetBlinker(BlinkerColor::BLUE, [this] { return Wifi::GetStatus() == WL_CONNECTED; });
+#endif
+
 
   auto appConfig = Configurer{};
   configure(appConfig);
@@ -198,7 +204,7 @@ auto UserApplication<EventVariantT>::configureApplication() -> void {
   }
 
 #if defined(RGB_DEBUG)
-  // Monitoring only enabled for Debug configurations since Debug does logging and the monitor relies on that
+  // Monitoring only enabled for Debug configurations since Debug does logging and the monitor depends on that
   Timer::SetTimeout(Duration::Seconds(1), [](auto& context){
     static Monitor monitor;
     monitor.update();

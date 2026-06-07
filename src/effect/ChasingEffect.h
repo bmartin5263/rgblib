@@ -5,7 +5,6 @@
 #ifndef RGBLIB_CHASINGEFFECT_H
 #define RGBLIB_CHASINGEFFECT_H
 
-#include <optional>
 #include "Types.h"
 #include "PixelList.h"
 #include "Iterable.h"

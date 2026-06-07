@@ -11,7 +11,7 @@
 #include "Assertions.h"
 #include "RgbColor.h"
 #include "ContiguousPixelList.h"
-#include "LEDCircuit.h"
+#include "LEDDevice.h"
 #include "Log.h"
 #include "ContiguousPixelGrid.h"
 #include "RgbwSupport.h"
@@ -28,7 +28,7 @@ template <
   uint MULTI_MATRIX_COLS = 1,
   typename MULTI_MATRIX_STRATEGY = PixelRowMatrixColumn
 >
-class FastLEDMatrix : public ContiguousPixelGrid, public LEDCircuit {
+class FastLEDMatrix : public ContiguousPixelGrid, public LEDDevice {
 public:
   static_assert(MULTI_MATRIX_ROWS > 0, "MULTI_MATRIX_ROWS must be greater than 0");
   static_assert(MULTI_MATRIX_COLS > 0, "MULTI_MATRIX_COLS must be greater than 0");

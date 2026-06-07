@@ -11,7 +11,7 @@
 #include "Assertions.h"
 #include "RgbColor.h"
 #include "ContiguousPixelList.h"
-#include "LEDCircuit.h"
+#include "LEDDevice.h"
 #include "Log.h"
 #include "RgbwSupport.h"
 
@@ -22,7 +22,7 @@ namespace rgb {
  * between pixel and LED
  */
 template <u16 N, uint PIN, RgbwSupport RGBW_SUPPORT=RgbwSupport::DISABLE>
-class FastLEDStrip : public ContiguousPixelList, public LEDCircuit {
+class FastLEDStrip : public ContiguousPixelList, public LEDDevice {
 public:
   constexpr explicit FastLEDStrip(
     u16 offset = 0

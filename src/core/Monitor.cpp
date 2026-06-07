@@ -7,6 +7,7 @@
 #include "Effects.h"
 #include "Clock.h"
 #include "Vehicle.h"
+#include "Wireless.h"
 
 
 namespace rgb {
@@ -17,8 +18,9 @@ auto Monitor::update() -> void {
   auto maxTimers = Timer::MaxCount();
   auto effects = Effects::ActiveCount();
   auto totalEffects = Effects::TotalCount();
+  auto address = Wifi::GetAddress();
   auto fps = Clock::Fps();
-  INFO("FPS: %i   Timers: %i / %i (peak=%i)   Effects: %i / %i", fps, timers, totalTimers, maxTimers, effects, totalEffects);
+  INFO("FPS: %i, Timers: %i / %i (peak=%i), Effects: %i / %i, WiFi: %s", fps, timers, totalTimers, maxTimers, effects, totalEffects, address.c_str());
 }
 
 }

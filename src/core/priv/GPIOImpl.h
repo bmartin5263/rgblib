@@ -11,6 +11,9 @@ namespace rgb::priv { class GPIOImpl : public GPIOArduino {}; };
 #elif defined(RGB_ESP32)
 #include "GPIOESP32.h"
 namespace rgb::priv { class GPIOImpl : public GPIOESP32 {}; };
+#else
+#error GPIO not available
 #endif
+
 
 #endif //RGBLIB_GPIOIMPLEMENTATION_H

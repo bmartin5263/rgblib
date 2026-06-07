@@ -13,38 +13,37 @@
 namespace rgb {
 
 auto Wifi::SetMode(wifi_mode_t mode) -> void {
-  WiFi.mode(mode);
+  WiFiClass::mode(mode);
 }
 
 auto Wifi::start() -> int {
-  auto status = getStatus();
-  if (status == WL_CONNECTED || status == WL_IDLE_STATUS) {
+  if (auto status = getStatus(); status == WL_CONNECTED || status == WL_IDLE_STATUS) {
     return status;
   }
 
   static_assert(
-    Length(SSID) == 0 || Length(PASSWORD) > 0,
+    StrLength(SSID) == 0 || StrLength(PASSWORD) > 0,
     "Missing Password - Please define RGB_WIFI_PASSWORD"
   );
 
-  INFO("Starting Wi-Fi using SSID %s %s", SSID, PASSWORD);
-  Stopwatch sw{"Wifi::start()"};
+  INFO("Starting Wi-Fi using SSID %s", SSID);
 
   lastConnectAttempt = Clock::Now();
   return WiFi.begin(SSID, PASSWORD); // Expected return is WL_DISCONNECTED while connecting
 }
 
-#define RESTART_WIFI(reason) \
-if (Clock::Now().timeSince(lastConnectAttempt) > Duration::Seconds(5)) { \
-  ERROR("Failed to connect to Wi-Fi. Reason Code: %s", #reason); \
-  start();                     \
+auto Wifi::restartWifi(const char* reason) -> void {
+  if (Clock::Now().timeSince(lastConnectAttempt) > Duration::Seconds(5)) {
+    ERROR("Failed to connect to Wi-Fi. Reason Code: %s", reason);
+    start();
+  }
 }
 
 auto Wifi::update() -> void {
-  switch (WiFi.status()) {
+  switch (WiFiClass::status()) {
     case WL_CONNECTED:
       if (!connected) {
-        INFO("Wi-Fi connected to %s", WiFi.localIP().toString().c_str());
+        INFO("Wi-Fi connected with IP %s", WiFi.localIP().toString().c_str());
         connected = true;
       }
       break;
@@ -52,28 +51,28 @@ auto Wifi::update() -> void {
       // Waiting for connection
       break;
     case WL_NO_SHIELD:
-      RESTART_WIFI(WL_NO_SHIELD);
+      restartWifi("WL_NO_SHIELD");
       break;
     case WL_CONNECT_FAILED:
-      RESTART_WIFI(WL_CONNECT_FAILED);
+      restartWifi("WL_CONNECT_FAILED");
       break;
     case WL_CONNECTION_LOST:
-      RESTART_WIFI(WL_CONNECTION_LOST);
+      restartWifi("WL_CONNECTION_LOST");
       break;
     case WL_DISCONNECTED:
-      RESTART_WIFI(WL_DISCONNECTED);
+      restartWifi("WL_DISCONNECTED");
       break;
     case WL_NO_SSID_AVAIL:
-      RESTART_WIFI(WL_NO_SSID_AVAIL);
+      restartWifi("WL_NO_SSID_AVAIL");
       break;
     case WL_SCAN_COMPLETED:
-      RESTART_WIFI(WL_SCAN_COMPLETED);
+      restartWifi("WL_SCAN_COMPLETED");
       break;
   }
 }
 
 auto Wifi::getStatus() const -> int {
-  return WiFi.status();
+  return WiFiClass::status();
 }
 
 auto Wifi::getAddress() const -> String {

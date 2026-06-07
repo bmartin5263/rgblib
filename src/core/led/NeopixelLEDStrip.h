@@ -11,7 +11,7 @@
 #include "Assertions.h"
 #include "RgbColor.h"
 #include "ContiguousPixelList.h"
-#include "LEDCircuit.h"
+#include "LEDDevice.h"
 #include "Log.h"
 
 namespace rgb {
@@ -26,7 +26,7 @@ namespace rgb {
  * @tparam BACKEND hardware backend (RMT or SPI)
  */
 template <u16 N, u16 PIN, neoPixelType TYPE>
-class NeopixelLEDStrip : public ContiguousPixelList, public LEDCircuit {
+class NeopixelLEDStrip : public ContiguousPixelList, public LEDDevice {
 public:
   constexpr explicit NeopixelLEDStrip(
     u16 offset = 0

@@ -37,11 +37,15 @@ public:
   auto end() const -> ConstPixelIterator;
 
   PixelList() = default;
+  virtual ~PixelList() = default;
+
+protected:
+  // Copy/move are protected to prevent slicing through a PixelList base
+  // reference; only concrete derived types may copy themselves.
   PixelList(const PixelList& rhs) = default;
   PixelList(PixelList&& rhs) noexcept = default;
   PixelList& operator=(const PixelList& rhs) = default;
   PixelList& operator=(PixelList&& rhs) noexcept = default;
-  virtual ~PixelList() = default;
 };
 
 class PixelProxy {

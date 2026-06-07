@@ -18,23 +18,22 @@ namespace rgb::log {
 
 auto init(u32 baud = 9600) -> void;
 auto printHeader(const char* level, const char* function) -> void;
+[[gnu::format(printf, 1, 2)]]
+auto printMessage(const char* format, ...) -> void;
 
 #define ERROR(format, ...) do { \
   rgb::log::printHeader("ERROR", __PRETTY_FUNCTION__); \
-  Serial.printf(format, ##__VA_ARGS__); \
-  Serial.println();            \
+  rgb::log::printMessage(format, ##__VA_ARGS__); \
 } while(false)
 
 #define PRINTF(format, ...) do { \
-  Serial.printf(format, ##__VA_ARGS__); \
-  Serial.println();            \
+  rgb::log::printMessage(format, ##__VA_ARGS__); \
 } while(false)
 
 #if RGB_LOG_LEVEL > 0
 #define INFO(format, ...) do { \
   rgb::log::printHeader("INFO", __PRETTY_FUNCTION__);  \
-  Serial.printf(format, ##__VA_ARGS__);                \
-  Serial.println();            \
+  rgb::log::printMessage(format, ##__VA_ARGS__); \
 } while(false)
 #else
 #define INFO(format, ...)
@@ -44,8 +43,7 @@ auto printHeader(const char* level, const char* function) -> void;
 #if RGB_LOG_LEVEL > 1
 #define TRACE(format, ...) do { \
   rgb::log::printHeader("TRACE", __PRETTY_FUNCTION__); \
-  Serial.printf(format, ##__VA_ARGS__); \
-  Serial.println();            \
+  rgb::log::printMessage(format, ##__VA_ARGS__); \
 } while(false)
 #else
 #define TRACE(format, ...)

@@ -27,6 +27,7 @@ auto ContiguousPixelList::slice(uint start, uint endExclusive) -> PixelSlice {
 }
 
 auto ContiguousPixelList::set(uint pixel, const Color& color) -> void {
+  ASSERT(pixel < length(), "Pixel is out of bounds");
   if (mReversed) {
     data()[length() - 1 - pixel] = color;
   }
@@ -36,7 +37,6 @@ auto ContiguousPixelList::set(uint pixel, const Color& color) -> void {
 }
 
 auto ContiguousPixelList::get(uint pixel) const -> Pixel {
-  ASSERT(pixel >= 0, "Pixel is negative");
   ASSERT(pixel < length(), "Pixel is out of bounds");
   if (mReversed) {
     return data()[length() - 1 - pixel];

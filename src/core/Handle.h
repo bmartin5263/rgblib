@@ -17,25 +17,23 @@ struct Handle {
   Handle() noexcept : opt() {}
   explicit Handle(T value) noexcept : opt(value) {}
   Handle(Handle&& rhs) noexcept { opt = std::move(rhs.opt); }
-  auto operator=(Handle&& rhs) noexcept -> Handle& { opt = std::move(rhs.opt); }
+  Handle(const Handle& rhs) = delete;
+  auto operator=(const Handle& rhs) -> Handle& = delete;
 
-  auto operator*() noexcept -> T& {
-    return opt.value();
+  auto operator=(Handle&& rhs) noexcept -> Handle&  {
+    opt = std::move(rhs.opt);
+    return *this;
   }
+
+  auto operator*() noexcept -> T& { return opt.value(); }
+  auto get() noexcept -> T& { return opt.value(); }
+  auto isSet() -> bool { return opt.has_value(); }
 
   auto operator->() noexcept -> T* {
     if (opt) {
       return &opt.value();
     }
     return nullptr;
-  }
-
-  auto get() noexcept -> T& {
-    return opt.value();
-  }
-
-  auto isSet() -> bool {
-    return opt.has_value();
   }
 
   auto destroy() noexcept -> void {
@@ -49,9 +47,6 @@ struct Handle {
     destroy();
     opt = newValue;
   }
-
-  Handle(const Handle& rhs) = delete;
-  auto operator=(const Handle& rhs) -> Handle& = delete;
 
   ~Handle() {
     TRACE("~Handle();");
