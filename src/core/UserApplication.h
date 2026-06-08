@@ -88,7 +88,7 @@ protected:
 
 private:
   auto configureApplication() -> void;
-  auto initialize() -> void;
+  auto startSubsystems() -> void;
   auto baseUpdate() -> void;
   auto baseDraw() -> void;
 
@@ -128,7 +128,7 @@ auto UserApplication<EventVariantT>::setup() -> void {
   xTaskCreatePinnedToCore(vehicleReader, "vehicleReader", RGB_VEHICLE_CORE_STACK_SIZE, this, RGB_VEHICLE_CORE_PRIORITY, nullptr, 1);
 #endif
 
-  initialize();
+  startSubsystems();
   publishSystemEvent(WakeEvent{Clock::Now()});
   INFO("Setup Application");
 }
@@ -141,12 +141,14 @@ auto UserApplication<EventVariantT>::loop() -> void {
 }
 
 template<typename EventVariantT>
-auto UserApplication<EventVariantT>::initialize() -> void {
+auto UserApplication<EventVariantT>::startSubsystems() -> void {
   SetupLEDs();
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->start(); });
   std::for_each(std::begin(mSensors), std::end(mSensors), [](auto sensor){ sensor->start(); });
 
+#if RGB_VEHICLE_CORE_ENABLED
   vehicleLogger.start();
+#endif
 }
 
 template<typename EventVariantT>
