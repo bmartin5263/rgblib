@@ -6,14 +6,13 @@
 #define RGBLIB_TIMER_H
 
 #include "Types.h"
+#include "PriorityNodePool.h"
 #include "TimerNode.h"
 #include "TimerHandle.h"
 
 namespace rgb {
 
-class Timer {
-  static constexpr auto TIMER_COUNT = 10;
-
+class Timer : public PriorityNodePool<TimerNode, 10> {
 public:
   [[nodiscard]]
   static auto SetTimeout(Duration duration, const Runnable& function) -> TimerHandle;
@@ -35,7 +34,6 @@ public:
   static auto ActiveCount() -> uint;
   static auto StopAll() -> void;
   static auto MaxCount() -> uint;
-  static constexpr auto TotalCount() -> uint { return TIMER_COUNT; }
   static auto Instance() -> Timer&;
 
   auto setTimeout(Duration duration, const Runnable& function) -> TimerHandle;
@@ -57,17 +55,11 @@ public:
   ~Timer() = default;
 
 private:
-  TimerNode nodes[TIMER_COUNT]{};
-  TimerNode* unusedHead{nullptr};
-  TimerNode* toAddHead{nullptr};
-  TimerNode* activeHead{nullptr};
-  uint nextHandleId{1};
   uint usedCount{0};
   uint maxUsedCount{0};
 
   auto executeTimer(TimerNode* node, Timestamp now) -> void;
   auto nextTimerNode() -> TimerNode*;
-  auto enqueueForAdding(TimerNode* node) -> void;
   auto processAdditions() -> void;
   auto reclaimNodes() -> void;
   auto stopAll() -> void;

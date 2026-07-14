@@ -25,6 +25,28 @@ auto PixelList::fill(const Color& color, uint range) -> void {
   fill(color, 0, range);
 }
 
+auto PixelList::fillRatio(const Color& color, normal fillPercent) -> void {
+  if (fillPercent > 1.0f) {
+    fillPercent = 1.0f;
+  }
+  auto range = static_cast<uint>(size() * fillPercent);
+  range = std::min(range, size());
+  fill(color, 0, range);
+}
+
+auto PixelList::fillReverse(const Color& color, uint range) -> void {
+  fill(color, size() - range, size());
+}
+
+auto PixelList::fillRatioReverse(const Color& color, normal fillPercent) -> void {
+  if (fillPercent > 1.0f) {
+    fillPercent = 1.0f;
+  }
+  auto range = static_cast<uint>(size() * fillPercent);
+  range = std::min(range, size());
+  fill(color, size() - range, size());
+}
+
 auto PixelList::fill(const Color& color, uint start, uint endExclusive) -> void {
   endExclusive = std::min(length(), endExclusive);
   for (auto i = start; i < endExclusive; ++i) {

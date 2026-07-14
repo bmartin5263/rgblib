@@ -16,28 +16,27 @@ public:
   auto nextFrame() -> void;
 
   static auto NextFrame() -> void { Instance().nextFrame(); }
-  static auto Start(frames_t fps) -> void { Instance().start(fps); }
+  static auto Start() -> void { Instance().start(); }
   static auto Now() -> Timestamp { return Timestamp{System::MicroTime()}; }
+  static auto Delta() -> Duration { return Duration{ Instance().mDelta }; }
   static auto Fps() -> uint { return Instance().fps(); }
 
 private:
 
   static auto Instance() -> Clock&;
-  auto start(frames_t fps) -> void;
+  auto start() -> void;
   auto fps() const -> uint;
 
   frames_t mFrames{};
   frames_t mFpsCounter{};
   frames_t mLastFps{};
-  frames_t mTargetFps; // for detecting low FPS
   u64 mNextFrame{};
-  microseconds_t mTickStart{};
+  microseconds_t mFrameStartTime{};
   microseconds_t mLastFrameRateCheck{};
-  microseconds_t mMaxMillisecondsPerFrame;
   microseconds_t mDelta{};
   uint lastWakeTime{xTaskGetTickCount()};
-  u64 frequency{pdMS_TO_TICKS(4)};
-  bool lowFpsDetected{};
+  u64 frequency{pdMS_TO_TICKS(4)}; // ~200 FPS
+  bool mLowFpsDetected{};
 };
 
 }

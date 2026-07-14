@@ -9,8 +9,13 @@
 ## Language
 
 - C++20
+- No concepts (not available in compiler)
 - Be as const-correct as possible
 - Prefer trailing return types and braces on same line for functions `constexpr auto function() -> type {`
+
+## Code Verification
+
+- Compile with `/opt/homebrew/bin/pio run -e debug`
 
 ## Code Generation
 

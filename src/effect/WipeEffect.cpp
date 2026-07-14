@@ -13,8 +13,8 @@ auto WipeEffect::draw(Timestamp now, PixelList& pixels) -> void {
   auto pixelLength = pixels.length();
 
   Duration duration;
-  if (progression.durationIsDelay) {
-    duration = Duration{progression.duration.value * pixelLength};
+  if (progression.constantSpeedMode) {
+    duration = progression.duration * pixelLength;
   }
   else {
     duration = progression.duration;

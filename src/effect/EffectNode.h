@@ -8,6 +8,7 @@
 #include <variant>
 #include "Types.h"
 #include "Assertions.h"
+#include "PriorityNode.h"
 #include "Effect.h"
 
 namespace rgb {
@@ -18,9 +19,7 @@ using OneOrManyPixelLists = std::variant<OnePixelList, ManyPixelLists>;
 
 class Effect;
 class PixelList;
-struct EffectNode {
-  EffectNode* prev{};
-  EffectNode* next{};
+struct EffectNode : PriorityNode<EffectNode> {
   OneOrManyPixelLists pixels;
   Effect* effect;
   Timestamp startedAt{};
@@ -28,6 +27,10 @@ struct EffectNode {
   uint handleId{};
   uint priority{};
   bool stopping{};
+
+  auto operator<(const EffectNode& rhs) const -> bool {
+    return priority < rhs.priority;
+  }
 
   auto clean() -> void {
     prev = nullptr;
@@ -60,62 +63,6 @@ struct EffectNode {
     else {
       auto& iterable = std::get<ManyPixelLists>(pixels);
       effect->draw(now - startedAt, iterable);
-    }
-  }
-
-  static auto Size(EffectNode* head) -> uint {
-    auto result = 0u;
-    while (head != nullptr) {
-      ++result;
-      head = head->next;
-    }
-    return result;
-  }
-
-  static auto InsertFront(EffectNode*& head, EffectNode* node) {
-    ASSERT(node->next == nullptr, "Next is not nullptr");
-    ASSERT(node->prev == nullptr, "Prev is not nullptr");
-
-    node->prev = nullptr;
-    node->next = head;
-    if (head != nullptr) {
-      head->prev = node;
-    }
-    head = node;
-  }
-
-  static auto Pop(EffectNode*& head) -> EffectNode* {
-    ASSERT(head != nullptr, "Popping from empty list");
-    auto popped = head;
-    ASSERT(popped->prev == nullptr, "Prev is not nullptr");
-
-    if (head->next != nullptr) {
-      head->next->prev = nullptr;
-    }
-    head = head->next;
-
-    popped->next = nullptr;
-    popped->prev = nullptr;
-
-    return popped;
-  }
-
-  static auto Remove(EffectNode*& head, EffectNode* nodeToRemove) -> void {
-    ASSERT(head != nullptr, "Removing from empty list");
-    ASSERT(nodeToRemove != nullptr, "Removing null node");
-
-    if (nodeToRemove == head) {
-      head = head->next;
-      nodeToRemove->next = nullptr;
-      nodeToRemove->prev = nullptr;
-      return;
-    }
-
-    if (nodeToRemove->next != nullptr) {
-      nodeToRemove->next->prev = nodeToRemove->prev;
-    }
-    if (nodeToRemove->prev != nullptr) {
-      nodeToRemove->prev->next = nodeToRemove->next;
     }
   }
 };

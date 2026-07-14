@@ -26,9 +26,9 @@ It's Shader has more information about what cycle the effect is in, what positio
 
 `TODO`
 
-| Effect   | Activation Pattern (for a given PixelList) | Cycles |
-|----------|--------------------------------------------|--------|
-| Pixelate | All pixels randomly over time              | Yes    |
+| Effect    | Activation Pattern (for a given PixelList) | Cycles |
+|-----------|--------------------------------------------|--------|
+| Pixellate | All pixels randomly over time              | Yes    |
 
 ## Debugging Tools
 
@@ -83,21 +83,6 @@ See Also
 
 - Extract out Vehicle stuff, make a generic vehicle-less application
   - Some projects exist outside a vehicle (obviously), shouldn't have to bring in the vehicle connection stuff if not needed
-- Effects should have a delay until they start again, so we don't _need_ DeadPixelLists
+- Effects should have a delay until they start again, so we don't _need_ DeadPixelLists to pad the endings
 - Unit Tests
   - Lots of stuff can be unit tested, let's start
-
-## Logging Findings
-
-### Lincoln Town Car
-
-#### Short Drive 1 Code Name BK
-
-- MPH seems to be off, its reporting I'm going way faster than I really am
-  - Test going a steady speed, does it report that speed?
-  - Also switch to KPH mode in car and verify that
-- RPM is accurate
-- Fuel Level jumps up and down very erratically, especially toward the lower end
-  - Running average _does_ show a drop, but the window has to be ~2 minutes and is most accurate without outliers in the data
-- Throttle position aligns well with RPM changes, so it seems to be accurate
-  - During long brakes (like waiting for the BK payload or long traffic lights), the value

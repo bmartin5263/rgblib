@@ -11,44 +11,28 @@
 namespace rgb {
 
 struct BaseEvent {
-  Timestamp when;
+  Timestamp occurredAt;
 };
 
 // Nothing happened...
-struct NullEvent : public BaseEvent {
-};
-
-// System woke up from its sleep
-struct WakeEvent : public BaseEvent {};
-
-// System is going to sleep soon
-struct SleepEvent : public BaseEvent {
-   Duration timeLimit; // how long before the system ACTUALLY goes to sleep
+struct NullEvent : BaseEvent {
 };
 
 // Car's engine has started
-struct OBDIIConnected : public BaseEvent {};
+struct VehicleConnected : BaseEvent {};
 
 // Car's engine has stopped
-struct OBDIIDisconnected : public BaseEvent {};
+struct VehicleDisconnected : BaseEvent {};
 
 // Car's engine has started
-struct CarEngineStarted : public BaseEvent {};
+struct CarEngineStarted : BaseEvent {};
 
 // Car's engine has stopped
-struct CarEngineStopped : public BaseEvent {};
+struct CarEngineStopped : BaseEvent {};
 
-// Hard brake threshold was crossed
-struct HardBrakeDetected : public BaseEvent {};
-
-struct IRButtonPressed : public BaseEvent {
+struct IRButtonPressed : BaseEvent {
   IRButtonType button{};
 };
-
-struct CarMoving : public BaseEvent {
-};
-
-struct CarStopped : public BaseEvent {};
 
 }
 

@@ -42,7 +42,7 @@ using time_t = u64;
 
 template<typename V, class Self>
 struct number_wrapper {
-  using self_type = number_wrapper<V, Self>;
+  using self_type = number_wrapper;
 
   V value;
 
@@ -151,9 +151,9 @@ struct number_wrapper {
   }
 };
 
-struct Duration : public number_wrapper<time_t, Duration> {
-  constexpr explicit Duration() : number_wrapper<time_t, Duration>(0) {}
-  constexpr explicit Duration(time_t microseconds) : number_wrapper<time_t, Duration>(microseconds) {}
+struct Duration : number_wrapper<time_t, Duration> {
+  constexpr explicit Duration() : number_wrapper(0) {}
+  constexpr explicit Duration(time_t microseconds) : number_wrapper(microseconds) {}
   static constexpr auto Seconds(time_t amount) -> Duration { return Duration(amount * 1000000); }
   static constexpr auto Minutes(time_t amount) -> Duration { return Duration(amount * 60000000); }
   static constexpr auto Milliseconds(time_t amount) -> Duration { return Duration(amount * 1000); }
@@ -166,14 +166,18 @@ struct Duration : public number_wrapper<time_t, Duration> {
   [[nodiscard]] constexpr auto asMilliseconds() const -> time_t { return value / 1000; }
   [[nodiscard]] constexpr auto asMicroseconds() const -> time_t { return value; }
 
-  constexpr auto operator*(float rhs) const -> Duration {
-    return Duration { static_cast<time_t>(static_cast<float>(value) * rhs) };
+  constexpr auto operator*(uint rhs) const -> Duration {
+    return Duration { value * rhs };
   }
+
+  // constexpr auto operator*(float rhs) const -> Duration {
+  //   return Duration { static_cast<time_t>(static_cast<float>(value) * rhs) };
+  // }
 };
 
-struct Timestamp : public number_wrapper<time_t, Timestamp> {
-  constexpr explicit Timestamp() : number_wrapper<time_t, Timestamp>(0) {}
-  constexpr explicit Timestamp(time_t microseconds) : number_wrapper<time_t, Timestamp>(microseconds) {}
+struct Timestamp : number_wrapper<time_t, Timestamp> {
+  constexpr explicit Timestamp() : number_wrapper(0) {}
+  constexpr explicit Timestamp(time_t microseconds) : number_wrapper(microseconds) {}
   static constexpr auto Microseconds(time_t amount) -> Timestamp { return Timestamp(amount); }
   static constexpr auto Milliseconds(time_t amount) -> Timestamp { return Timestamp(amount * 1000); }
   static constexpr auto Max() -> Timestamp { return Timestamp(std::numeric_limits<time_t>::max()); }

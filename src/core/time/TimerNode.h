@@ -8,6 +8,7 @@
 #include <optional>
 #include "Types.h"
 #include "Assertions.h"
+#include "PriorityNode.h"
 #include "Func.h"
 
 namespace rgb {
@@ -19,9 +20,7 @@ struct TimerContext {
 
 using TimerFunction = Consumer<TimerContext&>;
 
-struct TimerNode {
-  TimerNode* prev{};
-  TimerNode* next{};
+struct TimerNode : PriorityNode<TimerNode> {
   TimerFunction timerFunction{};
   Runnable cancelFunction{DoNothing};
   Timestamp executeAt{};
@@ -52,47 +51,8 @@ struct TimerNode {
     executeAt = when;
   }
 
-  static auto InsertFront(TimerNode*& head, TimerNode* node) {
-    ASSERT(node->next == nullptr, "Next is not nullptr");
-    ASSERT(node->prev == nullptr, "Prev is not nullptr");
-
-    node->prev = nullptr;
-    node->next = head;
-    if (head != nullptr) {
-      head->prev = node;
-    }
-    head = node;
-  }
-
-  static auto Pop(TimerNode*& head) -> TimerNode* {
-    ASSERT(head != nullptr, "Popping from empty list");
-    auto popped = head;
-    ASSERT(popped->prev == nullptr, "Prev is not nullptr");
-
-    if (head->next != nullptr) {
-      head->next->prev = nullptr;
-    }
-    head = head->next;
-
-    popped->next = nullptr;
-    popped->prev = nullptr;
-
-    return popped;
-  }
-
-  static auto Remove(TimerNode*& head, TimerNode* nodeToRemove) -> void {
-    ASSERT(head != nullptr, "Removing from empty list");
-    ASSERT(nodeToRemove != nullptr, "Removing null node");
-    ASSERT(nodeToRemove != head, "Attempting to remove head without Pop()");
-
-    if (nodeToRemove->next != nullptr) {
-      nodeToRemove->next->prev = nodeToRemove->prev;
-    }
-    if (nodeToRemove->prev != nullptr) {
-      nodeToRemove->prev->next = nodeToRemove->next;
-    }
-    nodeToRemove->next = nullptr;
-    nodeToRemove->prev = nullptr;
+  auto operator<(const TimerNode& rhs) const -> bool {
+    return executeAt < rhs.executeAt;
   }
 };
 

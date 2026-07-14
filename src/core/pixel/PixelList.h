@@ -27,6 +27,9 @@ public:
 
   auto fill(const Color& color) -> void;
   auto fill(const Color& color, uint range) -> void;
+  auto fillRatio(const Color& color, normal fillPercent) -> void;
+  auto fillReverse(const Color& color, uint range) -> void;
+  auto fillRatioReverse(const Color& color, normal fillPercent) -> void;
   auto fill(const Color& color, uint start, uint endExclusive) -> void;
   auto clear() -> void;
   auto size() const -> uint { return length(); };

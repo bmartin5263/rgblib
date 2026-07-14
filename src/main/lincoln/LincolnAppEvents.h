@@ -8,26 +8,12 @@
 #include "EventType.h"
 #include "UserApplication.h"
 
-/**
- * Car entered highway
- */
-struct HighwayModeEntered : public rgb::BaseEvent {};
+struct RainbowModeEntered : rgb::BaseEvent {};
+struct RainbowModeExited : rgb::BaseEvent {};
+struct CarMoving : rgb::BaseEvent {};
+struct CarStopped : rgb::BaseEvent {};
 
-/**
- * Car left highway
- */
-struct HighwayModeExited : public rgb::BaseEvent {};
-
-/**
- * Car floored it from a standstill
- */
-struct PeelOut : public rgb::BaseEvent {};
-
-struct RainbowModeEntered : public rgb::BaseEvent {};
-
-struct RainbowModeExited : public rgb::BaseEvent {};
-
-using LincolnAppEvents = rgb::Event<HighwayModeEntered, HighwayModeExited, PeelOut, RainbowModeEntered, RainbowModeExited>;
+using LincolnAppEvents = rgb::Event<RainbowModeEntered, RainbowModeExited, CarMoving, CarStopped>;
 using LincolnApp = rgb::UserApplication<LincolnAppEvents>;
 
 #endif //RGBLIB_LINCOLNAPPEVENTS_H

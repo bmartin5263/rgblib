@@ -7,15 +7,14 @@
 
 #include "Types.h"
 #include "Func.h"
+#include "PriorityNodePool.h"
 #include "EffectHandle.h"
 #include "EffectNode.h"
 
 namespace rgb {
 
 class PixelList;
-class Effects {
-  static constexpr auto EFFECT_COUNT = 10;
-
+class Effects : public PriorityNodePool<EffectNode, 10> {
 public:
   static auto Initialize() -> void;
   [[nodiscard]]
@@ -34,7 +33,6 @@ public:
   static auto Update() -> void;
   static auto Draw() -> void;
   static auto ActiveCount() -> uint;
-  static constexpr auto TotalCount() -> uint { return EFFECT_COUNT; }
   static auto Instance() -> Effects&;
 
   Effects();
@@ -45,12 +43,7 @@ public:
   ~Effects() = default;
 
 private:
-  EffectNode nodes[EFFECT_COUNT]{};
   Timestamp startTime{};
-  EffectNode* unusedHead{nullptr};
-  EffectNode* toAddHead{nullptr};
-  EffectNode* activeHead{nullptr};
-  uint nextHandleId{1};
 
   auto initialize() -> void;
   auto start(Effect& effect, PixelList& pixels) -> EffectHandle;
@@ -62,7 +55,6 @@ private:
   auto activeCount() -> uint;
 
   auto nextEffectNode() -> EffectNode*;
-  auto enqueueForAdding(EffectNode* node) -> void;
   auto processAdditions(Timestamp now) -> void;
   auto reclaimNodes() -> void;
   auto recycle(EffectNode* timer) -> EffectNode*;

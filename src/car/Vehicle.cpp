@@ -17,7 +17,7 @@ auto OBDDestroyer::operator()(COBD& c) const noexcept -> void {
 
 auto Vehicle::connect(PinNumber rx, PinNumber tx) -> bool {
   auto lock = std::unique_lock { mu };
-  if (obdHandle->getState() == OBD_STATES::OBD_CONNECTED) {
+  if (obdHandle->getState() == OBD_CONNECTED) {
     INFO("Vehicle already connected");
     mConnected = true;
     return true;
@@ -29,14 +29,12 @@ auto Vehicle::connect(PinNumber rx, PinNumber tx) -> bool {
   mConnected = false;
 
   if (!obdHandle->begin(rx.to<i8>(), tx.to<i8>())) {
-    // ERROR("Vehicle begin() failed");
-//    FAIL("Vehicle begin() failed", Color::MAGENTA(.01f));
+    ERROR("Vehicle begin() failed");
     return false;
   }
 
   if (!obdHandle->init()) {
     ERROR("Vehicle init() failed");
-//    FAIL("Vehicle init() failed", Color::MAGENTA(.01f));
     return false;
   }
 
@@ -44,7 +42,7 @@ auto Vehicle::connect(PinNumber rx, PinNumber tx) -> bool {
   mConnected = true;
   mLastResponse = Clock::Now();
 
-  Application::PublishSystemEvent(OBDIIConnected{Clock::Now()});
+  Application::PublishSystemEvent(VehicleConnected{Clock::Now()});
 
   return true;
 }
@@ -53,7 +51,7 @@ auto Vehicle::disconnect() -> void {
   auto lock = std::unique_lock { mu };
   obdHandle.reset({});
   mConnected = false;
-  Application::PublishSystemEvent(OBDIIDisconnected{Clock::Now()});
+  Application::PublishSystemEvent(VehicleDisconnected{Clock::Now()});
 
   INFO("Vehicle Disconnected");
 }

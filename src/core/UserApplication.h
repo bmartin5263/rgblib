@@ -66,14 +66,10 @@ public:
   auto run() -> void;
   auto setup() -> void;
   auto loop() -> void;
-  auto publishSystemEvent(const SystemEvent& event) -> void override;
-  auto on(size_t uid, Consumer<const SystemEvent&> action) -> void override;
-  auto getVehicle() -> Vehicle* override;
-  auto getVehicleLogger() -> VehicleLogger* override;
-  auto isSleeping() -> bool;
-  auto goToSleep(Duration time) -> void;
-  auto goToSleep() -> void;
-  auto wakeUp() -> void;
+  auto publishSystemEvent(const SystemEvent& event) -> void final;
+  auto on(size_t uid, Consumer<const SystemEvent&> action) -> void final;
+  auto getVehicle() -> Vehicle* final;
+  auto getVehicleLogger() -> VehicleLogger* final;
 
   static auto PublishEvent(const AnyEvent& event) -> void;
 
@@ -129,7 +125,6 @@ auto UserApplication<EventVariantT>::setup() -> void {
 #endif
 
   startSubsystems();
-  publishSystemEvent(WakeEvent{Clock::Now()});
   INFO("Setup Application");
 }
 
@@ -239,21 +234,13 @@ auto UserApplication<EventVariantT>::on(size_t uid, Consumer<const SystemEvent&>
 
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::PublishEvent(const AnyEvent& event) -> void {
-  auto self = static_cast<UserApplication<EventVariantT>*>(Application::instance);
+  auto self = static_cast<UserApplication*>(instance);
   auto uid = event.index();
   if (auto it = self->mEventMap.find(uid); it != self->mEventMap.end()) {
     for (auto& handler : it->second) {
       handler(event);
     }
   }
-}
-
-template<typename EventVariantT>
-auto UserApplication<EventVariantT>::goToSleep(rgb::Duration time) -> void {
-  publishSystemEvent(SleepEvent{{Clock::Now()}, time});
-  Timer::SetTimeout(time, [this](){
-    goToSleep();
-  }).detach();
 }
 
 #if RGB_VEHICLE_CORE_ENABLED

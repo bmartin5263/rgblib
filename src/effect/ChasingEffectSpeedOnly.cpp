@@ -26,14 +26,7 @@ auto ChasingEffectSpeedOnly::step() -> void {
 
 auto ChasingEffectSpeedOnly::draw(Timestamp now, PixelList& pixels) -> void {
   auto pixelLength = pixels.length();
-
-  uint actualTrailLength;
-  if (std::holds_alternative<normal>(trailLength.variant)) {
-    actualTrailLength = static_cast<uint>(static_cast<normal>(pixels.length()) * std::get<normal>(trailLength.variant));
-  }
-  else {
-    actualTrailLength = std::get<uint>(trailLength.variant);
-  }
+  auto actualTrailLength = trailLength.getUnits(pixels);
 
   auto params = ShaderParameters {
     .now = now,

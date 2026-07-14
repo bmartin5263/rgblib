@@ -11,6 +11,35 @@ auto ChasingEffect::draw(Timestamp now, PixelList& pixels) -> void {
   auto actualTrailLength = trailLength.getUnits(pixels);
   auto pixelLength = pixels.length();
 
+  Duration activeDuration;
+  Duration idleDuration;
+  if (progression.constantSpeedMode) {
+    activeDuration = progression.duration * pixelLength;
+    idleDuration = progression.idleDuration;
+  }
+  else {
+    activeDuration = progression.duration;
+    idleDuration = progression.idleDuration;
+  }
+  auto totalDuration = activeDuration + idleDuration;
+
+
+  normal percentComplete;
+  normal idleRatio;
+  if (!activeDuration.isZero()) {
+    percentComplete = now.percentOf(totalDuration);
+    idleRatio = idleDuration.ratio<normal>(activeDuration);
+  }
+  else {
+    percentComplete = .0f;
+    idleRatio = .0f;
+  }
+
+
+  auto paddingLength = static_cast<ulong>(static_cast<float>(pixelLength) * idleRatio);
+  auto effectiveLength = pixelLength + paddingLength;
+  auto effectPosition = static_cast<ulong>(static_cast<float>(effectiveLength) * percentComplete); // round down
+
   auto params = ShaderParameters {
     .now = now,
     .duration = progression.duration,
@@ -21,25 +50,6 @@ auto ChasingEffect::draw(Timestamp now, PixelList& pixels) -> void {
     .positionRatio = 0.0f,
     .brightness = Brightness::GetBrightness(brightness)
   };
-
-  Duration activeDuration;
-  Duration idleDuration;
-  if (progression.durationIsDelay) {
-    activeDuration = Duration{progression.duration.value * pixelLength};
-    idleDuration = progression.idleDuration;
-  }
-  else {
-    activeDuration = progression.duration;
-    idleDuration = progression.idleDuration;
-  }
-  auto totalDuration = activeDuration + idleDuration;
-  auto idleRatio = idleDuration.ratio<double>(activeDuration);
-  auto padding = static_cast<ulong>(pixelLength * idleRatio);
-  auto effectiveLength = pixelLength + padding;
-
-  auto headPercent = now.percentOf(totalDuration);
-  auto effectPosition = static_cast<ulong>(static_cast<double>(effectiveLength) * headPercent); // round down
-
   if (buildup) {
     for (auto trailPosition = 0; trailPosition < actualTrailLength; ++trailPosition) {
       if (trailPosition > effectPosition) {
@@ -62,7 +72,7 @@ auto ChasingEffect::draw(Timestamp now, PixelList& pixels) -> void {
     }
   }
   else {
-    params.cycle = static_cast<uint>(headPercent);
+    params.cycle = static_cast<uint>(percentComplete);
     for (auto trailPosition = 0; trailPosition < actualTrailLength; ++trailPosition) {
       auto pixelPosition = (effectPosition + trailPosition + shift) % effectiveLength; // draw tail first
       params.trailPosition = actualTrailLength - 1 - trailPosition;

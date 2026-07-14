@@ -12,7 +12,7 @@ namespace rgb {
 struct EffectProgression {
   Duration duration{}; // either 'delay' or 'activeDuration'
   Duration idleDuration{};
-  bool durationIsDelay{};
+  bool constantSpeedMode{};
 
   static constexpr EffectProgression ConstantTime(Duration duration) {
     return {duration, Duration::Seconds(0), false};

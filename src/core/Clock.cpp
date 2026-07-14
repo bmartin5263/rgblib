@@ -9,29 +9,19 @@
 namespace rgb {
 
 auto Clock::nextFrame() -> void {
-  vTaskDelayUntil(&lastWakeTime, frequency);
+  xTaskDelayUntil(&lastWakeTime, frequency);
+  auto now = System::MicroTime();
+  mDelta = now - mFrameStartTime;
+  mFrameStartTime = now;
 
-  mTickStart = System::MilliTime();
-  auto elapsed = mTickStart - mLastFrameRateCheck;
-
-  if (elapsed >= 1000) { // Update every second
-    if (mFpsCounter < (mTargetFps / 2)) {
-      if (!lowFpsDetected) {
-        lowFpsDetected = true;
-        // Do callback
-      }
-    }
-    else {
-      if (lowFpsDetected) {
-        lowFpsDetected = false;
-        // Do recover callback
-      }
-    }
-
+  auto elapsed = mFrameStartTime - mLastFrameRateCheck;
+  if (elapsed >= 1'000'000) { // Update every second
+    mLowFpsDetected = mFpsCounter < 100;
     mLastFps = mFpsCounter;
     mFpsCounter = 0;
-    mLastFrameRateCheck = mTickStart;
+    mLastFrameRateCheck = mFrameStartTime;
   }
+
   ++mFpsCounter;
   ++mFrames;
 }
@@ -41,9 +31,9 @@ auto Clock::Instance() -> Clock& {
   return instance;
 }
 
-auto Clock::start(frames_t fps) -> void {
-  mTargetFps = fps;
-  mMaxMillisecondsPerFrame = 1000 / fps;
+auto Clock::start() -> void {
+  lastWakeTime = xTaskGetTickCount();
+  mFrameStartTime = System::MicroTime();
 }
 
 auto Clock::fps() const -> uint {

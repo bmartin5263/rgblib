@@ -79,14 +79,14 @@ auto LincolnTownCar::smoothThrottlePosition() const -> rgb::percent {
 auto LincolnTownCar::transitionToStopped() -> void {
   TRACE("mState = STOPPED");
   mRainbowMode.reset();
-  Application::PublishSystemEvent(rgb::CarStopped{{Clock::Now()}});
+  LincolnApp::PublishEvent(CarStopped{{Clock::Now()}});
   mState = &STOPPED_STATE;
   mStoppedAt = Clock::Now();
 }
 
 auto LincolnTownCar::transitionToMoving() -> void {
   TRACE("mState = MOVING");
-  LincolnApp::PublishEvent(rgb::CarMoving{{Clock::Now()}});
+  LincolnApp::PublishEvent(CarMoving{{Clock::Now()}});
   mState = &MOVING_STATE;
   mStoppedAt = Clock::Now();
 }

@@ -10,35 +10,6 @@ namespace rgb {
 
 Effects::Effects() {
   INFO("Initializing Effects");
-  for (int i = 0; i < EFFECT_COUNT; ++i) {
-    auto& current = nodes[i];
-    current.id = i;
-    if (i > 0) {
-      current.prev = &nodes[i - 1];
-    }
-    else {
-      current.prev = nullptr;
-    }
-    if (i < EFFECT_COUNT - 1) {
-      current.next = &nodes[i + 1];
-    }
-    else {
-      current.next = nullptr;
-    }
-  }
-  for (int i = 0; i < EFFECT_COUNT; ++i) {
-    ASSERT(nodes[i].id == i, "Id invalid");
-    if (i != 0) {
-      ASSERT(nodes[i].prev == &nodes[i - 1], "Prev Mismatch");
-    }
-    if (i != EFFECT_COUNT - 1) {
-      ASSERT(nodes[i].next == &nodes[i + 1], "Next Mismatch");
-    }
-  }
-  unusedHead = &nodes[0];
-  ASSERT(unusedHead != nullptr, "Failed to initialize Effects");
-  ASSERT(nodes[0].prev == nullptr, "Head invalid");
-  ASSERT(nodes[EFFECT_COUNT - 1].next == nullptr, "Tail invalid");
 }
 
 auto Effects::Initialize() -> void {
@@ -65,7 +36,7 @@ auto Effects::start(Effect& effect, PixelList& pixels) -> EffectHandle {
   effectNode->priority = 0;
   effectNode->handleId = nextHandleId++;
 
-  EffectNode::InsertFront(toAddHead, effectNode);
+  enqueueForAdding(effectNode);
 
   INFO(
     "Assigning Effect '%i'. To Add Effects: %i. Active Effects %i. Unused Effects %i",
@@ -90,7 +61,7 @@ auto Effects::start(Effect& effect, ManyPixelLists pixels) -> EffectHandle {
   effectNode->priority = 0;
   effectNode->handleId = nextHandleId++;
 
-  EffectNode::InsertFront(toAddHead, effectNode);
+  enqueueForAdding(effectNode);
 
   INFO(
     "Assigning Effect '%i'. To Add Effects: %i. Active Effects %i. Unused Effects %i",
@@ -147,28 +118,7 @@ auto Effects::processAdditions(Timestamp now) -> void {
     nodeToInsert->prev = nullptr;
     nodeToInsert->next = nullptr;
 
-    if (activeHead == nullptr || nodeToInsert->priority < activeHead->priority) {
-      EffectNode::InsertFront(activeHead, nodeToInsert);
-      TRACE(
-        "Activated Effect '%i'. To Add Effects: %i. Active Effects %i. Unused Effects %i",
-        nodeToInsert->id, EffectNode::Size(toAddHead), EffectNode::Size(activeHead), EffectNode::Size(unusedHead));
-      continue;
-    }
-
-    auto current = activeHead;
-    while (current->next != nullptr && current->next->priority < nodeToInsert->priority) {
-      current = current->next;
-    }
-
-    // todo current->next->priority >= nodeToInsert->priority
-    ASSERT(nodeToInsert->priority >= current->priority, "Node in wrong position");
-
-    nodeToInsert->prev = current;
-    nodeToInsert->next = current->next;
-    if (current->next != nullptr) {
-      current->next->prev = nodeToInsert;
-    }
-    current->next = nodeToInsert;
+    EffectNode::Insert(activeHead, nodeToInsert);
 
     TRACE(
       "Activated Effect '%i'. To Add Effects: %i. Active Effects %i. Unused Effects %i",
@@ -179,12 +129,8 @@ auto Effects::processAdditions(Timestamp now) -> void {
 auto Effects::nextEffectNode() -> EffectNode* {
   if (unusedHead == nullptr) {
     reclaimNodes();
-    ASSERT_C(unusedHead != nullptr, "No more timer nodes available", Color::WHITE());
   }
-  auto next = EffectNode::Pop(unusedHead);
-  ASSERT(next->next == nullptr, "Next is not a nullptr");
-  ASSERT(next->prev == nullptr, "Prev is not a nullptr");
-  return next;
+  return popUnused();
 }
 
 auto Effects::reclaimNodes() -> void {

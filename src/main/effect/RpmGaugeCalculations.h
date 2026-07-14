@@ -10,8 +10,8 @@
 struct RpmGaugeCalculations {
   rgb::Timestamp now{};
   rgb::normal coolantPercent{};
-  rgb::normal effectiveBrightBrightness{};
-  rgb::normal effectiveDimBrightness{};
+  rgb::normal effectiveOnBrightness{};
+  rgb::normal effectiveOffBrightness{};
   rgb::u16 effectiveYellowLineStart{};
   rgb::u16 rpmPerLevel{};
   rgb::u16 effectiveRedLineStart{};

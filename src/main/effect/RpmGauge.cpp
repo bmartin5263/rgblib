@@ -5,6 +5,7 @@
 #include "RpmGauge.h"
 #include "Brightness.h"
 #include "Timer.h"
+#include "corvette/CorvetteMain.h"
 
 using namespace rgb;
 
@@ -12,9 +13,9 @@ auto calculatePulseBrightness(
   normal brightness,
   normal scale,
   Timestamp now,
-  Timestamp lastPulseReset
+  Timestamp lastPulseReset // corrects the time so the beginning of the pulse starts at a low brightness
 ) -> normal {
-  return Lerp(brightness, brightness * scale, Pulse((now - lastPulseReset), Duration::Milliseconds(1500)));
+  return Lerp(brightness, brightness * scale, Pulse((now - lastPulseReset), Duration::Milliseconds(1000)));
 }
 
 auto mapToPixelPosition(uint level, uint ledCount, uint offset = 0) -> u16 {
@@ -32,19 +33,18 @@ auto RpmGauge::update(Timestamp now) -> void {
 }
 
 auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
-  auto& vehicle = LincolnTownCar::Instance();
   auto calcs = RpmGaugeCalculations();
   calcs.now = Clock::Now();
-  calcs.coolantPercent = PercentBetween(getCoolantTemp(vehicle), minCoolantLevel, maxCoolantLevel);
+  calcs.coolantPercent = PercentBetween(coolantTempSupplier(), minCoolantLevel, maxCoolantLevel);
   calcs.effectiveYellowLineStart = static_cast<u16>(static_cast<float>(yellowLineStart) * LerpClamp(.6f, 1.0f, calcs.coolantPercent));
   calcs.effectiveRedLineStart = static_cast<u16>(static_cast<float>(redLineStart) * LerpClamp(.8f, 1.0f, calcs.coolantPercent));
-  calcs.effectiveDimBrightness = Brightness::GetBrightness({
-    .medium = rgb::ByteToFloat(1),
-    .bright = rgb::ByteToFloat(4)
+  calcs.effectiveOffBrightness = Brightness::GetBrightness({
+    .medium = offLowBrightness,
+    .bright = offHighBrightness
   });
-  calcs.effectiveBrightBrightness = Brightness::GetBrightness({
-    .medium = rgb::ByteToFloat(7),
-    .bright = rgb::ByteToFloat(40)
+  calcs.effectiveOnBrightness = Brightness::GetBrightness({
+    .medium = onLowBrightness,
+    .bright = onHighBrightness
   });
 
   auto ledCount = pixels.length();
@@ -53,20 +53,23 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
   calcs.yellowLevel = (calcs.effectiveYellowLineStart - rpmStart) / calcs.rpmPerLevel;
   calcs.redLevel = (calcs.effectiveRedLineStart - rpmStart) / calcs.rpmPerLevel;
 
-  rpm = vehicle.smoothRpm();
+  rpm = smoothRpmSupplier();
   calcs.rpmLevelAchieved = (rpm - min(rpm, rpmStart)) / calcs.rpmPerLevel;
 
   if (calcs.rpmLevelAchieved == 0 && rpm > 100) {
     ++calcs.rpmLevelAchieved;
   }
-  calcs.glow = calcs.rpmLevelAchieved > calcs.yellowLevel;
-  if (calcs.rpmLevelAchieved > calcs.redLevel) {
-    if (!redAchievedAt) {
-      redAchievedAt = now;
-    }
-  }
-  else {
-    redAchievedAt.reset();
+
+  switch (glowCondition) {
+    case GlowCondition::YELLOW_LINE:
+      calcs.glow = calcs.rpmLevelAchieved > calcs.yellowLevel;
+      break;
+    case GlowCondition::RED_LINE:
+      calcs.glow = calcs.rpmLevelAchieved > calcs.redLevel;
+      break;
+    default:
+      calcs.glow = false;
+      break;
   }
 
   TRACE("rpmPerLevel=%i, yellowLevel=%i, redLevel=%i, achieved=%i, glow=%i", calcs.rpmPerLevel, calcs.yellowLevel, calcs.redLevel, calcs.rpmLevelAchieved, calcs.glow);
@@ -76,12 +79,22 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
   auto time = now.percentOf(BUILD_UP_TIME);
   auto activeLevel = static_cast<int>(static_cast<float>(levelCount) * time);
 
-  if (rainbow && now.timeSince(redAchievedAt.value_or(now)) > Duration::Milliseconds(100)) {
-    auto t = Clock::Now().percentOfWrapped(RAINBOW_SPEED);
-    auto color = Color::HslToRgb(t) * calcs.effectiveBrightBrightness * 1.5f;
+  if (rainbowSupplier()) {
+    if (!rainbowAchievedAt) {
+      rainbowAchievedAt = now;
+    }
+    auto rainbowBrightness = calcs.effectiveOnBrightness * rainbowBrightnessScale;
+    auto fillPercent = (now - rainbowAchievedAt.value()).percentOf(Duration::Milliseconds(300));
+    auto fillIndex = pixels.size() * fillPercent;
+    auto t = now.percentOfWrapped(RAINBOW_SPEED);
+    auto color = Color::HslToRgb(t) * rainbowBrightness;
     pixels.fill(color, levelCount);
+    if (fillIndex < pixels.size()) {
+      pixels.set(fillIndex, Color::WHITE() * rainbowBrightness * 2);
+    }
   }
   else {
+    rainbowAchievedAt = std::nullopt;
     for (int level = 0; level < levelCount && level < activeLevel; ++level) {
       calcs.level = level;
       auto color = colorMode->calculateColor(calcs, *this);
@@ -94,51 +107,35 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
   }
 
   if (now < BUILD_UP_TIME) {
-    pixels.set(activeLevel, Color::WHITE() * calcs.effectiveBrightBrightness * 2);
+    pixels.set(activeLevel, Color::WHITE() * calcs.effectiveOnBrightness * 2);
   }
 }
 
-auto RpmGauge::getCoolantTemp(LincolnTownCar& vehicle) -> fahrenheit {
-  if (dynamicRedLine && vehicle.isConnected()) {
-    return vehicle.coolantTemp();
-  }
-  else {
-    return maxCoolantLevel;
-  }
-}
-
-auto RpmGauge::calculateNextBrightness(const RpmGaugeCalculations& calculations) -> rgb::normal {
-  if (calculations.level >= calculations.rpmLevelAchieved) {
-    return calculations.effectiveDimBrightness;
+auto RpmGauge::calculateNextBrightness(const RpmGaugeCalculations& calcs) -> normal {
+  auto effectiveBrightBrightness = calcs.effectiveOnBrightness;
+  auto effectiveDimBrightness = calcs.effectiveOffBrightness;
+  if (calcs.level >= calcs.rpmLevelAchieved) {
+    return effectiveDimBrightness;
   }
 
-  if (calculations.glow) {
+  if (calcs.glow) {
     if (!lastFrameWasYellow) {
-      lastPulseReset = calculations.now - Duration::Milliseconds(500);
+      lastPulseReset = calcs.now - Duration::Milliseconds(250);
     }
-    auto brightness = calculatePulseBrightness(calculations.effectiveBrightBrightness, 3.0f, calculations.now, lastPulseReset);
+    auto pulseBrightness = calculatePulseBrightness(effectiveBrightBrightness, pulseBrightnessScale, calcs.now, lastPulseReset);
     lastFrameWasYellow = true;
-    return brightness;
+    return pulseBrightness;
   }
   else {
     if (lastFrameWasYellow) {
-      auto brightness = calculatePulseBrightness(calculations.effectiveBrightBrightness, 3.0f, calculations.now, lastPulseReset);
-      if (brightness <= calculations.effectiveBrightBrightness * 1.16f) {
+      auto pulseBrightness = calculatePulseBrightness(effectiveBrightBrightness, pulseBrightnessScale, calcs.now, lastPulseReset);
+      if (pulseBrightness <= effectiveBrightBrightness * 1.16f) {
         lastFrameWasYellow = false;
       }
-      return brightness;
+      return pulseBrightness;
     }
     else {
-      return calculations.effectiveBrightBrightness;
+      return effectiveBrightBrightness;
     }
   }
-}
-
-auto RpmGauge::startRainbow() -> void {
-  rainbow = true;
-}
-
-auto RpmGauge::stopRainbow() -> void {
-  INFO("stopping rainbow");
-  rainbow = false;
 }

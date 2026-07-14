@@ -58,15 +58,11 @@ constexpr auto narrow_variant(const Source& source) -> std::optional<Target> {
 
 using SystemEvent = EventVariant<
   NullEvent,
-  WakeEvent,
-  SleepEvent,
-  OBDIIConnected,
-  OBDIIDisconnected,
+  VehicleConnected,
+  VehicleDisconnected,
   CarEngineStarted,
   CarEngineStopped,
-  IRButtonPressed,
-  CarMoving,
-  CarStopped
+  IRButtonPressed
 >;
 
 template<typename ...UserEvents>
