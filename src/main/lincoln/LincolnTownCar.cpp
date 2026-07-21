@@ -5,13 +5,12 @@
 #include "LincolnTownCar.h"
 #include "Vehicle.h"
 #include "LincolnAppEvents.h"
-#include "Timer.h"
 
 using namespace rgb;
 
-ColdStartState LincolnTownCar::COLD_START_STATE{};
-MovingState LincolnTownCar::MOVING_STATE{};
-StoppedState LincolnTownCar::STOPPED_STATE{};
+LincolnColdStartState LincolnTownCar::COLD_START_STATE{};
+LincolnMovingState LincolnTownCar::MOVING_STATE{};
+LincolnStoppedState LincolnTownCar::STOPPED_STATE{};
 
 auto LincolnTownCar::update() -> void {
   auto& vehicle = Vehicle::Instance();
@@ -29,6 +28,7 @@ auto LincolnTownCar::update() -> void {
   mThrottle = vehicle.throttlePosition();
   RunningAverage(mSmoothThrottle, mThrottle, .1f);
 
+  INFO("pre-update, mState == COLD_START: %i", mState == &COLD_START_STATE);
   mState->update(*this);
 
   mLastUpdate = Clock::Now();
@@ -77,7 +77,7 @@ auto LincolnTownCar::smoothThrottlePosition() const -> rgb::percent {
 
 
 auto LincolnTownCar::transitionToStopped() -> void {
-  TRACE("mState = STOPPED");
+  INFO("mState = STOPPED");
   mRainbowMode.reset();
   LincolnApp::PublishEvent(CarStopped{{Clock::Now()}});
   mState = &STOPPED_STATE;
@@ -85,7 +85,7 @@ auto LincolnTownCar::transitionToStopped() -> void {
 }
 
 auto LincolnTownCar::transitionToMoving() -> void {
-  TRACE("mState = MOVING");
+  INFO("mState = MOVING");
   LincolnApp::PublishEvent(CarMoving{{Clock::Now()}});
   mState = &MOVING_STATE;
   mStoppedAt = Clock::Now();

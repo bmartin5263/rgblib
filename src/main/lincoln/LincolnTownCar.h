@@ -17,13 +17,13 @@
 //};
 
 class LincolnTownCar {
-  static ColdStartState COLD_START_STATE;
-  static StoppedState STOPPED_STATE;
-  static MovingState MOVING_STATE;
+  static LincolnColdStartState COLD_START_STATE;
+  static LincolnStoppedState STOPPED_STATE;
+  static LincolnMovingState MOVING_STATE;
 public:
-  friend class StoppedState;
-  friend class ColdStartState;
-  friend class MovingState;
+  friend class LincolnStoppedState;
+  friend class LincolnColdStartState;
+  friend class LincolnMovingState;
 
   static constexpr auto RPM_SMOOTHING_FACTOR = 0.03f;
   static constexpr auto MAX_IDLE_RPM = 750;

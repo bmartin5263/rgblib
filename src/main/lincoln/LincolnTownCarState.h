@@ -10,7 +10,6 @@
 class LincolnTownCar;
 class LincolnTownCarState {
 public:
-  virtual auto reset(LincolnTownCar& vehicle) -> void {};
   virtual auto update(LincolnTownCar& vehicle) -> void = 0;
 
   LincolnTownCarState() = default;
@@ -21,21 +20,19 @@ public:
   virtual ~LincolnTownCarState() = default;
 };
 
-class StoppedState : public LincolnTownCarState {
+class LincolnStoppedState : public LincolnTownCarState {
 public:
-  auto reset(LincolnTownCar& vehicle) -> void override;
   auto update(LincolnTownCar& vehicle) -> void override;
 };
 
-class ColdStartState : public LincolnTownCarState {
+class LincolnColdStartState : public LincolnTownCarState {
 public:
   auto update(LincolnTownCar& vehicle) -> void override;
 
 };
 
-class MovingState : public LincolnTownCarState {
+class LincolnMovingState : public LincolnTownCarState {
 public:
-  auto reset(LincolnTownCar& vehicle) -> void override;
   auto update(LincolnTownCar& vehicle) -> void override;
 };
 

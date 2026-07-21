@@ -4,8 +4,6 @@
 
 #include "CorvetteState.h"
 #include "Corvette.h"
-#include "CorvetteApp.h"
-#include "Application.h"
 #include "Clock.h"
 
 using namespace rgb;
@@ -15,7 +13,10 @@ auto ColdStartState::reset(Timestamp enteredAt) -> void {
 }
 
 auto ColdStartState::update(Corvette& vehicle) -> void {
-  Corvette::IDLE_STATE.update(vehicle);
+  if (vehicle.mRpm > Corvette::STARTING_RPM
+    && (Clock::Now().timeSince(enteredAt) > Duration::Seconds(10) || vehicle.mSpeed > 0)) {
+    vehicle.transitionToDriving(true);
+  }
 }
 
 auto IdleState::reset(Timestamp enteredAt) -> void {
@@ -59,29 +60,47 @@ auto RainbowState::update(Corvette& vehicle) -> void {
 }
 
 void ColdStartState::draw(Corvette& vehicle) {
-  auto current = Clock::Now() - enteredAt;
-  auto percentComplete = current.percentOf(Duration::Seconds(1));
+  auto now = Clock::Now() - enteredAt;
+  auto percentComplete = now.percentOf(Duration::Seconds(1));
   vehicle.drawIdleEffects(percentComplete, percentComplete);
 }
 
 void IdleState::draw(Corvette& vehicle) {
-  auto current = Clock::Now() - enteredAt;
-  auto percentComplete = current.percentOf(Duration::Seconds(1));
+  auto now = Clock::Now() - enteredAt;
+  auto percentComplete = now.percentOf(Duration::Seconds(1));
   vehicle.drawRpmEffects();
   vehicle.drawIdleEffects(percentComplete, percentComplete);
 }
 
 void DrivingState::draw(Corvette& vehicle) {
-  auto current = Clock::Now() - enteredAt;
-  auto percentComplete = chargeUp ? current.percentOf(Duration::Seconds(1)) : 1.0f;
+  auto now = Clock::Now() - enteredAt;
+  auto percentComplete = chargeUp ? now.percentOf(Duration::Seconds(1)) : 1.0f;
   vehicle.drawIdleEffects(1.0f, 1.0f - percentComplete);
   vehicle.drawRpmEffects(percentComplete);
 }
 
 void RainbowState::draw(Corvette& vehicle) {
-  auto current = Clock::Now() - enteredAt;
-  auto percentComplete = current.percentOf(Duration::Milliseconds(500));
+  auto now = Clock::Now() - enteredAt;
+  auto percentComplete = now.percentOf(Duration::Milliseconds(500));
   vehicle.drawRpmEffects();
   vehicle.drawRainbowEffects(percentComplete);
 }
 
+auto SleepState::reset(Timestamp enteredAt) -> void {
+  this->enteredAt = enteredAt;
+}
+
+auto SleepState::update(Corvette& vehicle) -> void {
+  // delay(1000);
+  // auto now = Clock::Now() - enteredAt;
+  // auto percentComplete = now.percentOf(Duration::Seconds(1));
+  // if (percentComplete > 1.0f) {
+  //   // delay(1000);
+  // }
+}
+
+void SleepState::draw(Corvette& vehicle) {
+  auto now = Clock::Now() - enteredAt;
+  auto percentComplete = now.percentOf(Duration::Seconds(1));
+  vehicle.drawSleepEffects(percentComplete);
+}

@@ -58,6 +58,7 @@ constexpr auto narrow_variant(const Source& source) -> std::optional<Target> {
 
 using SystemEvent = EventVariant<
   NullEvent,
+  AppReady,
   VehicleConnected,
   VehicleDisconnected,
   CarEngineStarted,

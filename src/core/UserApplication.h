@@ -78,9 +78,10 @@ public:
 
 protected:
   virtual auto configure(Configurer& app) -> void = 0;
+  virtual auto initialize() -> void {}
   virtual auto update() -> void = 0;
   virtual auto draw() -> void = 0;
-  virtual auto postDraw() -> void {};
+  virtual auto postDraw() -> void {}
 
 private:
   auto configureApplication() -> void;
@@ -106,12 +107,15 @@ auto UserApplication<EventVariantT>::getVehicleLogger() -> VehicleLogger* {
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::run() -> void {
   setup();
-  loop();
+  while (true) {
+    loop();
+  }
 }
 
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::setup() -> void {
   log::init();
+  INFO("Setup Application");
   configureApplication();
 
 #if RGB_OTA
@@ -125,7 +129,8 @@ auto UserApplication<EventVariantT>::setup() -> void {
 #endif
 
   startSubsystems();
-  INFO("Setup Application");
+  initialize();
+  PublishEvent(AppReady{{Clock::Now()}});
 }
 
 template<typename EventVariantT>
@@ -216,7 +221,9 @@ auto UserApplication<EventVariantT>::publishSystemEvent(const SystemEvent& syste
     return AnyEvent{e};
   }, systemEvent);
   auto uid = systemEvent.index();
+  INFO("publishSystemEvent: uid=%u", uid);
   if (auto it = mEventMap.find(uid); it != mEventMap.end()) {
+    INFO("handlers size: %u", it->second.size());
     for (auto& handler : it->second) {
       handler(event);
     }
@@ -225,6 +232,7 @@ auto UserApplication<EventVariantT>::publishSystemEvent(const SystemEvent& syste
 
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::on(size_t uid, Consumer<const SystemEvent&> action) -> void {
+  INFO("on: uid=%u", uid);
   mEventMap[uid].push_back([action](auto& anyEvent) {
     if (auto systemEvent = narrow_variant<SystemEvent>(anyEvent)) {
       action(systemEvent.value());

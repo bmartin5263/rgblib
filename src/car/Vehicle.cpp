@@ -57,25 +57,25 @@ auto Vehicle::disconnect() -> void {
 }
 
 auto Vehicle::update() -> VehicleUpdateCode {
-  if (!mConnected) { return VehicleUpdateCode::NONE; }
+  if (!mConnected) { return NONE; }
   auto lock = std::unique_lock { mu };
 
-  if (!mConnected) { return VehicleUpdateCode::NONE; }
+  if (!mConnected) { return NONE; }
   readPID(PID_RPM, mRpm, NoRemapping);
 
-  if (!mConnected) { return VehicleUpdateCode::PARTIAL; }
+  if (!mConnected) { return PARTIAL; }
   readPID(PID_COOLANT_TEMP, mCoolantTemp, ToFahrenheit);
 
-  if (!mConnected) { return VehicleUpdateCode::PARTIAL; }
+  if (!mConnected) { return PARTIAL; }
   readPID(PID_SPEED, mSpeed, NoRemapping);
 
-  if (!mConnected) { return VehicleUpdateCode::PARTIAL; }
+  if (!mConnected) { return PARTIAL; }
   readPID(PID_THROTTLE, mThrottlePosition, ToPercent);
 
-  if (!mConnected) { return VehicleUpdateCode::PARTIAL; }
+  if (!mConnected) { return PARTIAL; }
   readPID(PID_FUEL_LEVEL, mFuelLevel, ToPercent);
 
-  return VehicleUpdateCode::FULL;
+  return FULL;
 }
 
 auto Vehicle::rpm() const -> revs_per_minute {

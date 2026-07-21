@@ -107,7 +107,7 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
   }
 
   if (now < BUILD_UP_TIME) {
-    pixels.set(activeLevel, Color::WHITE() * calcs.effectiveOnBrightness * 2);
+    pixels.set(activeLevel, Color::WHITE() * calcs.effectiveOnBrightness * 3);
   }
 }
 

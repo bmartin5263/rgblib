@@ -4,30 +4,24 @@
 
 #include "LincolnTownCarState.h"
 #include "LincolnTownCar.h"
-#include "Application.h"
 #include "Clock.h"
 
 using namespace rgb;
 
-auto ColdStartState::update(LincolnTownCar& vehicle) -> void {
+auto LincolnColdStartState::update(LincolnTownCar& vehicle) -> void {
+  INFO("Cold Start");
   LincolnTownCar::STOPPED_STATE.update(vehicle);
 }
 
-auto StoppedState::reset(LincolnTownCar& vehicle) -> void {
-
-}
-
-auto StoppedState::update(LincolnTownCar& vehicle) -> void {
+auto LincolnStoppedState::update(LincolnTownCar& vehicle) -> void {
+  INFO("Stopped");
   if (vehicle.mRpm > LincolnTownCar::STARTING_RPM) {
     vehicle.transitionToMoving();
   }
 }
 
-auto MovingState::reset(LincolnTownCar& vehicle) -> void {
-
-}
-
-auto MovingState::update(LincolnTownCar& vehicle) -> void {
+auto LincolnMovingState::update(LincolnTownCar& vehicle) -> void {
+  INFO("Moving");
   if (vehicle.mRpm >= LincolnTownCar::RAINBOW_RPM) {
     vehicle.enterOrExtendRainbowMode();
   }

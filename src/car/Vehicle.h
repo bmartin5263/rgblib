@@ -31,7 +31,7 @@ public:
   template<class T>
   using atomic = std::atomic<T>;
 
-  static constexpr auto DISCONNECT_TIMEOUT = Duration::Seconds(2);
+  static constexpr auto DISCONNECT_TIMEOUT = Duration::Milliseconds(100);
 
   auto setTimeout(Duration timeout) -> void;
   auto update() -> VehicleUpdateCode;

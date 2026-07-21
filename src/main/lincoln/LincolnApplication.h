@@ -28,6 +28,83 @@
 
 using namespace rgb;
 
+// Colors
+constexpr auto FOOT_PURPLE = Color {0.2f, 0.f, 1.0f};
+constexpr auto FIBER_PURPLE = Color {0.3f, 0.f, 1.0f};
+
+// LED Counts
+static constexpr u16 FOOT_STRIP_LED_COUNT = 40;
+static constexpr u16 FIBER_STRIP1_LED_COUNT = 147;
+static constexpr u16 FIBER_STRIP2_LED_COUNT = 147;
+static constexpr u16 FIBER_STRIP3_LED_COUNT = 120;
+static constexpr u16 LONGEST_STRIP_LENGTH = Max(FIBER_STRIP1_LED_COUNT, FIBER_STRIP2_LED_COUNT, FIBER_STRIP3_LED_COUNT);
+static constexpr u16 HALF_FOOT_STRIP_LED_COUNT = FOOT_STRIP_LED_COUNT / 2;
+static constexpr u16 RAINBOW_WHITE_LENGTH = 5;
+
+// LEDs
+auto ring = FastLEDStrip<12, D2_RGB, RgbwSupport::ENABLE>();
+auto leftFoot = FastLEDStrip<FOOT_STRIP_LED_COUNT, D4_RGB>();
+auto rightFoot = FastLEDStrip<FOOT_STRIP_LED_COUNT, D5_RGB>();
+auto dashFiber1 = FastLEDStrip<FIBER_STRIP1_LED_COUNT, D6_RGB>();
+auto dashFiber2 = FastLEDStrip<FIBER_STRIP2_LED_COUNT, D7_RGB>();
+auto dashFiber3 = FastLEDStrip<FIBER_STRIP3_LED_COUNT, D8_RGB>();
+
+// "Dead" Segments
+auto deadHalfRing = DeadPixelList{ring.length() / 2};
+auto deadFiberLength1 = DeadPixelList(FIBER_STRIP1_LED_COUNT);
+auto deadFiberLength2 = DeadPixelList(FIBER_STRIP1_LED_COUNT + 27);
+
+// Segments
+auto ringReverse = ReversePixelList{ring};
+auto introRing = PixelStitch{ring, deadHalfRing};
+auto introRingReverse = ReversePixelList{introRing};
+auto dashFiber3Reverse = ReversePixelList(dashFiber3);
+auto heartBeatFiber1 = PixelStitch{dashFiber1, deadFiberLength1};
+auto heartBeatFiber2 = PixelStitch{dashFiber2, deadFiberLength1};
+auto heartBeatFiber3 = PixelStitch{dashFiber3Reverse, deadFiberLength2};
+
+auto dashFiber12 = PixelStitch{dashFiber1, dashFiber2};
+auto dashFiberFull = PixelStitch{dashFiber12, dashFiber3Reverse};
+
+// Groups
+auto footFiberGroup = std::array<PixelList*, 5> { &leftFoot, &rightFoot, &dashFiber1, &dashFiber2, &dashFiber3Reverse };
+auto heartbeatFiberGroup = std::array<PixelList*, 3> { &heartBeatFiber1, &heartBeatFiber2, &heartBeatFiber3 };
+
+// Sensors
+auto irRemote = IRReceiver{PinNumber{A7}};
+
+// Effects
+
+// Intro Effects
+auto ringChase1 = ChasingEffect{};
+auto ringChase2 = ChasingEffect{};
+auto introWipe = WipeEffect{};
+
+// Rpm Effect
+auto rpmGauge = RpmGauge{};
+auto footWipe = WipeEffect{};
+auto fiberChase = ChasingEffectSpeedOnly{};
+
+
+auto footTimerHandle = TimerHandle{};
+auto footRainbowTimerHandle = TimerHandle{};
+
+// Regular Level
+auto footLevel = 0;
+auto dashFiberLevel = 0;
+
+// Rainbow Level
+auto footRainbowLevel = 0;
+auto dashFiberRainbowLevel = 0;
+
+// Sleep Level
+auto footSleepLevel = 0;
+auto dashFiberSleepLevel = 0;
+
+auto holdMode = false;
+auto rainbowMode = false;
+auto rpmGaugeHandle = EffectHandle{};
+
 struct ColorPalette {
   Color idleDashColor;
   Color idleFootColor;
@@ -90,116 +167,7 @@ private:
   Timestamp mChangedAt{};
 };
 
-// Colors
-constexpr auto FOOT_PURPLE = Color {0.2f, 0.f, 1.0f};
-constexpr auto FIBER_PURPLE = Color {0.3f, 0.f, 1.0f};
-
-// LED Counts
-static constexpr u16 FOOT_STRIP_LED_COUNT = 40;
-static constexpr u16 FIBER_STRIP1_LED_COUNT = 147;
-static constexpr u16 FIBER_STRIP2_LED_COUNT = 147;
-static constexpr u16 FIBER_STRIP3_LED_COUNT = 120;
-static constexpr u16 LONGEST_STRIP_LENGTH = Max(FIBER_STRIP1_LED_COUNT, FIBER_STRIP2_LED_COUNT, FIBER_STRIP3_LED_COUNT);
-static constexpr u16 HALF_FOOT_STRIP_LED_COUNT = FOOT_STRIP_LED_COUNT / 2;
-static constexpr u16 RAINBOW_WHITE_LENGTH = 5;
-
-// LEDs
-inline auto ring = FastLEDStrip<12, D2_RGB, RgbwSupport::ENABLE>();
-inline auto leftFoot = FastLEDStrip<FOOT_STRIP_LED_COUNT, D4_RGB>();
-inline auto rightFoot = FastLEDStrip<FOOT_STRIP_LED_COUNT, D5_RGB>();
-inline auto dashFiber1 = FastLEDStrip<FIBER_STRIP1_LED_COUNT, D6_RGB>();
-inline auto dashFiber2 = FastLEDStrip<FIBER_STRIP2_LED_COUNT, D7_RGB>();
-inline auto dashFiber3 = FastLEDStrip<FIBER_STRIP3_LED_COUNT, D8_RGB>();
-
-// "Dead" Segments
-inline auto deadHalfRing = DeadPixelList{ring.length() / 2};
-inline auto deadFiberLength1 = DeadPixelList(FIBER_STRIP1_LED_COUNT);
-inline auto deadFiberLength2 = DeadPixelList(FIBER_STRIP1_LED_COUNT + 27);
-
-// Segments
-inline auto ringReverse = ReversePixelList{ring};
-inline auto introRing = PixelStitch{ring, deadHalfRing};
-inline auto introRingReverse = ReversePixelList{introRing};
-inline auto dashFiber3Reverse = ReversePixelList(dashFiber3);
-inline auto heartBeatFiber1 = PixelStitch{dashFiber1, deadFiberLength1};
-inline auto heartBeatFiber2 = PixelStitch{dashFiber2, deadFiberLength1};
-inline auto heartBeatFiber3 = PixelStitch{dashFiber3Reverse, deadFiberLength2};
-
-inline auto dashFiber12 = PixelStitch{dashFiber1, dashFiber2};
-inline auto dashFiberFull = PixelStitch{dashFiber12, dashFiber3Reverse};
-
-// Groups
-inline auto footFiberGroup = std::array<PixelList*, 5> { &leftFoot, &rightFoot, &dashFiber1, &dashFiber2, &dashFiber3Reverse };
-inline auto heartbeatFiberGroup = std::array<PixelList*, 3> { &heartBeatFiber1, &heartBeatFiber2, &heartBeatFiber3 };
-
-// Sensors
-inline auto irRemote = IRReceiver{PinNumber{A7}};
-
-// Effects
-
-// Intro Effects
-inline auto ringChase1 = ChasingEffect{};
-inline auto ringChase2 = ChasingEffect{};
-inline auto introWipe = WipeEffect{};
-
-// Rpm Effect
-inline auto rpmGauge = RpmGauge{};
-inline auto footWipe = WipeEffect{};
-inline auto fiberChase = ChasingEffectSpeedOnly{};
-
-
-inline auto footTimerHandle = TimerHandle{};
-inline auto footRainbowTimerHandle = TimerHandle{};
-
-// Regular Level
-inline auto footLevel = 0;
-inline auto dashFiberLevel = 0;
-
-// Rainbow Level
-inline auto footRainbowLevel = 0;
-inline auto dashFiberRainbowLevel = 0;
-
-// Sleep Level
-inline auto footSleepLevel = 0;
-inline auto dashFiberSleepLevel = 0;
-
-inline auto holdMode = false;
-inline auto rainbowMode = false;
-inline auto rpmGaugeHandle = EffectHandle{};
-
-inline auto levelUpFn = [](int& footLevel, int& dashFiberLevel){
-  if (footLevel < leftFoot.length()) {
-    ++footLevel;
-  }
-  ++dashFiberLevel;
-  if (dashFiberLevel < LONGEST_STRIP_LENGTH) {
-    ++dashFiberLevel;
-  }
-  return footLevel < leftFoot.length() || dashFiberLevel < LONGEST_STRIP_LENGTH;
-};
-inline auto levelUpFn2 = [](int& footLevel, int& dashFiberLevel){
-  if (footLevel < leftFoot.length()) {
-    ++footLevel;
-  }
-  ++dashFiberLevel;
-  if (dashFiberLevel < dashFiberFull.length()) {
-    ++dashFiberLevel;
-  }
-  return footLevel < leftFoot.length() + RAINBOW_WHITE_LENGTH || dashFiberLevel < dashFiberFull.length() + RAINBOW_WHITE_LENGTH;
-};
-inline auto levelDownFn = [](int& footLevel, int& dashFiberLevel){
-  if (footLevel > 0) {
-    --footLevel;
-  }
-  --dashFiberLevel;
-  if (dashFiberLevel > 0) {
-    --dashFiberLevel;
-  }
-
-  return footLevel > 0 || dashFiberLevel > 0;
-};
-
-inline auto colorPalettes = FadingCarousel{Carousel{std::array{
+auto colorPalettes = FadingCarousel{Carousel{std::array{
   ColorPalette {
     .idleDashColor = Color::RED(),
     .idleFootColor = Color::RED(),
@@ -237,7 +205,40 @@ inline auto colorPalettes = FadingCarousel{Carousel{std::array{
   }
 }}};
 
+auto levelUpFn = [](int& footLevel, int& dashFiberLevel){
+  if (footLevel < leftFoot.length()) {
+    ++footLevel;
+  }
+  ++dashFiberLevel;
+  if (dashFiberLevel < LONGEST_STRIP_LENGTH) {
+    ++dashFiberLevel;
+  }
+  return footLevel < leftFoot.length() || dashFiberLevel < LONGEST_STRIP_LENGTH;
+};
+auto levelUpFn2 = [](int& footLevel, int& dashFiberLevel){
+  if (footLevel < leftFoot.length()) {
+    ++footLevel;
+  }
+  ++dashFiberLevel;
+  if (dashFiberLevel < dashFiberFull.length()) {
+    ++dashFiberLevel;
+  }
+  return footLevel < leftFoot.length() + RAINBOW_WHITE_LENGTH || dashFiberLevel < dashFiberFull.length() + RAINBOW_WHITE_LENGTH;
+};
+auto levelDownFn = [](int& footLevel, int& dashFiberLevel){
+  if (footLevel > 0) {
+    --footLevel;
+  }
+  --dashFiberLevel;
+  if (dashFiberLevel > 0) {
+    --dashFiberLevel;
+  }
+
+  return footLevel > 0 || dashFiberLevel > 0;
+};
+
 class LincolnApplication : public UserApplication<LincolnAppEvents> {
+private:
   static auto RunIntroSequence() {
     INFO("Starting Intro Sequence");
     Effects::Start(ringChase1, ring).detach();
@@ -321,6 +322,8 @@ protected:
       return pixel * 1.5f;
     };
 
+    app.on<AppReady>([](auto& event) { RunIntroSequence(); });
+
     app.on<CarMoving>([](auto& event){
       Effects::Stop(ringChase1, ringChase2);
       if (!rpmGaugeHandle.isRunning()) {
@@ -338,11 +341,9 @@ protected:
       footTimerHandle = Timer::ContinuouslyWhile([](){ return levelDownFn(footLevel, dashFiberLevel); });
     });
     app.on<RainbowModeEntered>([](auto& event) {
-      rpmGauge.startRainbow();
       footRainbowTimerHandle = Timer::ContinuouslyWhile([](){ return levelUpFn2(footRainbowLevel, dashFiberRainbowLevel); });
     });
     app.on<RainbowModeExited>([](auto& event) {
-      rpmGauge.stopRainbow();
       footRainbowTimerHandle.cancel();
       footRainbowLevel = 0;
       dashFiberRainbowLevel = 0;
@@ -393,6 +394,23 @@ protected:
           INFO("Unknown Button Pressed");
       }
     });
+
+    rpmGauge.smoothRpmSupplier = [] { return LincolnTownCar::Instance().smoothRpm(); };
+    rpmGauge.coolantTempSupplier = [] { return LincolnTownCar::Instance().coolantTemp(); };
+    rpmGauge.rainbowSupplier = [] { return LincolnTownCar::Instance().inRainbowMode(); };
+
+//    app.on<OBDIIConnected>([this](auto& event){
+//      if (isSleeping()) {
+//        wakeUp();
+//        RunIntroSequence();
+//      }
+//    });
+//    app.on<OBDIIDisconnected>([this](auto& event){
+//      goToSleep(Duration::Seconds(3));
+//    });
+//    app.on<SleepEvent>([](auto& event){
+//      footRainbowTimerHandle = Timer::ContinuouslyWhile([](){ return levelUpFn(footSleepLevel, dashFiberSleepLevel); });
+//    });
   }
 
   auto update() -> void override {

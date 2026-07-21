@@ -39,7 +39,7 @@ private:
   TraditionalRpmLayout(TraditionalRpmLayout&& rhs) noexcept = default;
   TraditionalRpmLayout& operator=(const TraditionalRpmLayout& rhs) = default;
   TraditionalRpmLayout& operator=(TraditionalRpmLayout&& rhs) noexcept = default;
-  ~TraditionalRpmLayout() = default;
+  ~TraditionalRpmLayout() override = default;
 };
 
 class SportRpmLayout : public RpmLayout {
@@ -58,7 +58,7 @@ private:
   SportRpmLayout(SportRpmLayout&& rhs) noexcept = default;
   SportRpmLayout& operator=(const SportRpmLayout& rhs) = default;
   SportRpmLayout& operator=(SportRpmLayout&& rhs) noexcept = default;
-  ~SportRpmLayout() = default;
+  ~SportRpmLayout() override = default;
 };
 
 #endif //RGBLIB_RPMSTYLE_H

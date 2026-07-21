@@ -18,6 +18,9 @@ struct BaseEvent {
 struct NullEvent : BaseEvent {
 };
 
+// Configuration and Initialization completed, emitted only once per-boot
+struct AppReady : BaseEvent {};
+
 // Car's engine has started
 struct VehicleConnected : BaseEvent {};
 

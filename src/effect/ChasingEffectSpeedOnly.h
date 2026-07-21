@@ -52,7 +52,7 @@ public:
 
 private: // TODO - see if this organization affected the memory size
   // When do we move the effect next
-  rgb::Timestamp nextMoveTime{0};
+  Timestamp nextMoveTime{0};
 
   // Where is the head of the effect
   u64 effectPosition{0};
@@ -64,8 +64,13 @@ public:
   // Length of the chase trail, in absolute units or relative to the length of the pixel buffer
   Length trailLength{.2f};
 
+  Length trim{Length::Units(0)};
+
   // Does the trail have to first enter from "off-screen"
   bool buildup{false};
+
+  // Chase in the opposite direction along the pixel buffer
+  bool reversed{false};
 
 };
 

@@ -25,6 +25,17 @@ public:
     }
   }
 
+  template<class Size>
+  auto getUnitsSized(Size size) -> uint {
+    if (std::holds_alternative<uint>(variant)) {
+      return std::get<uint>(variant);
+    }
+    else {
+      // Round down result
+      return static_cast<uint>(size * std::get<normal>(variant));
+    }
+  }
+
   static constexpr auto Units(uint units) -> Length {
     return Length{units};
   }

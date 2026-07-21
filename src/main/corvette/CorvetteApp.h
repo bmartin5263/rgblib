@@ -33,11 +33,19 @@ struct IdleModeEntered : rgb::BaseEvent {
 struct RainbowModeEntered : rgb::BaseEvent {
   CorvetteState* previousState;
 };
+struct SleepModeEntered : rgb::BaseEvent {
+  CorvetteState* previousState;
+};
+struct ColdStartModeEntered : rgb::BaseEvent {
+  CorvetteState* previousState;
+};
 
 using CorvetteAppEvents = rgb::Event<
   RainbowModeEntered,
   DriveModeEntered,
-  IdleModeEntered
+  IdleModeEntered,
+  SleepModeEntered,
+  ColdStartModeEntered
 >;
 
 using CorvetteApp = rgb::UserApplication<CorvetteAppEvents>;
@@ -57,10 +65,14 @@ using LeftFootStrip = rgb::FastLEDStrip<FOOT_STRIP_LED_COUNT, RGB_CORVETTE_LEFT_
 using RightFootStrip = rgb::FastLEDStrip<FOOT_STRIP_LED_COUNT, RGB_CORVETTE_RIGHT_PIN>;
 using TachometerStrip = rgb::FastLEDStrip<TACHOMETER_LED_COUNT, RGB_CORVETTE_TACHOMETER_PIN, rgb::RgbwSupport::ENABLE>;
 using CenterFiberStrip = rgb::FastLEDStrip<FIBER_LED_COUNT, RGB_CORVETTE_CENTER_FIBER_PIN>;
+using LeftFiberStrip = rgb::FastLEDStrip<FIBER_LED_COUNT, RGB_CORVETTE_LEFT_FIBER_PIN>;
+using RightFiberStrip = rgb::FastLEDStrip<FIBER_LED_COUNT, RGB_CORVETTE_RIGHT_FIBER_PIN>;
 
 extern LeftFootStrip leftFoot;
 extern RightFootStrip rightFoot;
 extern TachometerStrip tachometer;
 extern CenterFiberStrip centerFiber;
+extern LeftFiberStrip leftFiber;
+extern RightFiberStrip rightFiber;
 
 #endif //RGBLIB_CORVETTEAPP_H

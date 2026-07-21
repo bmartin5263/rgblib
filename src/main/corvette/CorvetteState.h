@@ -5,6 +5,7 @@
 #ifndef RGBLIB_CORVETTESTATE_H
 #define RGBLIB_CORVETTESTATE_H
 
+#include "EffectHandle.h"
 #include "Types.h"
 
 class Corvette;
@@ -54,6 +55,13 @@ public:
   auto draw(Corvette& vehicle) -> void override;
 
   rgb::percent throttleWhenRainbowStart;
+};
+
+class SleepState : public CorvetteState {
+public:
+  auto reset(rgb::Timestamp enteredAt) -> void;
+  auto update(Corvette& vehicle) -> void override;
+  auto draw(Corvette& vehicle) -> void override;
 };
 
 

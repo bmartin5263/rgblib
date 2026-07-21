@@ -5,27 +5,44 @@
 #include "Corvette.h"
 #include "Vehicle.h"
 #include "CorvetteApp.h"
+#include "DeadPixelList.h"
+#include "PixelStitch.h"
 
 using namespace rgb;
 
+namespace {
+constexpr auto NINTY_MPH = 144.f;
+auto deadPixelList = DeadPixelList{centerFiber.size()};
+auto heartBeatCenterFiber = PixelStitch{centerFiber, deadPixelList};
+auto heartBeatLeftFiber = PixelStitch{leftFiber, deadPixelList};
+auto heartBeatRightFiber = PixelStitch{rightFiber, deadPixelList};
+auto group = std::array<PixelList*, 3>({
+  &heartBeatCenterFiber, &heartBeatLeftFiber, &heartBeatRightFiber
+});
+}
+
 ColdStartState Corvette::COLD_START_STATE{};
+SleepState Corvette::SLEEP_STATE{};
 DrivingState Corvette::DRIVING_STATE{};
 IdleState Corvette::IDLE_STATE{};
 RainbowState Corvette::RAINBOW_STATE{};
 
+auto Corvette::setup() -> void {
+  mState = &SLEEP_STATE;
+  chasingEffect.buildup = true;
+  chasingEffect.reversed = true;
+  chasingEffect.delay = Duration::Milliseconds(50);
+  chasingEffect.trailLength = Length::Ratio(.2f);
+  chasingEffect.shader = [](auto color, auto& params) {
+    return color * 2;
+  };
+}
+
 auto Corvette::init() -> void {
-  COLD_START_STATE.reset(Clock::Now());
-  mState = &COLD_START_STATE;
+  transitionToColdStart();
 }
 
 auto Corvette::update() -> void {
-  static bool initialized = false;
-  if (!initialized) {
-    // Wait as long as to set the "enteredAt" since the effect depends on it
-    COLD_START_STATE.reset(Clock::Now());
-    initialized = true;
-  }
-
   auto& vehicle = Vehicle::Instance();
 
   mPreviousRpm = mRpm;
@@ -40,6 +57,10 @@ auto Corvette::update() -> void {
 
   mThrottle = vehicle.throttlePosition();
   mSmoothThrottle = RunningAverage(mSmoothThrottle, mThrottle, .1f);
+
+  auto speed = static_cast<float>(mSmoothSpeed);
+  auto chaseTime = Duration::Microseconds(LerpClamp(20000, 4000, speed / NINTY_MPH));
+  chasingEffect.delay = chaseTime;
 
   mState->update(*this);
 
@@ -107,16 +128,36 @@ auto Corvette::transitionToDriving(bool chargeUp) -> void {
   CorvetteApp::PublishEvent(DriveModeEntered{{Clock::Now()}, previousState});
 }
 
+auto Corvette::transitionToSleeping() -> void {
+  ASSERT(mState != &SLEEP_STATE, "Already in Sleep Mode");
+  TRACE("mState = SLEEP");
+  SLEEP_STATE.reset(Clock::Now());
+  auto previousState = setState(SLEEP_STATE);
+  chaseHandle.stop();
+  CorvetteApp::PublishEvent(SleepModeEntered{{Clock::Now()}, previousState});
+}
+
+auto Corvette::transitionToColdStart() -> void {
+  ASSERT(mState == &SLEEP_STATE, "Can only enter Cold Start from sleeping");
+  TRACE("mState = COLD_START");
+  COLD_START_STATE.reset(Clock::Now());
+  auto previousState = setState(COLD_START_STATE);
+  chaseHandle = Effects::Start(chasingEffect, group);
+  CorvetteApp::PublishEvent(ColdStartModeEntered{{Clock::Now()}, previousState});
+}
+
 auto Corvette::enterRainbowMode() -> void {
   ASSERT(mState != &RAINBOW_STATE, "Already in Rainbow Mode");
   TRACE("mState = RAINBOW");
   RAINBOW_STATE.reset(Clock::Now(), mThrottle);
+  chaseHandle.stop();
   auto previousState = setState(RAINBOW_STATE);
   CorvetteApp::PublishEvent(RainbowModeEntered{{Clock::Now()}, previousState});
 }
 
 auto Corvette::exitRainbowMode() -> void {
   INFO("exitRainbowMode");
+  chaseHandle = Effects::Start(chasingEffect, group);
   if (mRpm <= STARTING_RPM && mSpeed == 0) {
     transitionToIdle();
   }
@@ -125,31 +166,49 @@ auto Corvette::exitRainbowMode() -> void {
   }
 }
 
+auto Corvette::drawSleepEffects(normal phase) -> void {
+  if (phase > 1.0f) {
+    return;
+  }
+
+  auto colorFiber = FIBER_PURPLE.lerpClamp(Color::RED(), phase);
+  auto colorFoot = FOOT_PURPLE.lerpClamp(Color::RED(), phase);
+  auto fiberBrightness = GetFiberBrightness();
+
+  leftFoot.fillRatio(colorFoot, 1.0f - phase);
+  rightFoot.fillRatio(colorFoot, 1.0f - phase);
+  centerFiber.fillRatioReverse(colorFiber * fiberBrightness, 1.0f - phase);
+  leftFiber.fillRatioReverse(colorFiber * fiberBrightness, 1.0f - phase);
+  rightFiber.fillRatioReverse(colorFiber * fiberBrightness, 1.0f - phase);
+}
+
 auto Corvette::drawIdleEffects(normal fillPercent, normal colorPercent) -> void {
   auto colorFiber = Color::RED().lerpClamp(FIBER_PURPLE, colorPercent);
   auto colorFoot = Color::RED().lerpClamp(FOOT_PURPLE, colorPercent);
+  auto fiberBrightness = GetFiberBrightness();
 
   leftFoot.fillRatio(colorFoot, fillPercent);
   rightFoot.fillRatio(colorFoot, fillPercent);
-  centerFiber.fillRatioReverse(colorFiber * .3f, fillPercent);
+  centerFiber.fillRatioReverse(colorFiber * fiberBrightness, fillPercent);
+  leftFiber.fillRatioReverse(colorFiber * fiberBrightness, fillPercent);
+  rightFiber.fillRatioReverse(colorFiber * fiberBrightness, fillPercent);
 }
 
 auto Corvette::drawRpmEffects(normal fillPercent) -> void {
   auto rpmColorPercent = (static_cast<float>(mSmoothRpm) - RPM_LOW) / (RPM_HIGH - RPM_LOW);
+  rpmColorPercent = Clamp(rpmColorPercent, 0.0f, 1.0f);
   if (rpmColorPercent < 0.0f) {
     rpmColorPercent = 0.0f;
   }
   auto rpmColor = LOW_RPM_COLOR.lerpClamp(HIGH_RPM_COLOR, rpmColorPercent);
+  auto actualRpmColor = Color::GREEN().lerpClamp(rpmColor, fillPercent);
+  auto fiberBrightness = GetFiberBrightness();
 
-  auto rpmFillPercent = (mSmoothRpm - 500) / 3500.f;
-  if (rpmFillPercent < 0.0f) {
-    rpmFillPercent = 0.0f;
-  }
-
-  leftFoot.fillRatio(rpmColor, fillPercent);
-  rightFoot.fillRatio(rpmColor, fillPercent);
-  centerFiber.fillRatioReverse(rpmColor * .1f, fillPercent);
-  centerFiber.fillRatioReverse(rpmColor * .3f, std::min(fillPercent, rpmFillPercent));
+  leftFoot.fillRatio(actualRpmColor, fillPercent);
+  rightFoot.fillRatio(actualRpmColor, fillPercent);
+  centerFiber.fillRatioReverse(actualRpmColor * fiberBrightness, fillPercent);
+  leftFiber.fillRatioReverse(actualRpmColor * fiberBrightness, fillPercent);
+  rightFiber.fillRatioReverse(actualRpmColor * fiberBrightness, fillPercent);
 }
 
 auto Corvette::drawRainbowEffects(normal fillPercent) -> void {
@@ -172,6 +231,7 @@ auto Corvette::drawRainbowEffects(normal fillPercent) -> void {
 
   auto fiberLedCount = centerFiber.length();
   auto fiberRainbowLevel = std::min(static_cast<uint>(fiberLedCount * fillPercent), fiberLedCount) + RAINBOW_WHITE_LENGTH;
+  auto fiberBrightness = GetFiberBrightness() * 1.5f;
 
   for (int i = 0; i < fiberLedCount && i < fiberRainbowLevel; ++i) {
     if (i < fiberRainbowLevel - RAINBOW_WHITE_LENGTH) {
@@ -182,10 +242,14 @@ auto Corvette::drawRainbowEffects(normal fillPercent) -> void {
         hue = hue - floorf(hue);
       }
       auto rainbowDashColor = Color::HslToRgb(1.0f - hue);
-      centerFiber.set(fiberLedCount - 1 - i, rainbowDashColor * .5f);
+      centerFiber.set(fiberLedCount - 1 - i, rainbowDashColor * fiberBrightness);
+      leftFiber.set(fiberLedCount - 1 - i, rainbowDashColor * fiberBrightness);
+      rightFiber.set(fiberLedCount - 1 - i, rainbowDashColor * fiberBrightness);
     }
     else {
-      centerFiber.set(fiberLedCount - 1 - i, Color::WHITE() * .5f);
+      centerFiber.set(fiberLedCount - 1 - i, Color::WHITE() * fiberBrightness);
+      leftFiber.set(fiberLedCount - 1 - i, Color::WHITE() * fiberBrightness);
+      rightFiber.set(fiberLedCount - 1 - i, Color::WHITE() * fiberBrightness);
     }
   }
 
@@ -205,4 +269,17 @@ auto Corvette::inRainbowMode() const -> bool {
 
 auto Corvette::isStopped() const -> bool {
   return mState == &IDLE_STATE || mState == &COLD_START_STATE;
+}
+
+auto Corvette::isSleeping() const -> bool {
+  return mState == &SLEEP_STATE;
+}
+
+auto Corvette::GetFiberBrightness() -> float {
+  return Brightness::GetBrightness({
+      .dim = .1f,
+      .medium = .3f,
+      .bright = .5f,
+      .max = 1.0f
+    });
 }
