@@ -23,6 +23,12 @@
 #ifndef RGB_CORVETTE_CENTER_FIBER_PIN
 #define RGB_CORVETTE_CENTER_FIBER_PIN rgb::D5_RGB
 #endif
+#ifndef RGB_CORVETTE_LEFT_FIBER_PIN
+#define RGB_CORVETTE_LEFT_FIBER_PIN rgb::D6_RGB
+#endif
+#ifndef RGB_CORVETTE_RIGHT_FIBER_PIN
+#define RGB_CORVETTE_RIGHT_FIBER_PIN rgb::D7_RGB
+#endif
 
 struct DriveModeEntered : rgb::BaseEvent {
   CorvetteState* previousState;

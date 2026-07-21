@@ -14,7 +14,7 @@ namespace rgb {
 template<typename PriorityNode, uint Count>
 class PriorityNodePool {
 public:
-  static constexpr auto TotalCount() -> uint { return Count; }
+  static constexpr auto Capacity() -> uint { return Count; }
 
 protected:
   PriorityNode nodes[Count]{};

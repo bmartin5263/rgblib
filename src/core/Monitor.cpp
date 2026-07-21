@@ -14,10 +14,10 @@ namespace rgb {
 
 auto Monitor::update() -> void {
   auto timers = Timer::ActiveCount();
-  auto totalTimers = Timer::TotalCount();
+  auto totalTimers = Timer::Capacity();
   auto maxTimers = Timer::MaxCount();
   auto effects = Effects::ActiveCount();
-  auto totalEffects = Effects::TotalCount();
+  auto totalEffects = Effects::Capacity();
   auto address = Wifi::GetAddress();
   auto fps = Clock::Fps();
   INFO("FPS: %i, Timers: %i / %i (peak=%i), Effects: %i / %i, WiFi: %s", fps, timers, totalTimers, maxTimers, effects, totalEffects, address.c_str());
