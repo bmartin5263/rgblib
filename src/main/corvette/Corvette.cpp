@@ -146,6 +146,21 @@ auto Corvette::transitionToColdStart() -> void {
   CorvetteApp::PublishEvent(ColdStartModeEntered{{Clock::Now()}, previousState});
 }
 
+auto Corvette::toggleHoldMode() -> void {
+  if (mHoldMode) {
+    mHoldMode = false;
+    if (satisfiesIdleConditions()) {
+      transitionToIdle();
+    }
+  }
+  else {
+    mHoldMode = true;
+    if (isStopped()) {
+      transitionToDriving(true);
+    }
+  }
+}
+
 auto Corvette::enterRainbowMode() -> void {
   ASSERT(mState != &RAINBOW_STATE, "Already in Rainbow Mode");
   TRACE("mState = RAINBOW");
@@ -158,12 +173,16 @@ auto Corvette::enterRainbowMode() -> void {
 auto Corvette::exitRainbowMode() -> void {
   INFO("exitRainbowMode");
   chaseHandle = Effects::Start(chasingEffect, group);
-  if (mRpm <= STARTING_RPM && mSpeed == 0) {
+  if (satisfiesIdleConditions()) {
     transitionToIdle();
   }
   else {
     transitionToDriving(false);
   }
+}
+
+auto Corvette::satisfiesIdleConditions() const -> bool {
+  return mRpm <= STARTING_RPM && mSpeed == 0 && !mHoldMode;
 }
 
 auto Corvette::drawSleepEffects(normal phase) -> void {

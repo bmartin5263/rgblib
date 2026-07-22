@@ -67,6 +67,9 @@ protected:
         case IRButtonType::BUTTON_DOWN:
           Brightness::DecreaseLevel();
           break;
+        case IRButtonType::BUTTON_1:
+          Corvette::Instance().toggleHoldMode();
+          break;
         default:
           break;
       }

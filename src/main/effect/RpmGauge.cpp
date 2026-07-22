@@ -39,11 +39,11 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
   calcs.effectiveYellowLineStart = static_cast<u16>(static_cast<float>(yellowLineStart) * LerpClamp(.6f, 1.0f, calcs.coolantPercent));
   calcs.effectiveRedLineStart = static_cast<u16>(static_cast<float>(redLineStart) * LerpClamp(.8f, 1.0f, calcs.coolantPercent));
   calcs.effectiveOffBrightness = Brightness::GetBrightness({
-    .medium = offLowBrightness,
+    .dim = offLowBrightness,
     .bright = offHighBrightness
   });
   calcs.effectiveOnBrightness = Brightness::GetBrightness({
-    .medium = onLowBrightness,
+    .dim = onLowBrightness,
     .bright = onHighBrightness
   });
 

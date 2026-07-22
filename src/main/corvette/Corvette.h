@@ -55,6 +55,7 @@ public:
   auto transitionToDriving(bool chargeUp) -> void;
   auto transitionToSleeping() -> void;
   auto transitionToColdStart() -> void;
+  auto toggleHoldMode() -> void;
 
   static auto Instance() -> Corvette&;
 
@@ -69,6 +70,7 @@ private:
   auto setState(CorvetteState& state) -> CorvetteState*;
   auto enterRainbowMode() -> void;
   auto exitRainbowMode() -> void;
+  auto satisfiesIdleConditions() const -> bool;
 
   auto drawIdleEffects(rgb::normal fillPercent = 1.0f, rgb::normal colorPercent = 1.0f) -> void;
   auto drawRpmEffects(rgb::normal fillPercent = 1.0f) -> void;
@@ -90,8 +92,9 @@ private:
   rgb::revs_per_minute mSmoothRpm{};
   rgb::fahrenheit mCoolantTemp{};
   CorvetteState* mState{&SLEEP_STATE};
-  rgb::ChasingEffectSpeedOnly chasingEffect;
-  rgb::EffectHandle chaseHandle;
+  rgb::ChasingEffectSpeedOnly chasingEffect{};
+  rgb::EffectHandle chaseHandle{};
+  bool mHoldMode{};
 };
 
 #endif //RGBLIB_CORVETTE_H
