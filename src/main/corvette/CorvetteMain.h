@@ -67,8 +67,17 @@ protected:
         case IRButtonType::BUTTON_DOWN:
           Brightness::DecreaseLevel();
           break;
+        case IRButtonType::BUTTON_LEFT:
+          Corvette::Instance().prevColorPalette();
+          break;
+        case IRButtonType::BUTTON_RIGHT:
+          Corvette::Instance().nextColorPalette();
+          break;
         case IRButtonType::BUTTON_1:
           Corvette::Instance().toggleHoldMode();
+          break;
+        case IRButtonType::BUTTON_2:
+          Corvette::Instance().toggleForceRainbowMode();
           break;
         default:
           break;

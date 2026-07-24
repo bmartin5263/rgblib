@@ -35,10 +35,10 @@ auto DrivingState::reset(Timestamp enteredAt, bool chargeUp) -> void {
 }
 
 auto DrivingState::update(Corvette& vehicle) -> void {
-  if (vehicle.mRpm >= Corvette::RAINBOW_RPM) {
+  if (vehicle.satisfiesRainbowConditions()) {
     vehicle.enterRainbowMode();
   }
-  else if (vehicle.mRpm <= Corvette::STARTING_RPM && vehicle.mSpeed == 0) {
+  else if (vehicle.satisfiesIdleConditions()) {
     vehicle.transitionToIdle();
   }
 }
@@ -51,10 +51,14 @@ auto RainbowState::reset(Timestamp enteredAt, percent throttleWhenRainbowStart) 
 
 auto RainbowState::update(Corvette& vehicle) -> void {
   auto endTime = effectiveStartTime + Corvette::RAINBOW_DURATION;
-  if (Clock::Now() >= endTime && (throttleWhenRainbowStart < .1f || throttleWhenRainbowStart - vehicle.mThrottle > .1f)) {
+  if (
+    Clock::Now() >= endTime
+    && (throttleWhenRainbowStart < .1f || throttleWhenRainbowStart - vehicle.mThrottle > .1f)
+    && !vehicle.mRainbowMode
+  ) {
     vehicle.exitRainbowMode();
   }
-  else if (vehicle.mRpm >= Corvette::RAINBOW_RPM) {
+  else if (vehicle.satisfiesRainbowConditions()) {
     effectiveStartTime = Clock::Now();
   }
 }
@@ -92,15 +96,15 @@ auto SleepState::reset(Timestamp enteredAt) -> void {
 
 auto SleepState::update(Corvette& vehicle) -> void {
   // delay(1000);
-  // auto now = Clock::Now() - enteredAt;
-  // auto percentComplete = now.percentOf(Duration::Seconds(1));
-  // if (percentComplete > 1.0f) {
-  //   // delay(1000);
-  // }
+  auto now = Clock::Now() - enteredAt;
+  auto percentComplete = now.percentOf(Duration::Seconds(5));
+  if (percentComplete > 1.0f) {
+    delay(1000);
+  }
 }
 
 void SleepState::draw(Corvette& vehicle) {
   auto now = Clock::Now() - enteredAt;
-  auto percentComplete = now.percentOf(Duration::Seconds(1));
+  auto percentComplete = now.percentOf(Duration::Seconds(2));
   vehicle.drawSleepEffects(percentComplete);
 }

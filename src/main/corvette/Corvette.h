@@ -28,8 +28,6 @@ public:
   static constexpr auto STARTING_RPM = 1000;
   static constexpr auto RAINBOW_RPM = 4200;
   static constexpr auto RAINBOW_DURATION = rgb::Duration::Seconds(5);
-  static constexpr auto LOW_RPM_COLOR = rgb::Color::GREEN();
-  static constexpr auto HIGH_RPM_COLOR = rgb::Color::RED();
   static constexpr auto RPM_LOW = 1500;
   static constexpr auto RPM_HIGH = 3000;
 
@@ -56,6 +54,10 @@ public:
   auto transitionToSleeping() -> void;
   auto transitionToColdStart() -> void;
   auto toggleHoldMode() -> void;
+  auto toggleForceRainbowMode() -> void;
+
+  auto nextColorPalette() -> void;
+  auto prevColorPalette() -> void;
 
   static auto Instance() -> Corvette&;
 
@@ -71,6 +73,7 @@ private:
   auto enterRainbowMode() -> void;
   auto exitRainbowMode() -> void;
   auto satisfiesIdleConditions() const -> bool;
+  auto satisfiesRainbowConditions() const -> bool;
 
   auto drawIdleEffects(rgb::normal fillPercent = 1.0f, rgb::normal colorPercent = 1.0f) -> void;
   auto drawRpmEffects(rgb::normal fillPercent = 1.0f) -> void;
@@ -95,6 +98,7 @@ private:
   rgb::ChasingEffectSpeedOnly chasingEffect{};
   rgb::EffectHandle chaseHandle{};
   bool mHoldMode{};
+  bool mRainbowMode{};
 };
 
 #endif //RGBLIB_CORVETTE_H
