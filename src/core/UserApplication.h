@@ -25,6 +25,7 @@
 
 #include "Application.h"
 #include "UserApplicationConfigurer.h"
+#include "LEDDevice.h"
 #include "Clock.h"
 #include "Vehicle.h"
 #include "Timer.h"
@@ -33,7 +34,6 @@
 #include "Monitor.h"
 #include "Debug.h"
 #include "VehicleLogger.h"
-#include <mutex>
 
 #if RGB_OTA
 #include "Wireless.h"
@@ -42,7 +42,9 @@
 
 namespace rgb {
 
+#if RGB_VEHICLE_CORE_ENABLED
 static void vehicleReader(void* args);
+#endif
 
 struct SubtaskSharedState {
   Vehicle* vehicle;
@@ -77,10 +79,19 @@ public:
   VehicleLogger vehicleLogger{};
 
 protected:
+  // Register LEDs, sensors, configure pins, event handlers, and any other static config
   virtual auto configure(Configurer& app) -> void = 0;
+
+  // Runs once before beginning the main loop, all subsystems are ready at this time. Best time to start effects
   virtual auto initialize() -> void {}
-  virtual auto update() -> void = 0;
-  virtual auto draw() -> void = 0;
+
+  // Called once per-frame, used for updating the state of the application
+  virtual auto update() -> void {};
+
+  // Called once per-frame before Effects run, used for manually drawing individual LEDs
+  virtual auto draw() -> void {};
+
+  // Called once per-frame after Effects run, used for manually drawing individual LEDs
   virtual auto postDraw() -> void {}
 
 private:
@@ -91,7 +102,7 @@ private:
 
   std::vector<LEDDevice*> mLeds{};
   std::vector<Sensor*> mSensors{};
-  std::unordered_map<uint, std::vector<std::function<void(const AnyEvent&)>>> mEventMap{};
+  std::unordered_map<uint, std::vector<EventHandler<AnyEvent>>> mEventMap{};
 };
 
 template<typename EventVariantT>
@@ -125,11 +136,15 @@ auto UserApplication<EventVariantT>::setup() -> void {
 #endif
 
 #if RGB_VEHICLE_CORE_ENABLED
+  Debug::SetBlinker(BlinkerColor::YELLOW, [this] {
+    return vehicleLogger.isStarted();
+  });
   xTaskCreatePinnedToCore(vehicleReader, "vehicleReader", RGB_VEHICLE_CORE_STACK_SIZE, this, RGB_VEHICLE_CORE_PRIORITY, nullptr, 1);
 #endif
 
   startSubsystems();
   initialize();
+
   PublishEvent(AppReady{{Clock::Now()}});
 }
 
@@ -221,9 +236,7 @@ auto UserApplication<EventVariantT>::publishSystemEvent(const SystemEvent& syste
     return AnyEvent{e};
   }, systemEvent);
   auto uid = systemEvent.index();
-  INFO("publishSystemEvent: uid=%u", uid);
   if (auto it = mEventMap.find(uid); it != mEventMap.end()) {
-    INFO("handlers size: %u", it->second.size());
     for (auto& handler : it->second) {
       handler(event);
     }
@@ -232,7 +245,6 @@ auto UserApplication<EventVariantT>::publishSystemEvent(const SystemEvent& syste
 
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::on(size_t uid, Consumer<const SystemEvent&> action) -> void {
-  INFO("on: uid=%u", uid);
   mEventMap[uid].push_back([action](auto& anyEvent) {
     if (auto systemEvent = narrow_variant<SystemEvent>(anyEvent)) {
       action(systemEvent.value());

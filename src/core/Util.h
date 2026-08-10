@@ -6,55 +6,31 @@
 #define RGBLIB_UTIL_H
 
 #include <cmath>
-#include <type_traits>
-#include <Arduino.h>
-#include "Types.h"
 
 namespace rgb {
 
-constexpr auto StaticAssertions() -> void {
-  static_assert(sizeof(uint32_t) > sizeof(uint16_t));
-  static_assert(sizeof(uint64_t) > sizeof(uint32_t));
-  static_assert(sizeof(int) == 4);
-  static_assert(sizeof(int) == sizeof(float));
-  static_assert(sizeof(int*) == 4);
-  static_assert(sizeof(long) == 4);
-  static_assert(sizeof(long long) == 8);
-  static_assert(sizeof(float) == 4);
-  static_assert(sizeof(double) == 8);
-}
 
-constexpr auto ExtractBytes(u32 input, u8& byte0, u8& byte1, u8& byte2, u8& byte3) {
-  // Extract each byte
-  byte0 = (input & 0xFF);        // Extract the least significant byte
-  byte1 = (input >> 8) & 0xFF;  // Extract the second byte
-  byte2 = (input >> 16) & 0xFF; // Extract the third byte
-  byte3 = (input >> 24) & 0xFF; // Extract the most significant byte
-}
-
-constexpr auto Clamp(float value) {
-  if (value < 0.0f || value > 1.0f) {
+constexpr auto ClampWrap(float value) {
+  if (value < 0.0f) {
+    return 0.0f;
+  }
+  if (value > 1.0f) {
     value = value - floorf(value);
   }
   return value;
 }
 
 template <typename T>
-constexpr auto Clamp(T value, T min, T max) {
-  if (value < min) {
-    return min;
+constexpr auto Clamp(T value, T minInclusive, T maxInclusive) {
+  if (value < minInclusive) {
+    return minInclusive;
   }
-  else if (value > max) {
-    return max;
+  else if (value > maxInclusive) {
+    return maxInclusive;
   }
   else {
     return value;
   }
-}
-
-// Is this the right name?
-constexpr auto Sigmoid(u32 t) -> float {
-  return (sinf(static_cast<float>(t) * PI / 180) + 1);
 }
 
 template<typename T, typename N>
@@ -63,25 +39,11 @@ constexpr auto Lerp(T a, T b, N t) -> T {
   return a + (b - a) * t;
 }
 
-template<typename T, typename R>
-constexpr auto Lerp(T a, T b, R time, R range) -> T {
-  return a + (b - a) * (static_cast<float>(time) / static_cast<float>(range));
-}
-
 template<typename T, typename N>
 constexpr auto LerpWrap(T a, T b, N t) -> T {
   static_assert(std::is_floating_point_v<N>, "LerpWrap t parameter must be floating point");
   if (t < 0.0f || t > 1.0f) {
     t = t - std::floor(t);
-  }
-  return a + (b - a) * t;
-}
-
-template<typename T, typename R>
-constexpr auto LerpWrap(T a, T b, R time, R range) -> T {
-  auto t = static_cast<float>(time) / static_cast<float>(range);
-  if (t < 0.0f || t > 1.0f) {
-    t = t - std::floor(t); // Wrap using the fractional part
   }
   return a + (b - a) * t;
 }
@@ -97,28 +59,8 @@ constexpr auto LerpClamp(T a, T b, N t) -> T {
   return a + (b - a) * t;
 }
 
-constexpr auto LerpClamp2(Duration a, Duration b, normal t) -> Duration {
-  if (t <= 0.f) {
-    return a;
-  } else if (t >= 1.f) {
-    return b;
-  }
-  return a + (b - a) * t;
-}
-
-template<typename T, typename R>
-constexpr auto LerpClamp(T a, T b, R time, R range) -> T {
-  auto t = static_cast<float>(time) / static_cast<float>(range);
-  if (t <= 0.f) {
-    return a;
-  } else if (t >= 1.f) {
-    return b;
-  }
-  return a + (b - a) * t;
-}
-
 constexpr auto SinWave(float t, float frequency = .1f) -> float {
-  return 1.0f * sinf(2.f * static_cast<float>(PI) * frequency * t);
+  return 1.0f * sinf(2.f * static_cast<float>(M_PI) * frequency * t);
 }
 
 /**
@@ -126,7 +68,7 @@ constexpr auto SinWave(float t, float frequency = .1f) -> float {
  */
 constexpr auto Pulse(Timestamp time, Duration period) -> normal {
   auto t = static_cast<float>(time.value % period.value) / static_cast<float>(period.value);
-  return 0.5f * (1.0f + sinf(2.0f * static_cast<float>(PI) * t));
+  return 0.5f * (1.0f + sinf(2.0f * static_cast<float>(M_PI) * t));
 }
 
 constexpr auto FloatToByte(normal f) -> u8 {
@@ -145,8 +87,8 @@ constexpr auto ByteToFloat(u8 byte) -> normal {
 }
 
 template<typename T>
-constexpr auto easeInOutElastic(T x) -> T {
-  auto c5 = (2 * PI) / 4.5f;
+constexpr auto EaseInOutElastic(T x) -> T {
+  auto c5 = (2 * M_PI) / 4.5f;
   return x == 0 ? 0
       : x == 1 ? 1
       : x < 0.5f ? -(pow(2, 20 * x - 10) * sinf((20 * x - 11.125f) * c5)) / 2
@@ -155,6 +97,10 @@ constexpr auto easeInOutElastic(T x) -> T {
 
 constexpr auto KphToMph(kph value) -> mph {
   return static_cast<mph>(static_cast<float>(value) * 0.621371f);
+}
+
+constexpr auto MphToKph(kph value) -> mph {
+  return static_cast<mph>(static_cast<float>(value) * 1.609344);
 }
 
 constexpr auto CToF(celsius value) -> fahrenheit {
@@ -223,16 +169,16 @@ constexpr auto RunningAverage(T value, T next, float smoothingFactor) -> T {
   return static_cast<T>(smoothingFactor * static_cast<float>(next) + (1 - smoothingFactor) * static_cast<float>(value));
 }
 
-template<typename... Ts>
-constexpr auto Max(Ts... args) {
-  unsigned result = 0;
+template<typename T, typename... Ts>
+constexpr auto Max(T first, Ts... args) -> T {
+  auto result = first;
   ((result = args > result ? args : result), ...);
   return result;
 }
 
-template<typename... Ts>
-constexpr auto Min(Ts... args) {
-  unsigned result = 0;
+template<typename T, typename... Ts>
+constexpr auto Min(T first, Ts... args) -> T {
+  auto result = first;
   ((result = args < result ? args : result), ...);
   return result;
 }

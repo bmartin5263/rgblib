@@ -11,28 +11,32 @@
 
 namespace rgb {
 
-template<typename PriorityNode, uint Count>
+template<typename PriorityNode, uint N>
 class PriorityNodePool {
 public:
-  static constexpr auto Capacity() -> uint { return Count; }
+  static constexpr auto Capacity() -> uint { return N; }
+  auto activeCount() const -> uint { return mActiveCount; }
+  auto peakCount() const -> uint { return mPeakActiveCount; }
 
 protected:
-  PriorityNode nodes[Count]{};
-  PriorityNode* unusedHead{nullptr};
-  PriorityNode* toAddHead{nullptr};
-  PriorityNode* activeHead{nullptr};
-  uint nextHandleId{1};
+  PriorityNode mPool[N]{};
+  PriorityNode* pInactiveHead{nullptr};
+  PriorityNode* pInsertionQueueHead{nullptr};
+  PriorityNode* pActiveHead{nullptr};
+  uint mNextHandleId{1};
+  uint mActiveCount{0};
+  uint mPeakActiveCount{0};
 
   PriorityNodePool() {
-    for (uint i = 0; i < Count; ++i) {
-      auto& current = nodes[i];
+    for (uint i = 0; i < N; ++i) {
+      auto& current = mPool[i];
       current.id = i;
-      current.prev = i > 0 ? &nodes[i - 1] : nullptr;
-      current.next = i + 1 < Count ? &nodes[i + 1] : nullptr;
+      current.prev = i > 0 ? &mPool[i - 1] : nullptr;
+      current.next = i + 1 < N ? &mPool[i + 1] : nullptr;
     }
-    unusedHead = &nodes[0];
-    ASSERT(nodes[0].prev == nullptr, "Head invalid");
-    ASSERT(nodes[Count - 1].next == nullptr, "Tail invalid");
+    pInactiveHead = &mPool[0];
+    ASSERT(mPool[0].prev == nullptr, "Head invalid");
+    ASSERT(mPool[N - 1].next == nullptr, "Tail invalid");
   }
 
   PriorityNodePool(const PriorityNodePool& rhs) = default;
@@ -41,18 +45,44 @@ protected:
   PriorityNodePool& operator=(PriorityNodePool&& rhs) noexcept = default;
   ~PriorityNodePool() = default;
 
-  auto popUnused() -> PriorityNode* {
-    ASSERT_C(unusedHead != nullptr, "No more nodes available", Color::WHITE());
-    auto next = PriorityNode::Pop(unusedHead);
-    ASSERT(next->next == nullptr, "Next is not a nullptr");
-    ASSERT(next->prev == nullptr, "Prev is not a nullptr");
+  auto activate() -> PriorityNode* {
+    ASSERT(pInactiveHead != nullptr, "Pool exhausted");
+    if (pInactiveHead == nullptr) {
+      reclaimNodes();
+    }
+    if (pInactiveHead == nullptr) {
+      // todo - optional?
+      return nullptr;
+    }
+    auto next = PriorityNode::Pop(pInactiveHead);
+    next->clean();
+    next->handleId = mNextHandleId++;
+    PriorityNode::InsertFront(pInsertionQueueHead, next);
+    ++mActiveCount;
+    if (mActiveCount > mPeakActiveCount) {
+      mPeakActiveCount = mActiveCount;
+    }
     return next;
   }
 
-  auto enqueueForAdding(PriorityNode* node) -> void {
-    ASSERT(node->next == nullptr, "Next is not nullptr");
-    ASSERT(node->prev == nullptr, "Prev is not nullptr");
-    PriorityNode::InsertFront(toAddHead, node);
+  auto reclaimNodes() -> void {
+    INFO("Reclaiming Timer Nodes");
+    for (auto& timer : mPool) {
+      if (timer.isTombstone()) {
+        PriorityNode::Remove(pActiveHead, &timer);
+        PriorityNode::InsertFront(pInactiveHead, &timer);
+        --mActiveCount;
+      }
+    }
+  }
+
+  auto recycle(PriorityNode* node) -> void {
+    PriorityNode::InsertFront(pInsertionQueueHead, node);
+  }
+
+  auto release(PriorityNode* node) -> void {
+    PriorityNode::InsertFront(pInactiveHead, node);
+    --mActiveCount;
   }
 };
 

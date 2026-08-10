@@ -14,10 +14,10 @@
 #include "GPIO.h"
 #include "PixelStitch.h"
 #include "ReversePixelList.h"
-#include "ChasingEffect.h"
+#include "ChaseEffect.h"
 #include "DeadPixelList.h"
 #include "PixelSlice.h"
-#include "ChasingEffect.h"
+#include "ChaseEffect.h"
 #include "WipeEffect.h"
 
 using namespace rgb;

@@ -26,7 +26,6 @@ protected:
 
     grid.setBrightness(.2f);
     app.addLEDs(grid);
-    app.useHeartbeatLED();
 
     wipeEffect.shader = [](auto color, auto& params){
       if (params.pixelPosition <= params.wipeLength) {

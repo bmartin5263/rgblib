@@ -3,7 +3,7 @@
 //
 
 #include <utility>
-#include "ChasingEffectSpeedOnly.h"
+#include "ChaseEffectSpeedOnly.h"
 
 namespace rgb {
 
@@ -20,12 +20,12 @@ constexpr auto wrapIndex(i64 value, uint length) -> uint {
 
 }
 
-auto ChasingEffectSpeedOnly::reset(Timestamp now) -> void {
+auto ChaseEffectSpeedOnly::reset(Timestamp now) -> void {
   effectPosition = 0;
   nextMoveTime = now + delay;
 }
 
-auto ChasingEffectSpeedOnly::update(Timestamp now) -> void {
+auto ChaseEffectSpeedOnly::update(Timestamp now) -> void {
   while (now >= nextMoveTime) {
     TRACE("Step now=%llu, nextMoveTime=%llu, diff=%llu", now.asMilliseconds(), nextMoveTime.asMilliseconds(), (now-nextMoveTime).asMilliseconds());
     step();
@@ -33,11 +33,11 @@ auto ChasingEffectSpeedOnly::update(Timestamp now) -> void {
   }
 }
 
-auto ChasingEffectSpeedOnly::step() -> void {
+auto ChaseEffectSpeedOnly::step() -> void {
   effectPosition += 1;
 }
 
-auto ChasingEffectSpeedOnly::draw(Timestamp now, PixelList& pixels) -> void {
+auto ChaseEffectSpeedOnly::draw(Timestamp now, PixelList& pixels) -> void {
   auto totalLength = pixels.length();
   auto pixelLength = totalLength - trim.getUnits(pixels);
   auto actualTrailLength = trailLength.getUnitsSized(pixelLength);

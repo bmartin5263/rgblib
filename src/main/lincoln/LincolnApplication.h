@@ -14,11 +14,11 @@
 #include "LincolnAppEvents.h"
 #include "PixelStitch.h"
 #include "ReversePixelList.h"
-#include "ChasingEffect.h"
+#include "ChaseEffect.h"
 #include "DeadPixelList.h"
 #include "PixelSlice.h"
-#include "ChasingEffect.h"
-#include "ChasingEffectSpeedOnly.h"
+#include "ChaseEffect.h"
+#include "ChaseEffectSpeedOnly.h"
 #include "WipeEffect.h"
 #include "Brightness.h"
 #include "effect/RpmGauge.h"
@@ -76,14 +76,14 @@ auto irRemote = IRReceiver{PinNumber{A7}};
 // Effects
 
 // Intro Effects
-auto ringChase1 = ChasingEffect{};
-auto ringChase2 = ChasingEffect{};
+auto ringChase1 = ChaseEffect{};
+auto ringChase2 = ChaseEffect{};
 auto introWipe = WipeEffect{};
 
 // Rpm Effect
 auto rpmGauge = RpmGauge{};
 auto footWipe = WipeEffect{};
-auto fiberChase = ChasingEffectSpeedOnly{};
+auto fiberChase = ChaseEffectSpeedOnly{};
 
 
 auto footTimerHandle = TimerHandle{};
@@ -391,7 +391,8 @@ protected:
           }
           break;
         default:
-          INFO("Unknown Button Pressed");
+          // INFO("Unknown Button Pressed");
+          break;
       }
     });
 
@@ -414,13 +415,11 @@ protected:
   }
 
   auto update() -> void override {
-    constexpr auto NINTY_MPH = 144.f;
-
     auto& townCar = LincolnTownCar::Instance();
     townCar.update();
 
     auto speed = static_cast<float>(townCar.smoothSpeed());
-    auto chaseTime = Duration::Microseconds(LerpClamp(10000, 2000, speed / NINTY_MPH));
+    auto chaseTime = Duration::Microseconds(LerpClamp(10000, 2000, speed / MphToKph(90)));
     fiberChase.delay = chaseTime;
   }
 

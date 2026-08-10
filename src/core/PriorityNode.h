@@ -27,9 +27,6 @@ struct PriorityNode {
   }
 
   static auto InsertFront(Node*& head, Node* node) -> void {
-    ASSERT(node->next == nullptr, "Next is not nullptr");
-    ASSERT(node->prev == nullptr, "Prev is not nullptr");
-
     node->prev = nullptr;
     node->next = head;
     if (head != nullptr) {

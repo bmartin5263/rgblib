@@ -7,8 +7,6 @@
 
 #include <FastLED.h>
 #include "Types.h"
-#include "Pin.h"
-#include "Assertions.h"
 #include "RgbColor.h"
 #include "ContiguousPixelList.h"
 #include "LEDDevice.h"

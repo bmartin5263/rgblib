@@ -11,10 +11,14 @@
 #include "EffectHandle.h"
 #include "EffectNode.h"
 
+#ifndef RGB_MAX_EFFECTS
+#define RGB_MAX_EFFECTS 10
+#endif
+
 namespace rgb {
 
 class PixelList;
-class Effects : public PriorityNodePool<EffectNode, 10> {
+class Effects : public PriorityNodePool<EffectNode, RGB_MAX_EFFECTS> {
 public:
   static auto Initialize() -> void;
   [[nodiscard]]
@@ -33,6 +37,7 @@ public:
   static auto Update() -> void;
   static auto Draw() -> void;
   static auto ActiveCount() -> uint;
+  static auto PeakCount() -> uint;
   static auto Instance() -> Effects&;
 
   Effects();
@@ -52,11 +57,8 @@ private:
   auto stopAll() -> void;
   auto update() -> void;
   auto draw() -> void;
-  auto activeCount() -> uint;
 
-  auto nextEffectNode() -> EffectNode*;
   auto processAdditions(Timestamp now) -> void;
-  auto reclaimNodes() -> void;
   auto recycle(EffectNode* timer) -> EffectNode*;
 };
 

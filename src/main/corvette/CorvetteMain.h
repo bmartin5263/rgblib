@@ -79,22 +79,28 @@ protected:
         case IRButtonType::BUTTON_2:
           Corvette::Instance().toggleForceRainbowMode();
           break;
+        case IRButtonType::BUTTON_3:
+          Corvette::Instance().togglePulseMode();
+          break;
         default:
           break;
       }
     });
 
     rpmGauge.shape = RpmShape::LINE;
-    rpmGauge.yellowLineStart = 3400;
-    rpmGauge.redLineStart = 3800;
-    rpmGauge.limit = 4000;
+    rpmGauge.yellowLineStart = 3150;
+    rpmGauge.redLineStart = 3550;
+    rpmGauge.limit = 3900;
     rpmGauge.rpmStart = 1000;
     rpmGauge.minCoolantLevel = 70.f;
     rpmGauge.maxCoolantLevel = 170.f;
     rpmGauge.pulseBrightnessScale = 2.5f;
     rpmGauge.smoothRpmSupplier = [] { return Corvette::Instance().smoothRpm(); };
     rpmGauge.coolantTempSupplier = [] { return Corvette::Instance().coolantTemp(); };
-    rpmGauge.rainbowSupplier = [] { return Corvette::Instance().inRainbowMode(); };
+    rpmGauge.rainbowSupplier = [] {
+      auto& corvette = Corvette::Instance();
+      return corvette.inRainbowMode() && !corvette.inForcedRainbowMode();
+    };
     rpmGauge.glowCondition = GlowCondition::RED_LINE;
   }
 

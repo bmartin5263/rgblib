@@ -12,7 +12,6 @@
 using namespace rgb;
 
 namespace {
-constexpr auto NINTY_MPH = 144.f;
 auto deadPixelList = DeadPixelList{centerFiber.size()};
 auto heartBeatCenterFiber = PixelStitch{centerFiber, deadPixelList};
 auto heartBeatLeftFiber = PixelStitch{leftFiber, deadPixelList};
@@ -87,20 +86,12 @@ private:
 
 auto colorPalettes = FadingCarousel{Carousel{std::array{
   ColorPalette {
-    .idleFiberColor = FIBER_PURPLE,
-    .idleFootColor = FOOT_PURPLE,
-    .transitionFiberColor = Color::RED(),
-    .transitionFootColor = Color::RED(),
-    .lowRpmFiberColor = Color::GREEN(), .highRpmFiberColor = Color::RED(),
-    .lowRpmFootColor = Color::GREEN(), .highRpmFootColor = Color::RED(),
-  },
-  ColorPalette {
     .idleFiberColor = Color::RED(),
     .idleFootColor = Color::RED(),
     .transitionFiberColor = Color::BLUE(),
     .transitionFootColor = Color::BLUE(),
     .lowRpmFiberColor = Color::GREEN(), .highRpmFiberColor = Color::RED(),
-    .lowRpmFootColor = FOOT_PURPLE, .highRpmFootColor = FOOT_PURPLE,
+    .lowRpmFootColor = FOOT_PURPLE, .highRpmFootColor = Color::RED(),
   },
   ColorPalette {
     .idleFiberColor = FIBER_PURPLE,
@@ -108,16 +99,24 @@ auto colorPalettes = FadingCarousel{Carousel{std::array{
     .transitionFiberColor = Color::RED(),
     .transitionFootColor = Color::RED(),
     .lowRpmFiberColor = Color::GREEN(), .highRpmFiberColor = Color::RED(),
-    .lowRpmFootColor = FOOT_PURPLE, .highRpmFootColor = FOOT_PURPLE,
+    .lowRpmFootColor = Color::GREEN(), .highRpmFootColor = Color::RED(),
   },
   ColorPalette {
     .idleFiberColor = FIBER_PURPLE,
-    .idleFootColor = FOOT_PURPLE,
+    .idleFootColor = Color::BLUE(),
     .transitionFiberColor = Color::RED(),
     .transitionFootColor = Color::RED(),
-    .lowRpmFiberColor = FIBER_PURPLE, .highRpmFiberColor = FIBER_PURPLE,
-    .lowRpmFootColor = Color::GREEN(), .highRpmFootColor = Color::RED(),
-  }
+    .lowRpmFiberColor = Color::GREEN(), .highRpmFiberColor = Color::RED(),
+    .lowRpmFootColor = FOOT_PURPLE, .highRpmFootColor = FOOT_PURPLE,
+  },
+  ColorPalette {
+    .idleFiberColor = Color::RED(),
+    .idleFootColor = Color::RED(),
+    .transitionFiberColor = Color::GREEN(),
+    .transitionFootColor = Color::GREEN(),
+    .lowRpmFiberColor = Color::FromBytes(255, 0, 10), .highRpmFiberColor = Color::FromBytes(255, 0, 10),
+    .lowRpmFootColor = Color::BLUE(), .highRpmFootColor = Color::FromBytes(255, 0, 10),
+  },
 }}};
 }
 
@@ -157,10 +156,6 @@ auto Corvette::update() -> void {
 
   mThrottle = vehicle.throttlePosition();
   mSmoothThrottle = RunningAverage(mSmoothThrottle, mThrottle, .1f);
-
-  auto speed = static_cast<float>(mSmoothSpeed);
-  auto chaseTime = Duration::Microseconds(LerpClamp(20000, 4000, speed / NINTY_MPH));
-  chasingEffect.delay = chaseTime;
 
   mState->update(*this);
 
@@ -212,10 +207,10 @@ auto Corvette::setState(CorvetteState& state) -> CorvetteState* {
   return previous;
 }
 
-auto Corvette::transitionToIdle() -> void {
+auto Corvette::transitionToIdle(Duration pulseDuration) -> void {
   ASSERT(mState != &IDLE_STATE, "Already in Idle Mode");
   TRACE("mState = IDLE");
-  IDLE_STATE.reset(Clock::Now());
+  IDLE_STATE.reset(Clock::Now(), pulseDuration);
   auto previousState = setState(IDLE_STATE);
   CorvetteApp::PublishEvent(IdleModeEntered{{Clock::Now()}, previousState});
 }
@@ -250,7 +245,7 @@ auto Corvette::toggleHoldMode() -> void {
   if (mHoldMode) {
     mHoldMode = false;
     if (satisfiesIdleConditions()) {
-      transitionToIdle();
+      transitionToIdle(DEFAULT_PULSE_DURATION);
     }
   }
   else {
@@ -274,6 +269,10 @@ auto Corvette::toggleForceRainbowMode() -> void {
   }
 }
 
+auto Corvette::togglePulseMode() -> void {
+  mPulseMode = !mPulseMode;
+}
+
 auto Corvette::nextColorPalette() -> void {
   colorPalettes.next();
 }
@@ -295,7 +294,7 @@ auto Corvette::exitRainbowMode() -> void {
   INFO("exitRainbowMode");
   chaseHandle = Effects::Start(chasingEffect, group);
   if (satisfiesIdleConditions()) {
-    transitionToIdle();
+    transitionToIdle(Duration::Seconds(2));
   }
   else {
     transitionToDriving(false);
@@ -327,29 +326,47 @@ auto Corvette::drawSleepEffects(normal phase) -> void {
   rightFiber.fillRatioReverse(colorFiber * fiberBrightness, 1.0f - phase);
 }
 
-auto Corvette::drawIdleEffects(normal fillPercent, normal colorPercent) -> void {
+auto Corvette::drawIdleEffects(normal fillPercent, normal colorPercent, Duration pulseDuration) -> void {
   auto palette = colorPalettes.get();
   auto colorFiber = palette.transitionFiberColor.lerpClamp(palette.idleFiberColor, colorPercent);
   auto colorFoot = palette.transitionFootColor.lerpClamp(palette.idleFootColor, colorPercent);
   auto fiberBrightness = GetFiberBrightness();
 
-  leftFoot.fillRatio(colorFoot, fillPercent);
-  rightFoot.fillRatio(colorFoot, fillPercent);
+  normal pulse;
+  if (mPulseMode) {
+    pulse = Pulse(Clock::Now(), pulseDuration);
+  }
+  else {
+    pulse = 1.0f;
+  }
+
+  leftFoot.fillRatio(colorFoot * pulse, fillPercent);
+  rightFoot.fillRatio(colorFoot * pulse, fillPercent);
   centerFiber.fillRatioReverse(colorFiber * fiberBrightness, fillPercent);
   leftFiber.fillRatioReverse(colorFiber * fiberBrightness, fillPercent);
   rightFiber.fillRatioReverse(colorFiber * fiberBrightness, fillPercent);
 }
 
 auto Corvette::drawRpmEffects(normal fillPercent) -> void {
-  auto rpmColorPercent = (static_cast<float>(mSmoothRpm) - RPM_LOW) / (RPM_HIGH - RPM_LOW);
-  rpmColorPercent = Clamp(rpmColorPercent, 0.0f, 1.0f);
-  if (rpmColorPercent < 0.0f) {
-    rpmColorPercent = 0.0f;
+  auto fiberRpmColorPercent = (static_cast<float>(mSmoothRpm) - RPM_LOW) / (RPM_HIGH - RPM_LOW);
+  fiberRpmColorPercent = Clamp(fiberRpmColorPercent, 0.0f, 1.0f);
+  if (fiberRpmColorPercent < 0.0f) {
+    fiberRpmColorPercent = 0.0f;
   }
+
+  // auto footLow = 3000;
+  // auto footHigh = 3700;
+  // auto footRpmColorPercent = (static_cast<float>(mSmoothRpm) - footLow) / (footHigh - footLow);
+  // footRpmColorPercent = Clamp(footRpmColorPercent, 0.0f, 1.0f);
+  // if (footRpmColorPercent < 0.0f) {
+  //   footRpmColorPercent = 0.0f;
+  // }
+
+
   auto palette = colorPalettes.get();
 
-  auto rpmFootColor = palette.lowRpmFootColor.lerpClamp(palette.highRpmFootColor, rpmColorPercent);
-  auto rpmFiberColor = palette.lowRpmFiberColor.lerpClamp(palette.highRpmFiberColor, rpmColorPercent);
+  auto rpmFootColor = palette.lowRpmFootColor.lerpClamp(palette.highRpmFootColor, fiberRpmColorPercent);
+  auto rpmFiberColor = palette.lowRpmFiberColor.lerpClamp(palette.highRpmFiberColor, fiberRpmColorPercent);
   auto fiberBrightness = GetFiberBrightness();
 
   auto actualFootRpmColor = palette.lowRpmFootColor.lerpClamp(rpmFootColor, fillPercent);
@@ -357,6 +374,7 @@ auto Corvette::drawRpmEffects(normal fillPercent) -> void {
 
   leftFoot.fillRatio(actualFootRpmColor, fillPercent);
   rightFoot.fillRatio(actualFootRpmColor, fillPercent);
+
   centerFiber.fillRatioReverse(actualFiberRpmColor * fiberBrightness, fillPercent);
   leftFiber.fillRatioReverse(actualFiberRpmColor * fiberBrightness, fillPercent);
   rightFiber.fillRatioReverse(actualFiberRpmColor * fiberBrightness, fillPercent);
@@ -387,7 +405,7 @@ auto Corvette::drawRainbowEffects(normal fillPercent) -> void {
   for (int i = 0; i < fiberLedCount && i < fiberRainbowLevel; ++i) {
     if (i < fiberRainbowLevel - RAINBOW_WHITE_LENGTH) {
       auto ratio = static_cast<float>(fiberLedCount - i) / static_cast<float>(fiberLedCount);
-      auto offset = now.percentOf(Duration::Seconds(1));
+      auto offset = now.percentOf(Duration::Seconds(2));
       auto hue = ratio + offset;
       if (hue > 1.0f) {
         hue = hue - floorf(hue);
@@ -416,6 +434,10 @@ auto Corvette::isConnected() const -> bool {
 
 auto Corvette::inRainbowMode() const -> bool {
   return mState == &RAINBOW_STATE;
+}
+
+auto Corvette::inForcedRainbowMode() const -> bool {
+  return mRainbowMode;
 }
 
 auto Corvette::isStopped() const -> bool {

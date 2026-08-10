@@ -26,7 +26,7 @@ struct EffectNode : PriorityNode<EffectNode> {
   uint id{};
   uint handleId{};
   uint priority{};
-  bool stopping{};
+  bool stopped{};
 
   auto operator<(const EffectNode& rhs) const -> bool {
     return priority < rhs.priority;
@@ -40,7 +40,7 @@ struct EffectNode : PriorityNode<EffectNode> {
     startedAt = Timestamp::Zero();
     priority = {};
     handleId = 0;
-    stopping = false;
+    stopped = false;
   }
 
   auto start(Timestamp now) -> void {
@@ -64,6 +64,10 @@ struct EffectNode : PriorityNode<EffectNode> {
       auto& iterable = std::get<ManyPixelLists>(pixels);
       effect->draw(now - startedAt, iterable);
     }
+  }
+
+  auto isTombstone() -> bool {
+    return stopped;
   }
 };
 

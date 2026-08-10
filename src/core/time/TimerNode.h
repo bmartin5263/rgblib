@@ -46,6 +46,10 @@ struct TimerNode : PriorityNode<TimerNode> {
     return finishAt != Timestamp{0};
   }
 
+  auto isTombstone() -> bool {
+    return cancelled;
+  }
+
   auto repeat(Timestamp when) -> void {
     cancelled = false; // User code could have set this to `true` while executing the timer function
     executeAt = when;

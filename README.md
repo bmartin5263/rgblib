@@ -1,6 +1,5 @@
 # RGBLib
-
-C++ library for complex LED projects
+C++ framework for complex LED-based Applications
 
 ## Rendering
 

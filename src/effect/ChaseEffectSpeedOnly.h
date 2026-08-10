@@ -17,7 +17,7 @@
 namespace rgb {
 
 // Only permits speed-based progression
-class ChasingEffectSpeedOnly : public Effect {
+class ChaseEffectSpeedOnly : public Effect {
 public:
   struct ShaderParameters {
     Timestamp now{};

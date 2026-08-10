@@ -13,18 +13,27 @@ auto ColdStartState::reset(Timestamp enteredAt) -> void {
 }
 
 auto ColdStartState::update(Corvette& vehicle) -> void {
+  auto chaseTime = Duration::Microseconds(20000);
+  vehicle.chasingEffect.delay = chaseTime;
+
   if (vehicle.mRpm > Corvette::STARTING_RPM
-    && (Clock::Now().timeSince(enteredAt) > Duration::Seconds(10) || vehicle.mSpeed > 0)) {
+    && (Clock::Now().timeSince(enteredAt) > Duration::Seconds(5) || vehicle.mSpeed > 0)) {
     vehicle.transitionToDriving(true);
   }
 }
 
-auto IdleState::reset(Timestamp enteredAt) -> void {
+auto IdleState::reset(Timestamp enteredAt, Duration pulseDuration) -> void {
   this->enteredAt = enteredAt;
+  this->pulseDuration = pulseDuration;
 }
 
 auto IdleState::update(Corvette& vehicle) -> void {
-  if (vehicle.mRpm > Corvette::STARTING_RPM) {
+  auto chaseTime = Duration::Microseconds(20000);
+  vehicle.chasingEffect.delay = chaseTime;
+
+  auto now = Clock::Now() - enteredAt;
+  auto percentComplete = now.percentOf(Duration::Seconds(1));
+  if (vehicle.mRpm > Corvette::STARTING_RPM && percentComplete >= 1.0f) {
     vehicle.transitionToDriving(true);
   }
 }
@@ -32,14 +41,34 @@ auto IdleState::update(Corvette& vehicle) -> void {
 auto DrivingState::reset(Timestamp enteredAt, bool chargeUp) -> void {
   this->enteredAt = enteredAt;
   this->chargeUp = chargeUp;
+  this->maxSpeed = 0;
 }
 
 auto DrivingState::update(Corvette& vehicle) -> void {
+  auto speed = vehicle.mSpeed;
+  if (speed > maxSpeed) {
+    maxSpeed = speed;
+  }
+
+  auto smoothSpeed = static_cast<float>(vehicle.mSmoothSpeed);
+  auto chaseTime = Duration::Microseconds(LerpClamp(12000, 3000, smoothSpeed / MphToKph(100)));
+  vehicle.chasingEffect.delay = chaseTime;
+
   if (vehicle.satisfiesRainbowConditions()) {
     vehicle.enterRainbowMode();
   }
   else if (vehicle.satisfiesIdleConditions()) {
-    vehicle.transitionToIdle();
+    auto pulseDuration = Corvette::DEFAULT_PULSE_DURATION;
+    if (maxSpeed > MphToKph(90)) {
+      pulseDuration = Duration::Seconds(2);
+    }
+    else if (maxSpeed > MphToKph(70)) {
+      pulseDuration = Duration::Seconds(3);
+    }
+    else if (maxSpeed > MphToKph(50)) {
+      pulseDuration = Duration::Seconds(4);
+    }
+    vehicle.transitionToIdle(pulseDuration);
   }
 }
 
@@ -105,6 +134,6 @@ auto SleepState::update(Corvette& vehicle) -> void {
 
 void SleepState::draw(Corvette& vehicle) {
   auto now = Clock::Now() - enteredAt;
-  auto percentComplete = now.percentOf(Duration::Seconds(2));
+  auto percentComplete = now.percentOf(Duration::Seconds(1));
   vehicle.drawSleepEffects(percentComplete);
 }

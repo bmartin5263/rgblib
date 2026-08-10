@@ -10,29 +10,36 @@
 #include <functional>
 #include <array>
 
+#include "RgbColor.h"
+
 namespace rgb {
 
 enum class BlinkerColor : u8 {
   RED, GREEN, BLUE, PURPLE, YELLOW, CYAN, WHITE, COUNT
 };
 
+class PixelList;
 class Debug {
 public:
   static constexpr auto CYCLE_INTERVAL = Duration::Seconds(3);
   static constexpr auto BLINK_DURATION = Duration::Milliseconds(300);
   static constexpr auto GAP_DURATION = Duration::Milliseconds(0);
   static constexpr auto BLINKER_COUNT = static_cast<u8>(BlinkerColor::COUNT);
+  static constexpr auto DEFAULT_FAULT_COLOR = Color::MAGENTA() * .3f;
 
   using BlinkerCallback = std::function<bool()>;
 
-  static auto Trigger() -> void { Instance().trigger(); }
-  static auto Recover() -> void { Instance().recover(); }
+  static auto TriggerFault() -> void { Instance().triggerFault(); }
+  static auto RecoverFault() -> void { Instance().recoverFault(); }
   static auto HasFault() -> bool { return Instance().hasFault(); }
   static auto Update() -> void { Instance().update(); }
   static auto Draw() -> void { Instance().draw(); }
+  static auto SetDebugPixels(PixelList* pixels, const Color& color = DEFAULT_FAULT_COLOR) -> void { Instance().setDebugPixels(pixels, color); }
+
   static auto SetBlinker(BlinkerColor color, BlinkerCallback callback) -> void {
     Instance().setBlinker(color, std::move(callback));
   }
+
   static auto ClearBlinker(BlinkerColor color) -> void {
     Instance().clearBlinker(color);
   }
@@ -51,19 +58,22 @@ private:
   ~Debug() = default;
 
   static auto Instance() -> Debug&;
-  auto trigger() -> void;
-  auto recover() -> void;
+  auto triggerFault() -> void;
+  auto recoverFault() -> void;
   auto hasFault() const -> bool;
   auto update() -> void;
   auto draw() -> void;
   auto setBlinker(BlinkerColor color, BlinkerCallback callback) -> void;
   auto clearBlinker(BlinkerColor color) -> void;
+  auto setDebugPixels(PixelList* pixels, const Color& color) -> void;
 
   auto nextActiveBlinker() -> bool;
   auto setLed(BlinkerColor color) -> void;
   auto clearLed() -> void;
 
   std::array<BlinkerCallback, BLINKER_COUNT> mBlinkers{};
+  PixelList* mDebugPixels{nullptr};
+  Color mDebugColor{DEFAULT_FAULT_COLOR};
   BlinkState mState{BlinkState::IDLE};
   Timestamp mStateStart{};
   u8 mCurrentIndex{0};

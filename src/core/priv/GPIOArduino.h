@@ -26,7 +26,7 @@ public:
   }
 
 private:
-  static constexpr auto map(PinMode mode) -> int {
+  static auto map(PinMode mode) -> int {
     switch (mode) {
       case PinMode::READ:
         return INPUT;

@@ -5,13 +5,15 @@
 #include "Debug.h"
 #include <Arduino.h>
 
+#include "PixelList.h"
+
 namespace rgb {
 
-auto Debug::trigger() -> void {
+auto Debug::triggerFault() -> void {
   mFault = true;
 }
 
-auto Debug::recover() -> void {
+auto Debug::recoverFault() -> void {
   mFault = false;
 }
 
@@ -23,6 +25,10 @@ auto Debug::update() -> void {
 }
 
 auto Debug::draw() -> void {
+  if (mFault && mDebugPixels != nullptr) {
+    mDebugPixels->fill(mDebugColor);
+  }
+
   auto now = Clock::Now();
   auto elapsed = now.timeSince(mStateStart);
 
@@ -69,6 +75,11 @@ auto Debug::setBlinker(BlinkerColor color, BlinkerCallback callback) -> void {
 
 auto Debug::clearBlinker(BlinkerColor color) -> void {
   mBlinkers[static_cast<u8>(color)] = nullptr;
+}
+
+auto Debug::setDebugPixels(PixelList* pixels, const Color& color) -> void {
+  mDebugPixels = pixels;
+  mDebugColor = color;
 }
 
 auto Debug::nextActiveBlinker() -> bool {

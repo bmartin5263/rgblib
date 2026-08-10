@@ -24,7 +24,7 @@ namespace rgb {
  *   StepBased   - The trail moves at the same speed no matter the length of the LED strip
  *   ChainBased* - The trail moves at a speed that depends on how long the effect should take
  */
-class ChasingEffect : public Effect {
+class ChaseEffect : public Effect {
 public:
   struct ShaderParameters {
     Timestamp now{};

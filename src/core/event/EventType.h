@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <variant>
 #include <optional>
-#include "Types.h"
+#include <functional>
 #include "SystemEvents.h"
 
 namespace rgb {
@@ -22,9 +22,9 @@ struct extend_variant<std::variant<Ts...>, Extra...> {
 };
 
 template<typename Variant, typename... Extra>
+// ReSharper disable once CppRedundantTypenameKeyword (will cause compile error if removed)
 using extend_variant_t = typename extend_variant<Variant, Extra...>::type;
 
-// Enforces 'EventConcept' constraints when creating the variant
 template<typename... Events>
 using EventVariant = std::variant<Events...>;
 
@@ -68,6 +68,10 @@ using SystemEvent = EventVariant<
 
 template<typename ...UserEvents>
 using Event = extend_variant_t<SystemEvent, UserEvents...>;
+
+
+template<typename T>
+using EventHandler = std::function<void(const T&)>;
 
 }
 #endif //RGBLIB_EVENTTYPE_H

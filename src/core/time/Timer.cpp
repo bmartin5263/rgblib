@@ -43,17 +43,18 @@ auto Timer::SetImmediateTimeout(const TimerFunction& function) -> TimerHandle {
 auto Timer::setTimeout(Duration duration, const TimerFunction& function) -> TimerHandle {
   TRACE("SetTimeout()");
   auto now = Clock::Now();
-  auto timer = nextTimerNode();
+  auto timer = activate();
+  if (timer == nullptr) {
+    ERROR("Failed to allocate Timer");
+    return TimerHandle{};
+  }
 
-  timer->clean();
   timer->timerFunction = function;
   timer->cancelFunction = DoNothing;
   timer->executeAt = now + duration;
-  timer->handleId = nextHandleId++;
   timer->startedAt = now;
 
   TRACE("Assigning Timer '%i'", timer->id);
-  enqueueForAdding(timer);
 
   return TimerHandle { timer };
 }
@@ -61,9 +62,12 @@ auto Timer::setTimeout(Duration duration, const TimerFunction& function) -> Time
 auto Timer::continuouslyWhile(const Predicate& function) -> TimerHandle {
   TRACE("ContinuouslyWhile()");
   auto now = Clock::Now();
-  auto timer = nextTimerNode();
+  auto timer = activate();
+  if (timer == nullptr) {
+    ERROR("Failed to allocate Timer");
+    return TimerHandle{};
+  }
 
-  timer->clean();
   timer->timerFunction = [function](TimerContext& context){
     auto doContinue = function();
     if (doContinue) {
@@ -72,11 +76,9 @@ auto Timer::continuouslyWhile(const Predicate& function) -> TimerHandle {
   };
   timer->cancelFunction = DoNothing;
   timer->executeAt = now;
-  timer->handleId = nextHandleId++;
   timer->startedAt = now;
 
   TRACE("Assigning Timer '%i'. startedAt=%llu, finishAt=%llu", timer->id, timer->startedAt.value, timer->finishAt.value);
-  enqueueForAdding(timer);
 
   return TimerHandle { timer };
 }
@@ -84,18 +86,19 @@ auto Timer::continuouslyWhile(const Predicate& function) -> TimerHandle {
 auto Timer::continuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle {
   TRACE("ContinuouslyFor()");
   auto now = Clock::Now();
-  auto timer = nextTimerNode();
+  auto timer = activate();
+  if (timer == nullptr) {
+    ERROR("Failed to allocate Timer");
+    return TimerHandle{};
+  }
 
-  timer->clean();
   timer->timerFunction = function;
   timer->cancelFunction = DoNothing;
   timer->finishAt = now + duration;
   timer->executeAt = now;
   timer->startedAt = now;
-  timer->handleId = nextHandleId++;
 
   TRACE("Assigning Timer '%i'. startedAt=%llu, finishAt=%llu", timer->id, timer->startedAt.value, timer->finishAt.value);
-  enqueueForAdding(timer);
 
   return TimerHandle { timer };
 }
@@ -119,11 +122,11 @@ auto Timer::processTimers() -> void {
   processAdditions();
 
   auto now = Clock::Now();
-  while (activeHead != nullptr && activeHead->executeAt <= now) {
-    auto timer = TimerNode::Pop(activeHead);
+  while (pActiveHead != nullptr && pActiveHead->executeAt <= now) {
+    auto timer = TimerNode::Pop(pActiveHead);
     if (timer->cancelled) {
       timer->cancelFunction();
-      recycle(timer);
+      release(timer);
     }
     else {
       executeTimer(timer, now);
@@ -132,52 +135,23 @@ auto Timer::processTimers() -> void {
 }
 
 auto Timer::executeTimer(TimerNode* timer, Timestamp now) -> void {
-  auto shouldRecycle = false;
   if (timer->isContinuous()) {
-    shouldRecycle = executeContinuousTimer(timer, now);
+    executeContinuousTimer(timer, now);
   }
   else {
-    shouldRecycle = executeRegularTimer(timer, now);
-  }
-
-  if (shouldRecycle) {
-    recycle(timer);
+    executeRegularTimer(timer, now);
   }
 }
 
 auto Timer::processAdditions() -> void {
-  while (toAddHead != nullptr) {
-    auto nodeToInsert = toAddHead;
-    toAddHead = toAddHead->next;
+  while (pInsertionQueueHead != nullptr) {
+    auto nodeToInsert = pInsertionQueueHead;
+    pInsertionQueueHead = pInsertionQueueHead->next;
 
     nodeToInsert->prev = nullptr;
     nodeToInsert->next = nullptr;
 
-    TimerNode::Insert(activeHead, nodeToInsert);
-  }
-}
-
-auto Timer::nextTimerNode() -> TimerNode* {
-  if (unusedHead == nullptr) {
-    reclaimNodes();
-  }
-  auto next = popUnused();
-  ++usedCount;
-  if (usedCount > maxUsedCount) {
-    maxUsedCount = usedCount;
-  }
-  return next;
-}
-
-auto Timer::reclaimNodes() -> void {
-  INFO("Reclaiming Timer Nodes");
-  for (auto& timer : nodes) {
-    if (timer.cancelled) {
-      TimerNode::Remove(activeHead, &timer);
-      timer.clean();
-      TimerNode::InsertFront(unusedHead, &timer);
-      --usedCount;
-    }
+    TimerNode::Insert(pActiveHead, nodeToInsert);
   }
 }
 
@@ -186,47 +160,34 @@ auto Timer::Instance() -> Timer& {
   return timer;
 }
 
-auto Timer::activeCount() const -> uint {
-  return usedCount;
-}
-
 auto Timer::ActiveCount() -> uint {
   return Instance().activeCount();
 }
 
-auto Timer::recycle(TimerNode* timer) -> void {
-  TRACE("Recycling Timer '%i'", timer->id);
-  timer->clean();
-  TimerNode::InsertFront(unusedHead, timer);
-  --usedCount;
-}
-
-auto Timer::executeRegularTimer(TimerNode* timer, Timestamp now) -> bool {
+auto Timer::executeRegularTimer(TimerNode* timer, Timestamp now) -> void {
   auto context = TimerContext{};
   TRACE("Running Timer '%i'", timer->id);
   timer->timerFunction(context);
   if (context.repeatIn) {
     TRACE("Repeating Timer '%i' in '%llu'", timer->id, context.repeatIn.value().value);
     timer->repeat(now + context.repeatIn.value());
-    enqueueForAdding(timer);
-    return false;
+    recycle(timer);
   }
   else {
-    return true;
+    release(timer);
   }
 }
 
-auto Timer::executeContinuousTimer(TimerNode* timer, Timestamp now) -> bool {
+auto Timer::executeContinuousTimer(TimerNode* timer, Timestamp now) -> void {
   auto context = TimerContext{};
   context.percentComplete = std::min(1.0f, (now - timer->startedAt).percentOf(timer->finishAt - timer->startedAt));
   timer->timerFunction(context);
   if (now < timer->finishAt) {
     timer->repeat(now);
-    enqueueForAdding(timer);
-    return false;
+    recycle(timer);
   }
   else {
-    return true;
+    release(timer);
   }
 }
 
@@ -242,16 +203,12 @@ auto Timer::setImmediateTimeout(const TimerFunction& function) -> TimerHandle {
   return setTimeout(Duration::Zero(), function);
 }
 
-auto Timer::MaxCount() -> uint {
-  return Instance().maxCount();
-}
-
-auto Timer::maxCount() const -> uint {
-  return maxUsedCount;
+auto Timer::PeakCount() -> uint {
+  return Instance().peakCount();
 }
 
 auto Timer::stopAll() -> void {
-  auto current = activeHead;
+  auto current = pActiveHead;
   while (current != nullptr) {
     current->cancelled = true;
     current = current->next;

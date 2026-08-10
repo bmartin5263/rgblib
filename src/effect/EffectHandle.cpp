@@ -19,7 +19,7 @@ auto EffectHandle::stop() -> void {
   if (node != nullptr) {
     TRACE("EffectHandle(id=%ui)::cancel()", handleId);
     if (node->handleId == handleId) {
-      node->stopping = true;
+      node->stopped = true;
     }
     detach();
   }
@@ -50,10 +50,10 @@ auto EffectHandle::detach() -> void {
   this->handleId = 0;
 }
 
-auto EffectHandle::isRunning() -> bool {
+auto EffectHandle::isRunning() const -> bool {
   return node != nullptr
       && node->handleId == handleId
-      && !node->stopping;
+      && !node->stopped;
 }
 
 }

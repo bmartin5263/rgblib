@@ -31,3 +31,7 @@
 ## Refactoring
 
 - Avoid changing explicit class parameter types to `auto` for lambdas unless the type is primitive
+
+## Testing
+
+- use `constexpr` over `const`

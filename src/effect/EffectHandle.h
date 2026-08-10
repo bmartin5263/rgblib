@@ -28,7 +28,7 @@ public:
   // Release ownership and stop the effect
   auto stop() -> void;
 
-  auto isRunning() -> bool;
+  auto isRunning() const -> bool;
 
   auto operator==(const EffectHandle& rhs) const -> bool {
     return node == rhs.node && handleId == rhs.handleId;

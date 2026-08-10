@@ -25,22 +25,19 @@ auto Effects::Start(Effect& effect, PixelList& pixels) -> EffectHandle {
 }
 
 auto Effects::start(Effect& effect, PixelList& pixels) -> EffectHandle {
-  TRACE("start()");
-  auto effectNode = nextEffectNode();
-  ASSERT(effectNode->next == nullptr, "EffectNode.Next is not nullptr");
-  ASSERT(effectNode->prev == nullptr, "EffectNode.Prev is not nullptr");
+  auto effectNode = activate();
+  if (effectNode == nullptr) {
+    ERROR("Failed to allocate Effect");
+    return EffectHandle{};
+  }
 
-  effectNode->clean();
   effectNode->pixels = &pixels;
   effectNode->effect = &effect;
   effectNode->priority = 0;
-  effectNode->handleId = nextHandleId++;
-
-  enqueueForAdding(effectNode);
 
   INFO(
     "Assigning Effect '%i'. To Add Effects: %i. Active Effects %i. Unused Effects %i",
-    effectNode->id, EffectNode::Size(toAddHead), EffectNode::Size(activeHead), EffectNode::Size(unusedHead));
+    effectNode->id, EffectNode::Size(pInsertionQueueHead), EffectNode::Size(pActiveHead), EffectNode::Size(pInactiveHead));
 
   return EffectHandle { effectNode };
 }
@@ -50,22 +47,19 @@ auto Effects::Start(Effect& effect, ManyPixelLists pixels) -> EffectHandle {
 }
 
 auto Effects::start(Effect& effect, ManyPixelLists pixels) -> EffectHandle {
-  TRACE("start()");
-  auto effectNode = nextEffectNode();
-  ASSERT(effectNode->next == nullptr, "EffectNode.Next is not nullptr");
-  ASSERT(effectNode->prev == nullptr, "EffectNode.Prev is not nullptr");
+  auto effectNode = activate();
+  if (effectNode == nullptr) {
+    ERROR("Failed to allocate Effect");
+    return EffectHandle{};
+  }
 
-  effectNode->clean();
   effectNode->pixels = pixels;
   effectNode->effect = &effect;
   effectNode->priority = 0;
-  effectNode->handleId = nextHandleId++;
-
-  enqueueForAdding(effectNode);
 
   INFO(
     "Assigning Effect '%i'. To Add Effects: %i. Active Effects %i. Unused Effects %i",
-    effectNode->id, EffectNode::Size(toAddHead), EffectNode::Size(activeHead), EffectNode::Size(unusedHead));
+    effectNode->id, EffectNode::Size(pInsertionQueueHead), EffectNode::Size(pActiveHead), EffectNode::Size(pInactiveHead));
 
   return EffectHandle { effectNode };
 }
@@ -81,9 +75,9 @@ auto Effects::update() -> void {
   auto now = Clock::Now() - startTime;
   processAdditions(now);
 
-  auto effect = activeHead;
+  auto effect = pActiveHead;
   while (effect != nullptr) {
-    if (effect->stopping) {
+    if (effect->stopped) {
       effect = recycle(effect);
     }
     else {
@@ -102,7 +96,7 @@ auto Effects::draw() -> void {
     startTime = Clock::Now();
   }
   auto now = Clock::Now() - startTime;
-  auto effect = activeHead;
+  auto effect = pActiveHead;
   while (effect != nullptr) {
     effect->draw(now);
     effect = effect->next;
@@ -110,37 +104,15 @@ auto Effects::draw() -> void {
 }
 
 auto Effects::processAdditions(Timestamp now) -> void {
-  while (toAddHead != nullptr) {
-    auto nodeToInsert = toAddHead;
+  while (pInsertionQueueHead != nullptr) {
+    auto nodeToInsert = pInsertionQueueHead;
     nodeToInsert->start(now);
-    toAddHead = toAddHead->next;
+    pInsertionQueueHead = pInsertionQueueHead->next;
 
     nodeToInsert->prev = nullptr;
     nodeToInsert->next = nullptr;
 
-    EffectNode::Insert(activeHead, nodeToInsert);
-
-    TRACE(
-      "Activated Effect '%i'. To Add Effects: %i. Active Effects %i. Unused Effects %i",
-      nodeToInsert->id, EffectNode::Size(toAddHead), EffectNode::Size(activeHead), EffectNode::Size(unusedHead));
-  }
-}
-
-auto Effects::nextEffectNode() -> EffectNode* {
-  if (unusedHead == nullptr) {
-    reclaimNodes();
-  }
-  return popUnused();
-}
-
-auto Effects::reclaimNodes() -> void {
-  INFO("Reclaiming Effects Nodes");
-  for (auto& node : nodes) {
-    if (node.stopping) {
-      EffectNode::Remove(activeHead, &node);
-      node.stopping = false;
-      EffectNode::InsertFront(unusedHead, &node);
-    }
+    EffectNode::Insert(pActiveHead, nodeToInsert);
   }
 }
 
@@ -149,29 +121,21 @@ auto Effects::Instance() -> Effects& {
   return timer;
 }
 
-auto Effects::activeCount() -> uint {
-  auto num = 0;
-  auto current = activeHead;
-  while (current != nullptr) {
-    if (!current->stopping) {
-      ++num;
-    }
-    current = current->next;
-  }
-  return num;
-}
-
 auto Effects::ActiveCount() -> uint {
   return Instance().activeCount();
+}
+
+auto Effects::PeakCount() -> uint {
+  return Instance().peakCount();
 }
 
 auto Effects::recycle(EffectNode* effect) -> EffectNode* {
   auto next = effect->next;
   TRACE("Head = %p, Next = %p, ToRecycle = %p", activeHead, next, effect);
-  EffectNode::Remove(activeHead, effect);
+  EffectNode::Remove(pActiveHead, effect);
   effect->clean();
   TRACE("Head = %p, Next = %p, ToRecycle = %p", activeHead, next, effect);
-  EffectNode::InsertFront(unusedHead, effect);
+  EffectNode::InsertFront(pInactiveHead, effect);
   TRACE(
     "Recycled Effect '%i'. To Add Effects: %i. Active Effects %i. Unused Effects %i",
     effect->id, EffectNode::Size(toAddHead), EffectNode::Size(activeHead), EffectNode::Size(unusedHead));
@@ -184,19 +148,19 @@ auto Effects::Stop(Effect& effect) -> void {
 }
 
 auto Effects::stop(Effect& effect) -> void {
-  auto current = activeHead;
+  auto current = pActiveHead;
   while (current != nullptr) {
     if (current->effect == &effect) {
-      current->stopping = true;
+      current->stopped = true;
     }
     current = current->next;
   }
 }
 
 auto Effects::stopAll() -> void {
-  auto current = activeHead;
+  auto current = pActiveHead;
   while (current != nullptr) {
-    current->stopping = true;
+    current->stopped = true;
     current = current->next;
   }
 }

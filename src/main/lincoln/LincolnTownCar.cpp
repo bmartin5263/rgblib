@@ -17,18 +17,17 @@ auto LincolnTownCar::update() -> void {
 
   mPreviousRpm = mRpm;
   mRpm = vehicle.rpm();
-  RunningAverage(mSmoothRpm, mRpm, RPM_SMOOTHING_FACTOR);
+  mSmoothRpm = RunningAverage(mSmoothRpm, mRpm, RPM_SMOOTHING_FACTOR);
 
   mPreviousSpeed = mSpeed;
   mSpeed = vehicle.speed();
-  RunningAverage(mSmoothSpeed, mSpeed, RPM_SMOOTHING_FACTOR);
+  mSmoothSpeed = RunningAverage(mSmoothSpeed, mSpeed, RPM_SMOOTHING_FACTOR);
 
   mCoolantTemp = vehicle.coolantTemp();
 
   mThrottle = vehicle.throttlePosition();
-  RunningAverage(mSmoothThrottle, mThrottle, .1f);
+  mSmoothThrottle = RunningAverage(mSmoothThrottle, mThrottle, .1f);
 
-  INFO("pre-update, mState == COLD_START: %i", mState == &COLD_START_STATE);
   mState->update(*this);
 
   mLastUpdate = Clock::Now();

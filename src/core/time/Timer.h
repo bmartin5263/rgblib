@@ -31,9 +31,9 @@ public:
 
   static auto ProcessTimers() -> void;
   static auto Cancel(TimerNode* node) -> void;
-  static auto ActiveCount() -> uint;
   static auto StopAll() -> void;
-  static auto MaxCount() -> uint;
+  static auto ActiveCount() -> uint;
+  static auto PeakCount() -> uint;
   static auto Instance() -> Timer&;
 
   auto setTimeout(Duration duration, const Runnable& function) -> TimerHandle;
@@ -42,8 +42,6 @@ public:
   auto setImmediateTimeout(const TimerFunction& function) -> TimerHandle;
   auto continuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle;
   auto continuouslyWhile(const Predicate& function) -> TimerHandle;
-  auto activeCount() const -> uint;
-  auto maxCount() const -> uint;
   auto cancel(TimerNode* node) -> void;
   auto processTimers() -> void;
 
@@ -55,17 +53,11 @@ public:
   ~Timer() = default;
 
 private:
-  uint usedCount{0};
-  uint maxUsedCount{0};
-
   auto executeTimer(TimerNode* node, Timestamp now) -> void;
-  auto nextTimerNode() -> TimerNode*;
   auto processAdditions() -> void;
-  auto reclaimNodes() -> void;
   auto stopAll() -> void;
-  auto recycle(TimerNode* timer) -> void;
-  auto executeRegularTimer(TimerNode* timer, Timestamp now) -> bool;
-  auto executeContinuousTimer(TimerNode* timer, Timestamp now) -> bool;
+  auto executeRegularTimer(TimerNode* timer, Timestamp now) -> void;
+  auto executeContinuousTimer(TimerNode* timer, Timestamp now) -> void;
 };
 
 }

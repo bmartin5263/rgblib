@@ -21,15 +21,17 @@ public:
   CorvetteState& operator=(CorvetteState&& rhs) noexcept = default;
   virtual ~CorvetteState() = default;
 
-  rgb::Timestamp enteredAt;
-  rgb::Timestamp effectiveStartTime;
+  rgb::Timestamp enteredAt{};
+  rgb::Timestamp effectiveStartTime{};
 };
 
 class IdleState : public CorvetteState {
 public:
-  auto reset(rgb::Timestamp enteredAt) -> void;
+  auto reset(rgb::Timestamp enteredAt, rgb::Duration pulseDuration) -> void;
   auto update(Corvette& vehicle) -> void override;
   auto draw(Corvette& vehicle) -> void override;
+
+  rgb::Duration pulseDuration{};
 };
 
 class ColdStartState : public IdleState {
@@ -45,6 +47,7 @@ public:
   auto update(Corvette& vehicle) -> void override;
   auto draw(Corvette& vehicle) -> void override;
 
+  rgb::kph maxSpeed;
   bool chargeUp;
 };
 

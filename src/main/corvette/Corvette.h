@@ -5,7 +5,7 @@
 #ifndef RGBLIB_CORVETTE_H
 #define RGBLIB_CORVETTE_H
 
-#include "ChasingEffectSpeedOnly.h"
+#include "ChaseEffectSpeedOnly.h"
 #include "Flag.h"
 #include "CorvetteState.h"
 #include "RgbColor.h"
@@ -26,10 +26,11 @@ public:
   static constexpr auto RPM_SMOOTHING_FACTOR = 0.03f;
   static constexpr auto MAX_IDLE_RPM = 750;
   static constexpr auto STARTING_RPM = 1000;
-  static constexpr auto RAINBOW_RPM = 4200;
+  static constexpr auto RAINBOW_RPM = 4000;
   static constexpr auto RAINBOW_DURATION = rgb::Duration::Seconds(5);
+  static constexpr auto DEFAULT_PULSE_DURATION = rgb::Duration::Seconds(5);
   static constexpr auto RPM_LOW = 1500;
-  static constexpr auto RPM_HIGH = 3000;
+  static constexpr auto RPM_HIGH = 3500;
 
   auto setup() -> void;
   auto init() -> void;
@@ -46,15 +47,17 @@ public:
   auto state() const -> CorvetteState&;
   auto isConnected() const -> bool;
   auto inRainbowMode() const -> bool;
+  auto inForcedRainbowMode() const -> bool;
   auto isStopped() const -> bool;
   auto isSleeping() const -> bool;
 
-  auto transitionToIdle() -> void;
+  auto transitionToIdle(rgb::Duration pulseDuration) -> void;
   auto transitionToDriving(bool chargeUp) -> void;
   auto transitionToSleeping() -> void;
   auto transitionToColdStart() -> void;
   auto toggleHoldMode() -> void;
   auto toggleForceRainbowMode() -> void;
+  auto togglePulseMode() -> void;
 
   auto nextColorPalette() -> void;
   auto prevColorPalette() -> void;
@@ -75,10 +78,14 @@ private:
   auto satisfiesIdleConditions() const -> bool;
   auto satisfiesRainbowConditions() const -> bool;
 
-  auto drawIdleEffects(rgb::normal fillPercent = 1.0f, rgb::normal colorPercent = 1.0f) -> void;
-  auto drawRpmEffects(rgb::normal fillPercent = 1.0f) -> void;
-  auto drawRainbowEffects(rgb::normal fillPercent = 1.0f) -> void;
-  auto drawSleepEffects(rgb::normal fillPercent = 1.0f) -> void;
+  auto drawIdleEffects(
+    float fillPercent = 1.0f,
+    float colorPercent = 1.0f,
+    rgb::Duration pulseDuration = rgb::Duration::Seconds(5)
+  ) -> void;
+  auto drawRpmEffects(float fillPercent = 1.0f) -> void;
+  auto drawRainbowEffects(float fillPercent = 1.0f) -> void;
+  auto drawSleepEffects(float fillPercent = 1.0f) -> void;
 
   static auto GetFiberBrightness() -> float;
 
@@ -95,10 +102,11 @@ private:
   rgb::revs_per_minute mSmoothRpm{};
   rgb::fahrenheit mCoolantTemp{};
   CorvetteState* mState{&SLEEP_STATE};
-  rgb::ChasingEffectSpeedOnly chasingEffect{};
+  rgb::ChaseEffectSpeedOnly chasingEffect{};
   rgb::EffectHandle chaseHandle{};
   bool mHoldMode{};
   bool mRainbowMode{};
+  bool mPulseMode{};
 };
 
 #endif //RGBLIB_CORVETTE_H

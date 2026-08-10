@@ -2,12 +2,12 @@
 // Created by Brandon on 8/17/25.
 //
 
-#include "ChasingEffect.h"
+#include "ChaseEffect.h"
 #include "Clock.h"
 
 namespace rgb {
 
-auto ChasingEffect::draw(Timestamp now, PixelList& pixels) -> void {
+auto ChaseEffect::draw(Timestamp now, PixelList& pixels) -> void {
   auto actualTrailLength = trailLength.getUnits(pixels);
   auto pixelLength = pixels.length();
 

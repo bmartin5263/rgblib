@@ -9,19 +9,19 @@
 using namespace rgb;
 
 auto LincolnColdStartState::update(LincolnTownCar& vehicle) -> void {
-  INFO("Cold Start");
+  // INFO("Cold Start");
   LincolnTownCar::STOPPED_STATE.update(vehicle);
 }
 
 auto LincolnStoppedState::update(LincolnTownCar& vehicle) -> void {
-  INFO("Stopped");
+  // INFO("Stopped");
   if (vehicle.mRpm > LincolnTownCar::STARTING_RPM) {
     vehicle.transitionToMoving();
   }
 }
 
 auto LincolnMovingState::update(LincolnTownCar& vehicle) -> void {
-  INFO("Moving");
+  // INFO("Moving");
   if (vehicle.mRpm >= LincolnTownCar::RAINBOW_RPM) {
     vehicle.enterOrExtendRainbowMode();
   }

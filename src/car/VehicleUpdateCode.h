@@ -7,7 +7,7 @@
 
 namespace rgb {
 
-enum VehicleUpdateCode : i32 {
+enum VehicleUpdateCode : u32 {
   NONE = 0, PARTIAL = 1, FULL = 2
 };
 

@@ -9,7 +9,7 @@
 namespace rgb {
 
 auto DebugScreen::start(FlipDisplay flip) -> void {
-  ASSERT_C(u8g2.begin(), "Failed to start debug screen", Color::GREEN(.01f));
+  ASSERT(u8g2.begin(), "Failed to start debug screen");
   if (flip) {
     u8g2.setFlipMode(1);
   }
