@@ -35,9 +35,9 @@ private:
   rgb::Timestamp lastPulseReset{};
 
 public:
-  Supplier<rgb::fahrenheit> coolantTempSupplier{[](){ return 200.f; }};
-  Supplier<rgb::revs_per_minute> smoothRpmSupplier{[](){ return 0; }};
-  Supplier<bool> rainbowSupplier{[](){ return false; }};
+  Supplier<rgb::fahrenheit> coolantTempSupplier{[] { return 200.f; }};
+  Supplier<rgb::revs_per_minute> smoothRpmSupplier{[] { return 0; }};
+  Supplier<float> rainbowSupplier{[] { return 0.0f; }};
   rgb::Color greenColor{rgb::Color::GREEN()};
   rgb::Color yellowColor{rgb::Color::YELLOW()};
   rgb::Color redColor{rgb::Color::RED()};

@@ -86,6 +86,18 @@ constexpr auto ByteToFloat(u8 byte) -> normal {
   return static_cast<float>(byte) / 255.0f;
 }
 
+constexpr auto ToMph(kph value) -> mph {
+  return static_cast<mph>(static_cast<float>(value) * 0.621371f);
+}
+
+constexpr auto ToKph(mph value) -> kph {
+  return static_cast<kph>(static_cast<float>(value) * 1.609344);
+}
+
+constexpr auto CToF(celsius value) -> fahrenheit {
+  return (value * 9.0f / 5.0f) + 32.0f;
+}
+
 template<typename T>
 constexpr auto EaseInOutElastic(T x) -> T {
   auto c5 = (2 * M_PI) / 4.5f;
@@ -95,17 +107,6 @@ constexpr auto EaseInOutElastic(T x) -> T {
       : (pow(2, -20 * x + 10) * sinf((20 * x - 11.125f) * c5)) / 2 + 1;
 }
 
-constexpr auto KphToMph(kph value) -> mph {
-  return static_cast<mph>(static_cast<float>(value) * 0.621371f);
-}
-
-constexpr auto MphToKph(kph value) -> mph {
-  return static_cast<mph>(static_cast<float>(value) * 1.609344);
-}
-
-constexpr auto CToF(celsius value) -> fahrenheit {
-  return (value * 9.0f / 5.0f) + 32.0f;
-}
 
 constexpr auto EaseOutBounce(normal t) -> normal {
   auto n1 = 7.5625f;

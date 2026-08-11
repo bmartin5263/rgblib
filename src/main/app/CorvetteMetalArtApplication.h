@@ -8,16 +8,13 @@
 #include "UserApplication.h"
 #include "Pin.h"
 #include "IRReceiver.h"
-#include "Timer.h"
 #include "FastLEDStrip.h"
 #include "NeopixelLEDStrip.h"
-#include "GPIO.h"
 #include "PixelStitch.h"
 #include "ReversePixelList.h"
 #include "ChaseEffect.h"
 #include "DeadPixelList.h"
 #include "PixelSlice.h"
-#include "ChaseEffect.h"
 #include "WipeEffect.h"
 
 using namespace rgb;
@@ -43,7 +40,7 @@ auto wipeGroup = std::array<PixelList*, 2> { &leftSegment, &rightSegment };
 
 class CorvetteMetalArtApplication : public UserApplication<> {
 protected:
-  auto configure(UserApplication::Configurer& app) -> void override {
+  auto configure(Configurer& app) -> void override {
     s1.setBrightness(.8f);
     app.addLEDs(s1);
     app.addSensor(irRemote);
@@ -59,18 +56,6 @@ protected:
     };
     wipeEffect.progression = EffectProgression::ConstantTime(Duration::Seconds(2));
     Effects::Start(wipeEffect, wipeGroup).detach();
-
-    app.on<IRButtonPressed>([](auto& event) {
-      switch (event.button) {
-        case IRButtonType::BUTTON_LEFT:
-          break;
-        case IRButtonType::BUTTON_RIGHT:
-          break;
-        default:
-          INFO("Unknown Button Pressed");
-      }
-    });
-    app.useHeartbeatLED();
   }
 
   auto update() -> void override {

@@ -6,7 +6,7 @@
 #define RGBLIB_WIRELESS_H
 
 #include <esp_wifi_types.h>
-#include <Arduino.h>
+#include <WiFiType.h>
 #include "TimerHandle.h"
 #include "Types.h"
 
@@ -24,6 +24,7 @@ static constexpr auto StrLength(const char* string) -> size_t {
 }
 
 class Wifi {
+  using WifiStatus = wl_status_t;
 
 #if defined(RGB_WIFI_SSID)
   static constexpr const char* SSID = RGB_WIFI_SSID;
@@ -38,6 +39,8 @@ class Wifi {
 static constexpr auto ENABLED = StrLength(SSID) > 0;
 
 public:
+  static constexpr auto WIFI_RECONNECT_TIMEOUT = Duration::Seconds(5);
+
   constexpr static auto Enabled() -> bool {
     return ENABLED;
   }
@@ -46,19 +49,20 @@ public:
   static auto Start() -> int { return Instance().start(); }
   static auto Update() -> void { Instance().update(); }
   static auto GetStatus() -> int { return Instance().getStatus(); }
-  static auto GetAddress() -> String { return Instance().getAddress(); }
+  static auto GetAddress() -> IPAddress { return Instance().getAddress(); }
+  static auto IsConnected() -> bool { return Instance().isConnected(); }
 
   Wifi(const Wifi& rhs) = delete;
   Wifi& operator=(const Wifi& rhs) = delete;
 private:
   Wifi() = default;
-  Wifi(Wifi&& rhs) noexcept = default;
-  Wifi& operator=(Wifi&& rhs) noexcept = default;
+  Wifi(Wifi&& rhs) noexcept = delete;
+  Wifi& operator=(Wifi&& rhs) noexcept = delete;
   ~Wifi() = default;
 
-  Timestamp lastConnectAttempt{};
-  TimerHandle statusCheckHandle{};
-  bool connected{false}; // Primarily used for logging status changes
+  Timestamp mLastConnectAttempt{};
+  TimerHandle mStatusCheckHandle{};
+  bool mConnected{false}; // Primarily used for logging status changes
 
   static auto Instance() -> Wifi& {
     static Wifi instance;
@@ -68,8 +72,13 @@ private:
   auto start() -> int;
   auto update() -> void;
   auto getStatus() const -> int;
-  auto getAddress() const -> String;
-  auto restartWifi(const char* reason) -> void;
+  auto getAddress() const -> IPAddress;
+  auto restartWifi(WifiStatus status) -> void;
+  auto isConnected() const -> bool;
+
+#if RGB_DEBUG
+  static auto mapToString(WifiStatus reason) -> const char*;
+#endif
 };
 
 }

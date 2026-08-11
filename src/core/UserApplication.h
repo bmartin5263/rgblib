@@ -52,24 +52,17 @@ struct SubtaskSharedState {
 
 template<typename EventVariantT = SystemEvent>
 class UserApplication : public Application {
-  using Application::on;
 
 public:
   using AnyEvent = EventVariantT;
   using Configurer = UserApplicationConfigurer<EventVariantT>;
 
   UserApplication() = default;
-  virtual ~UserApplication() = default;
-  UserApplication(const UserApplication& rhs) = delete;
-  UserApplication(UserApplication&& rhs) noexcept = delete;
-  UserApplication& operator=(const UserApplication& rhs) = delete;
-  UserApplication& operator=(UserApplication&& rhs) noexcept = delete;
 
   auto run() -> void;
   auto setup() -> void;
   auto loop() -> void;
   auto publishSystemEvent(const SystemEvent& event) -> void final;
-  auto on(size_t uid, Consumer<const SystemEvent&> action) -> void final;
   auto getVehicle() -> Vehicle* final;
   auto getVehicleLogger() -> VehicleLogger* final;
 
@@ -241,15 +234,6 @@ auto UserApplication<EventVariantT>::publishSystemEvent(const SystemEvent& syste
       handler(event);
     }
   }
-}
-
-template<typename EventVariantT>
-auto UserApplication<EventVariantT>::on(size_t uid, Consumer<const SystemEvent&> action) -> void {
-  mEventMap[uid].push_back([action](auto& anyEvent) {
-    if (auto systemEvent = narrow_variant<SystemEvent>(anyEvent)) {
-      action(systemEvent.value());
-    }
-  });
 }
 
 template<typename EventVariantT>

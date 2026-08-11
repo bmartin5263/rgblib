@@ -20,11 +20,12 @@ auto OTASupport::start() -> bool {
   }
 
   INFO("Starting OTA Support");
+#if RGB_DEBUG
   Stopwatch sw{"OTASupport::start()"};
+#endif
 
   ArduinoOTA
     .setPort(3232)
-    .setHostname("myesp32")
     .setMdnsEnabled(false)
     .begin();
 

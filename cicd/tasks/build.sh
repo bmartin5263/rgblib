@@ -17,3 +17,4 @@ ln -s ~/.platformio/penv/bin/piodebuggdb /usr/local/bin/piodebuggdb
 cd rgblib
 
 ./scripts/build.sh
+./scripts/test.sh

@@ -56,6 +56,7 @@ public:
   auto reset(rgb::Timestamp enteredAt, rgb::percent throttleWhenRainbowStart) -> void;
   auto update(Corvette& vehicle) -> void override;
   auto draw(Corvette& vehicle) -> void override;
+  auto rainbowLevel() const -> float;
 
   rgb::percent throttleWhenRainbowStart;
 };

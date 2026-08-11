@@ -50,6 +50,7 @@ public:
   auto inForcedRainbowMode() const -> bool;
   auto isStopped() const -> bool;
   auto isSleeping() const -> bool;
+  auto rainbowLevel() const -> float;
 
   auto transitionToIdle(rgb::Duration pulseDuration) -> void;
   auto transitionToDriving(bool chargeUp) -> void;

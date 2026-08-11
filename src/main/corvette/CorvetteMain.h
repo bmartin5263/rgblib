@@ -99,7 +99,12 @@ protected:
     rpmGauge.coolantTempSupplier = [] { return Corvette::Instance().coolantTemp(); };
     rpmGauge.rainbowSupplier = [] {
       auto& corvette = Corvette::Instance();
-      return corvette.inRainbowMode() && !corvette.inForcedRainbowMode();
+      if (corvette.inRainbowMode() && !corvette.inForcedRainbowMode()) {
+        return corvette.rainbowLevel();
+      }
+      else {
+        return 0.0f;
+      }
     };
     rpmGauge.glowCondition = GlowCondition::RED_LINE;
   }

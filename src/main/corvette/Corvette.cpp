@@ -448,6 +448,10 @@ auto Corvette::isSleeping() const -> bool {
   return mState == &SLEEP_STATE;
 }
 
+auto Corvette::rainbowLevel() const -> float {
+  return static_cast<RainbowState*>(mState)->rainbowLevel();
+}
+
 auto Corvette::GetFiberBrightness() -> float {
   return Brightness::GetBrightness({
       .dim = .1f,

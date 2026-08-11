@@ -23,23 +23,6 @@ private:
   priv::IICImpl impl;
 };
 
-auto IIC::Implementation() -> priv::IICImpl& {
-  static IIC instance;
-  return instance.impl;
-}
-
-auto IIC::Start() -> bool {
-  return Implementation().start();
-}
-
-auto IIC::Stop() -> void {
-  Implementation().stop();
-}
-
-auto IIC::IsStarted() -> bool {
-  return Implementation().isStarted();
-}
-
 }
 
 #endif //RGBLIB_IIC_H

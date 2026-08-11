@@ -79,7 +79,8 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
   auto time = now.percentOf(BUILD_UP_TIME);
   auto activeLevel = static_cast<int>(static_cast<float>(levelCount) * time);
 
-  if (rainbowSupplier()) {
+  auto rainbowPercent = rainbowSupplier();
+  if (rainbowPercent > 0.0f) {
     if (!rainbowAchievedAt) {
       rainbowAchievedAt = now;
     }
@@ -87,8 +88,22 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
     auto fillPercent = (now - rainbowAchievedAt.value()).percentOf(Duration::Milliseconds(300));
     auto fillIndex = pixels.size() * fillPercent;
     auto t = now.percentOfWrapped(RAINBOW_SPEED);
-    auto color = Color::HslToRgb(t) * rainbowBrightness;
-    pixels.fill(color, levelCount);
+    auto rainbowLevelAchieved = levelCount * rainbowPercent;
+
+    for (int level = 0; level < levelCount; ++level) {
+      calcs.level = level;
+      auto color = Color::HslToRgb(t);
+      float brightness;
+      if (level >= rainbowLevelAchieved) {
+        brightness = calcs.effectiveOnBrightness;
+      }
+      else {
+        brightness = calcs.effectiveOffBrightness;
+      }
+      color *= brightness;
+      pixels.set(mapToPixelPosition(level, ledCount, offset), color);
+    }
+
     if (fillIndex < pixels.size()) {
       pixels.set(fillIndex, Color::WHITE() * rainbowBrightness * 2);
     }

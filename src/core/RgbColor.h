@@ -5,8 +5,8 @@
 #ifndef RGBLIB_RGBCOLOR_H
 #define RGBLIB_RGBCOLOR_H
 
-#include <esp_random.h>
 #include <type_traits>
+#include "Random.h"
 #include "Types.h"
 #include "Util.h"
 
@@ -191,7 +191,7 @@ struct Color {
     return {0.f, 0.f, 0.f, 0.f};
   }
 
-  static auto Random12(uint32_t seed = esp_random()) -> Color {
+  static auto Random12(uint32_t seed = Random::Next()) -> Color {
     return Sequential12(seed);
   }
 

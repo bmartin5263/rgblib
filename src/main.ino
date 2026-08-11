@@ -1,11 +1,11 @@
-#include "lincoln/LincolnApplication.h"
-auto app = LincolnApplication{};
+// #include "lincoln/LincolnApplication.h"
+// auto app = LincolnApplication{};
 
 // #include "corvette/CorvetteMain.h"
 // auto app = CorvetteApplication{};
 
-// #include "app/CorvetteMetalArtApplication.h"
-// auto app = CorvetteMetalArtApplication{};
+#include "app/CorvetteMetalArtApplication.h"
+auto app = CorvetteMetalArtApplication{};
 
 // #include "app/RGBPatternApplication.h"
 // auto app = RGBPatternApplication{};

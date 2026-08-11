@@ -22,17 +22,16 @@ public:
     instance->publishSystemEvent(SystemEvent{event});
   }
 
-  template<typename T>
-  constexpr auto on(Consumer<const T&> action) -> void {
-    auto index = EventIndex_v<T, SystemEvent>;
-    on(index, [&](auto& eventVariant){
-      action(std::get<T>(eventVariant));
-    });
-  }
-
-  virtual auto on(size_t uid, Consumer<const SystemEvent&> action) -> void = 0;
   virtual auto getVehicle() -> Vehicle* = 0;
   virtual auto getVehicleLogger() -> VehicleLogger* = 0;
+
+  virtual ~Application() = default;
+protected:
+  Application() = default;
+  Application(const Application& rhs) = delete;
+  Application(Application&& rhs) noexcept = delete;
+  Application& operator=(const Application& rhs) = delete;
+  Application& operator=(Application&& rhs) noexcept = delete;
 };
 
 }

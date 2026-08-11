@@ -6,7 +6,6 @@
 
 #include "Wireless.h"
 #include "Log.h"
-#include "Stopwatch.h"
 #include "Timer.h"
 #include "Clock.h"
 
@@ -28,45 +27,52 @@ auto Wifi::start() -> int {
 
   INFO("Starting Wi-Fi using SSID %s", SSID);
 
-  lastConnectAttempt = Clock::Now();
+  mLastConnectAttempt = Clock::Now();
   return WiFi.begin(SSID, PASSWORD); // Expected return is WL_DISCONNECTED while connecting
 }
 
-auto Wifi::restartWifi(const char* reason) -> void {
-  if (Clock::Now().timeSince(lastConnectAttempt) > Duration::Seconds(5)) {
-    ERROR("Failed to connect to Wi-Fi. Reason Code: %s", reason);
+auto Wifi::restartWifi(WifiStatus status) -> void {
+  if (Clock::Now().timeSince(mLastConnectAttempt) > WIFI_RECONNECT_TIMEOUT) {
+    ERROR("Failed to connect to Wi-Fi. Reason Code: %s", mapToString(status));
     start();
   }
+}
+
+auto Wifi::isConnected() const -> bool {
+  return mConnected;
 }
 
 auto Wifi::update() -> void {
   switch (WiFiClass::status()) {
     case WL_CONNECTED:
-      if (!connected) {
-        INFO("Wi-Fi connected with IP %s", WiFi.localIP().toString().c_str());
-        connected = true;
+      if (!mConnected) {
+#if RGB_DEBUG
+        auto ip = WiFi.localIP();
+        INFO("Wi-Fi connected with IP %u.%u.%u.%u", ip[0], ip[1], ip[2], ip[3]);
+#endif
+        mConnected = true;
       }
       break;
     case WL_IDLE_STATUS:
       // Waiting for connection
       break;
     case WL_NO_SHIELD:
-      restartWifi("WL_NO_SHIELD");
+      restartWifi(WL_NO_SHIELD);
       break;
     case WL_CONNECT_FAILED:
-      restartWifi("WL_CONNECT_FAILED");
+      restartWifi(WL_CONNECT_FAILED);
       break;
     case WL_CONNECTION_LOST:
-      restartWifi("WL_CONNECTION_LOST");
+      restartWifi(WL_CONNECTION_LOST);
       break;
     case WL_DISCONNECTED:
-      restartWifi("WL_DISCONNECTED");
+      restartWifi(WL_DISCONNECTED);
       break;
     case WL_NO_SSID_AVAIL:
-      restartWifi("WL_NO_SSID_AVAIL");
+      restartWifi(WL_NO_SSID_AVAIL);
       break;
     case WL_SCAN_COMPLETED:
-      restartWifi("WL_SCAN_COMPLETED");
+      restartWifi(WL_SCAN_COMPLETED);
       break;
   }
 }
@@ -75,8 +81,33 @@ auto Wifi::getStatus() const -> int {
   return WiFiClass::status();
 }
 
-auto Wifi::getAddress() const -> String {
-  return WiFi.localIP().toString();
+auto Wifi::getAddress() const -> IPAddress {
+  return WiFi.localIP();
 }
+
+#if RGB_DEBUG
+auto Wifi::mapToString(WifiStatus reason) -> const char* {
+  switch (reason) {
+    case WL_CONNECTED:
+      return "CONNECTED";
+    case WL_IDLE_STATUS:
+      return "IDLE";
+    case WL_NO_SHIELD:
+      return "NO_SHIELD";
+    case WL_CONNECT_FAILED:
+      return "CONNECT_FAILED";
+    case WL_CONNECTION_LOST:
+      return "CONNECTION_LOST";
+    case WL_DISCONNECTED:
+      return "DISCONNECTED";
+    case WL_NO_SSID_AVAIL:
+      return "NO_SSID_AVAIL";
+    case WL_SCAN_COMPLETED:
+      return "SCAN_COMPLETED";
+    default:
+      return "UNKNOWN";
+  }
+}
+#endif
 
 }

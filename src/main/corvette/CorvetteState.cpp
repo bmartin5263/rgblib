@@ -51,7 +51,7 @@ auto DrivingState::update(Corvette& vehicle) -> void {
   }
 
   auto smoothSpeed = static_cast<float>(vehicle.mSmoothSpeed);
-  auto chaseTime = Duration::Microseconds(LerpClamp(12000, 3000, smoothSpeed / MphToKph(100)));
+  auto chaseTime = Duration::Microseconds(LerpClamp(12000, 3000, smoothSpeed / ToKph(100)));
   vehicle.chasingEffect.delay = chaseTime;
 
   if (vehicle.satisfiesRainbowConditions()) {
@@ -59,13 +59,13 @@ auto DrivingState::update(Corvette& vehicle) -> void {
   }
   else if (vehicle.satisfiesIdleConditions()) {
     auto pulseDuration = Corvette::DEFAULT_PULSE_DURATION;
-    if (maxSpeed > MphToKph(90)) {
+    if (maxSpeed > ToKph(90)) {
       pulseDuration = Duration::Seconds(2);
     }
-    else if (maxSpeed > MphToKph(70)) {
+    else if (maxSpeed > ToKph(70)) {
       pulseDuration = Duration::Seconds(3);
     }
-    else if (maxSpeed > MphToKph(50)) {
+    else if (maxSpeed > ToKph(50)) {
       pulseDuration = Duration::Seconds(4);
     }
     vehicle.transitionToIdle(pulseDuration);
@@ -114,9 +114,15 @@ void DrivingState::draw(Corvette& vehicle) {
 
 void RainbowState::draw(Corvette& vehicle) {
   auto now = Clock::Now() - enteredAt;
-  auto percentComplete = now.percentOf(Duration::Milliseconds(500));
+  auto fillPercent = now.percentOf(Duration::Milliseconds(500));
   vehicle.drawRpmEffects();
-  vehicle.drawRainbowEffects(percentComplete);
+  vehicle.drawRainbowEffects(fillPercent);
+}
+
+auto RainbowState::rainbowLevel() const -> float {
+  auto now = Clock::Now() - effectiveStartTime;
+  auto percentRemaining = 1.0f - now.percentOf(Corvette::RAINBOW_DURATION);
+  return percentRemaining;
 }
 
 auto SleepState::reset(Timestamp enteredAt) -> void {

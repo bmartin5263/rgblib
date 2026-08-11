@@ -13,11 +13,12 @@
 namespace rgb {
 
 auto Monitor::update() -> void {
-  INFO("FPS: %i, Timers: %i / %i (peak=%i), Effects: %i / %i (peak=%i), WiFi: %s",
+  auto ip = Wifi::GetAddress();
+  INFO("FPS: %i, Timers: %i / %i (peak=%i), Effects: %i / %i (peak=%i), WiFi: %u.%u.%u.%u",
     Clock::Fps(),
     Timer::ActiveCount(), Timer::Capacity(), Timer::PeakCount(),
     Effects::ActiveCount(), Effects::Capacity(), Effects::PeakCount(),
-    Wifi::GetAddress().c_str()
+    ip[0], ip[1], ip[2], ip[3]
   );
 }
 

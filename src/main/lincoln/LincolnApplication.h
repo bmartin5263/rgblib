@@ -17,7 +17,6 @@
 #include "ChaseEffect.h"
 #include "DeadPixelList.h"
 #include "PixelSlice.h"
-#include "ChaseEffect.h"
 #include "ChaseEffectSpeedOnly.h"
 #include "WipeEffect.h"
 #include "Brightness.h"
@@ -398,20 +397,7 @@ protected:
 
     rpmGauge.smoothRpmSupplier = [] { return LincolnTownCar::Instance().smoothRpm(); };
     rpmGauge.coolantTempSupplier = [] { return LincolnTownCar::Instance().coolantTemp(); };
-    rpmGauge.rainbowSupplier = [] { return LincolnTownCar::Instance().inRainbowMode(); };
-
-//    app.on<OBDIIConnected>([this](auto& event){
-//      if (isSleeping()) {
-//        wakeUp();
-//        RunIntroSequence();
-//      }
-//    });
-//    app.on<OBDIIDisconnected>([this](auto& event){
-//      goToSleep(Duration::Seconds(3));
-//    });
-//    app.on<SleepEvent>([](auto& event){
-//      footRainbowTimerHandle = Timer::ContinuouslyWhile([](){ return levelUpFn(footSleepLevel, dashFiberSleepLevel); });
-//    });
+    rpmGauge.rainbowSupplier = [] { return LincolnTownCar::Instance().inRainbowMode() ? 1.0f : 0.0f; };
   }
 
   auto update() -> void override {
@@ -419,7 +405,7 @@ protected:
     townCar.update();
 
     auto speed = static_cast<float>(townCar.smoothSpeed());
-    auto chaseTime = Duration::Microseconds(LerpClamp(10000, 2000, speed / MphToKph(90)));
+    auto chaseTime = Duration::Microseconds(LerpClamp(10000, 2000, speed / ToKph(90)));
     fiberChase.delay = chaseTime;
   }
 
