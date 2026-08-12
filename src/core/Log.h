@@ -10,7 +10,7 @@
 
 #if defined (RGB_DEBUG)
 #if !defined(RGB_LOG_LEVEL)
-#define RGB_LOG_LEVEL 1
+#define RGB_LOG_LEVEL 2
 #endif
 #endif
 
@@ -21,16 +21,16 @@ auto printHeader(const char* level, const char* function) -> void;
 [[gnu::format(printf, 1, 2)]]
 auto printMessage(const char* format, ...) -> void;
 
-#define ERROR(format, ...) do { \
-  rgb::log::printHeader("ERROR", __PRETTY_FUNCTION__); \
-  rgb::log::printMessage(format, ##__VA_ARGS__); \
-} while(false)
-
-#define PRINTF(format, ...) do { \
-  rgb::log::printMessage(format, ##__VA_ARGS__); \
-} while(false)
-
 #if RGB_LOG_LEVEL > 0
+#define ERROR(format, ...) do { \
+  rgb::log::printHeader("ERROR", __PRETTY_FUNCTION__);  \
+  rgb::log::printMessage(format, ##__VA_ARGS__); \
+} while(false)
+#else
+#define ERROR(format, ...)
+#endif
+
+#if RGB_LOG_LEVEL > 1
 #define INFO(format, ...) do { \
   rgb::log::printHeader("INFO", __PRETTY_FUNCTION__);  \
   rgb::log::printMessage(format, ##__VA_ARGS__); \
@@ -40,7 +40,7 @@ auto printMessage(const char* format, ...) -> void;
 #endif
 
 
-#if RGB_LOG_LEVEL > 1
+#if RGB_LOG_LEVEL > 2
 #define TRACE(format, ...) do { \
   rgb::log::printHeader("TRACE", __PRETTY_FUNCTION__); \
   rgb::log::printMessage(format, ##__VA_ARGS__); \

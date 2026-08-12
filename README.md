@@ -48,7 +48,6 @@ use of these macros for reporting issues at runtime
 
 | Logging Macro      | Description                                                                                |
 |--------------------|--------------------------------------------------------------------------------------------|
-| `PRINTF(msg, ...)` | Print a log message without any header/timestamp. Always enabled, intended for real output |
 | `TRACE(msg, ...)`  | Print a log message with level _Trace_. Intended for low-level or frequent messages        |
 | `INFO(msg, ...)`   | Print a log message with level _Info_. Intended for high-level messages                    |
 | `ERROR(msg, ...)`  | Print a log message with level _Error_. Intended for abnormal events                       |

@@ -85,7 +85,6 @@ auto Wifi::getAddress() const -> IPAddress {
   return WiFi.localIP();
 }
 
-#if RGB_DEBUG
 auto Wifi::mapToString(WifiStatus reason) -> const char* {
   switch (reason) {
     case WL_CONNECTED:
@@ -108,6 +107,5 @@ auto Wifi::mapToString(WifiStatus reason) -> const char* {
       return "UNKNOWN";
   }
 }
-#endif
 
 }

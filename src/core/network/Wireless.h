@@ -76,9 +76,7 @@ private:
   auto restartWifi(WifiStatus status) -> void;
   auto isConnected() const -> bool;
 
-#if RGB_DEBUG
   static auto mapToString(WifiStatus reason) -> const char*;
-#endif
 };
 
 }

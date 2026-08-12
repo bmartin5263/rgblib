@@ -45,7 +45,7 @@ constexpr auto LerpWrap(T a, T b, N t) -> T {
   if (t < 0.0f || t > 1.0f) {
     t = t - std::floor(t);
   }
-  return a + (b - a) * t;
+  return Lerp(a, b, t);
 }
 
 template<typename T, typename N>
@@ -56,7 +56,7 @@ constexpr auto LerpClamp(T a, T b, N t) -> T {
   } else if (t >= 1.f) {
     return b;
   }
-  return a + (b - a) * t;
+  return Lerp(a, b, t);
 }
 
 constexpr auto SinWave(float t, float frequency = .1f) -> float {

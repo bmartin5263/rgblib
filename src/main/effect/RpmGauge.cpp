@@ -94,11 +94,11 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
       calcs.level = level;
       auto color = Color::HslToRgb(t);
       float brightness;
-      if (level >= rainbowLevelAchieved) {
-        brightness = calcs.effectiveOnBrightness;
+      if (level <= rainbowLevelAchieved) {
+        brightness = calcs.effectiveOnBrightness * 1.2f;
       }
       else {
-        brightness = calcs.effectiveOffBrightness;
+        brightness = calcs.effectiveOnBrightness * .5f;
       }
       color *= brightness;
       pixels.set(mapToPixelPosition(level, ledCount, offset), color);

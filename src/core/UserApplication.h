@@ -7,8 +7,6 @@
 
 #ifndef RGB_VEHICLE_RX
 #define RGB_VEHICLE_RX D11
-#include <WiFi.h>
-#include <WiFiType.h>
 #endif
 
 #ifndef RGB_VEHICLE_TX
