@@ -17,7 +17,7 @@
 #include "Pin.h"
 #include "VehicleUpdateCode.h"
 
-namespace rgb {
+namespace rgb::car {
 
 struct OBDDestroyer {
   auto operator()(COBD& c) const noexcept -> void;

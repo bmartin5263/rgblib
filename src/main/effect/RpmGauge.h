@@ -16,7 +16,6 @@ enum class GlowCondition {
   NONE, YELLOW_LINE, RED_LINE
 };
 
-class Vehicle;
 class RpmGauge : public rgb::Effect {
 public:
   static constexpr auto RPM_SMOOTHING_FACTOR = 0.03f;

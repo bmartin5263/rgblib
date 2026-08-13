@@ -8,7 +8,7 @@
 #include "Log.h"
 #include "RgbSPI.h"
 
-namespace rgb {
+namespace rgb::car {
 
 CANModule::CANModule(u8 pinNumber, ClockRate clockRate) {
   mcp2515.setSpiPins(pinNumber);

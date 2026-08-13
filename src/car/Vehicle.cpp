@@ -7,7 +7,7 @@
 #include "Util.h"
 #include "Application.h"
 
-namespace rgb {
+namespace rgb::car {
 
 Vehicle* Vehicle::instance = nullptr;
 

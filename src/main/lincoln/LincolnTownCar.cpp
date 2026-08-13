@@ -13,7 +13,7 @@ LincolnMovingState LincolnTownCar::MOVING_STATE{};
 LincolnStoppedState LincolnTownCar::STOPPED_STATE{};
 
 auto LincolnTownCar::update() -> void {
-  auto& vehicle = Vehicle::Instance();
+  auto& vehicle = car::Vehicle::Instance();
 
   mPreviousRpm = mRpm;
   mRpm = vehicle.rpm();
@@ -114,7 +114,7 @@ auto LincolnTownCar::coolantTemp() const -> rgb::fahrenheit {
 }
 
 auto LincolnTownCar::isConnected() const -> bool {
-  return Vehicle::Instance().isConnected();
+  return car::Vehicle::Instance().isConnected();
 }
 
 auto LincolnTownCar::inRainbowMode() const -> bool {

@@ -142,7 +142,7 @@ auto Corvette::init() -> void {
 }
 
 auto Corvette::update() -> void {
-  auto& vehicle = Vehicle::Instance();
+  auto& vehicle = car::Vehicle::Instance();
 
   mPreviousRpm = mRpm;
   mRpm = vehicle.rpm();
@@ -429,7 +429,7 @@ auto Corvette::coolantTemp() const -> fahrenheit {
 }
 
 auto Corvette::isConnected() const -> bool {
-  return Vehicle::Instance().isConnected();
+  return car::Vehicle::Instance().isConnected();
 }
 
 auto Corvette::inRainbowMode() const -> bool {

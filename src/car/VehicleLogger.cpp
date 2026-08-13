@@ -7,7 +7,7 @@
 #include "Clock.h"
 #include "RgbSPI.h"
 
-namespace rgb {
+namespace rgb::car {
 
 auto VehicleLogger::start() -> bool {
   if (started) {

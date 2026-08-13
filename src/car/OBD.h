@@ -4,6 +4,8 @@
 * Visit http://freematics.com for more information
 * (C)2012-2016 Stanley Huang <stanleyhuangyc@gmail.com>
 *************************************************************************/
+#ifndef OBD_H
+#define OBD_H
 
 #include <Arduino.h>
 
@@ -93,6 +95,7 @@
 // custom PIDs for calculated data
 #define PID_TRIP_DISTANCE 0x30
 
+namespace rgb::car {
 typedef enum {
   PROTO_AUTO = 0,
   PROTO_ISO_9141_2 = 3,
@@ -231,3 +234,5 @@ private:
   }
   char* getResultValue(char* buf);
 };
+}
+#endif // OBD_H

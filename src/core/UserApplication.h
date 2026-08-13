@@ -45,7 +45,7 @@ static void vehicleReader(void* args);
 #endif
 
 struct SubtaskSharedState {
-  Vehicle* vehicle;
+  car::Vehicle* vehicle;
 };
 
 template<typename EventVariantT = SystemEvent>
@@ -61,13 +61,13 @@ public:
   auto setup() -> void;
   auto loop() -> void;
   auto publishSystemEvent(const SystemEvent& event) -> void final;
-  auto getVehicle() -> Vehicle* final;
-  auto getVehicleLogger() -> VehicleLogger* final;
+  auto getVehicle() -> car::Vehicle* final;
+  auto getVehicleLogger() -> car::VehicleLogger* final;
 
   static auto PublishEvent(const AnyEvent& event) -> void;
 
-  Vehicle vehicle{};
-  VehicleLogger vehicleLogger{};
+  car::Vehicle vehicle{};
+  car::VehicleLogger vehicleLogger{};
 
 protected:
   // Register LEDs, sensors, configure pins, event handlers, and any other static config
@@ -97,12 +97,12 @@ private:
 };
 
 template<typename EventVariantT>
-auto UserApplication<EventVariantT>::getVehicle() -> Vehicle* {
+auto UserApplication<EventVariantT>::getVehicle() -> car::Vehicle* {
   return &vehicle;
 
 }
 template<typename EventVariantT>
-auto UserApplication<EventVariantT>::getVehicleLogger() -> VehicleLogger* {
+auto UserApplication<EventVariantT>::getVehicleLogger() -> car::VehicleLogger* {
   return &vehicleLogger;
 }
 
@@ -265,7 +265,7 @@ void vehicleReader(void* args) {
     else {
       auto result = vehicle->update();
       if (logger->isStarted()) {
-        logger->record(VehicleData{
+        logger->record(car::VehicleData{
           .lastUpdateResult = result,
           .rpm = vehicle->rpm(),
           .speed = vehicle->speed(),

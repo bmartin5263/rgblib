@@ -8,7 +8,7 @@
 #include "Types.h"
 #include "VehicleUpdateCode.h"
 
-namespace rgb {
+namespace rgb::car {
 
 struct VehicleData {
   VehicleUpdateCode lastUpdateResult{};

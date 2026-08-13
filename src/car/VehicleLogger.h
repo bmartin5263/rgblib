@@ -12,7 +12,7 @@
 #include <array>
 
 
-namespace rgb {
+namespace rgb::car {
 
 struct VehicleLogEntry {
   Timestamp timestamp{};

@@ -9,7 +9,7 @@
 
 #include "Types.h"
 
-namespace rgb {
+namespace rgb::car {
 
 class CANModule {
 public:

@@ -9,9 +9,11 @@
 #include "Func.h"
 
 namespace rgb {
-
+namespace car {
 class Vehicle;
 class VehicleLogger;
+}
+
 class Application {
 public:
   static Application* instance;
@@ -22,8 +24,8 @@ public:
     instance->publishSystemEvent(SystemEvent{event});
   }
 
-  virtual auto getVehicle() -> Vehicle* = 0;
-  virtual auto getVehicleLogger() -> VehicleLogger* = 0;
+  virtual auto getVehicle() -> car::Vehicle* = 0;
+  virtual auto getVehicleLogger() -> car::VehicleLogger* = 0;
 
   virtual ~Application() = default;
 protected:

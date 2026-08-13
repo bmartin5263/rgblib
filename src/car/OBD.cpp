@@ -15,6 +15,7 @@
 * OBD-II UART Adapter
 *************************************************************************/
 
+namespace rgb::car {
 byte COBD::sendCommand(const char* cmd, char* buf, byte bufsize, int timeout)
 {
   write(cmd);
@@ -97,7 +98,7 @@ void COBD::write(const char* s)
 {
 #ifdef DEBUG
   DEBUG.print("<<<");
-	DEBUG.println(s);
+  DEBUG.println(s);
 #endif
   OBDUART.write(s);
 }
@@ -362,7 +363,7 @@ byte COBD::receive(char* buffer, byte bufsize, int timeout)
   }
 #ifdef DEBUG
   DEBUG.print(">>>");
-	DEBUG.println(buffer);
+  DEBUG.println(buffer);
 #endif
   return n;
 }
@@ -456,29 +457,29 @@ bool COBD::memsRead(int16_t* acc, int16_t* gyr, int16_t* mag, int16_t* temp)
   if (acc) {
     success = false;
     if (sendCommand("ATACL\r", buf, sizeof(buf)) > 0) do {
-        char* p = getResultValue(buf);
-        if (!p) break;
-        acc[0] = atoi(p++);
-        if (!(p = strchr(p, ','))) break;
-        acc[1] = atoi(++p);
-        if (!(p = strchr(p, ','))) break;
-        acc[2] = atoi(++p);
-        success = true;
-      } while (0);
+      char* p = getResultValue(buf);
+      if (!p) break;
+      acc[0] = atoi(p++);
+      if (!(p = strchr(p, ','))) break;
+      acc[1] = atoi(++p);
+      if (!(p = strchr(p, ','))) break;
+      acc[2] = atoi(++p);
+      success = true;
+    } while (0);
     if (!success) return false;
   }
   if (gyr) {
     success = false;
     if (sendCommand("ATGYRO\r", buf, sizeof(buf)) > 0) do {
-        char* p = getResultValue(buf);
-        if (!p) break;
-        gyr[0] = atoi(p++);
-        if (!(p = strchr(p, ','))) break;
-        gyr[1] = atoi(++p);
-        if (!(p = strchr(p, ','))) break;
-        gyr[2] = atoi(++p);
-        success = true;
-      } while (0);
+      char* p = getResultValue(buf);
+      if (!p) break;
+      gyr[0] = atoi(p++);
+      if (!(p = strchr(p, ','))) break;
+      gyr[1] = atoi(++p);
+      if (!(p = strchr(p, ','))) break;
+      gyr[2] = atoi(++p);
+      success = true;
+    } while (0);
     if (!success) return false;
   }
   if (temp) {
@@ -498,9 +499,10 @@ bool COBD::memsRead(int16_t* acc, int16_t* gyr, int16_t* mag, int16_t* temp)
 #ifdef DEBUG
 void COBD::debugOutput(const char *s)
 {
-	DEBUG.print('[');
-	DEBUG.print(millis());
-	DEBUG.print(']');
-	DEBUG.print(s);
+  DEBUG.print('[');
+  DEBUG.print(millis());
+  DEBUG.print(']');
+  DEBUG.print(s);
 }
 #endif
+}
