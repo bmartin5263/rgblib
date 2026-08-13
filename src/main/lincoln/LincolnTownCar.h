@@ -5,16 +5,8 @@
 #ifndef RGBLIB_LINCOLNTOWNCAR_H
 #define RGBLIB_LINCOLNTOWNCAR_H
 
-#include "Vehicle.h"
 #include "Flag.h"
 #include "LincolnTownCarState.h"
-
-//enum LincolnTownCarState {
-//  COLD_START,
-//  STOPPED,
-//  MOVING,
-//  HIGHWAY
-//};
 
 class LincolnTownCar {
   static LincolnColdStartState COLD_START_STATE;

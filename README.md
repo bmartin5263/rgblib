@@ -37,7 +37,7 @@ It's Shader has more information about what cycle the effect is in, what positio
 |--------|-------------------------|
 | Red    | Debug Fault Triggered   |
 | Yellow |                         |
-| Green  | Connected to Vehicle    |
+| Green  |                         |
 | Cyan   |                         |
 | Blue   | TODO: Connected to WiFi |
 | Purple | Optional Heartbeat      |

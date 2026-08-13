@@ -25,13 +25,11 @@
 #include "UserApplicationConfigurer.h"
 #include "LEDDevice.h"
 #include "Clock.h"
-#include "Vehicle.h"
 #include "Timer.h"
 #include "Effects.h"
 #include "LEDCore.h"
 #include "Monitor.h"
 #include "Debug.h"
-#include "VehicleLogger.h"
 
 #if RGB_OTA
 #include "Wireless.h"
@@ -39,14 +37,6 @@
 #endif
 
 namespace rgb {
-
-#if RGB_VEHICLE_CORE_ENABLED
-static void vehicleReader(void* args);
-#endif
-
-struct SubtaskSharedState {
-  car::Vehicle* vehicle;
-};
 
 template<typename EventVariantT = SystemEvent>
 class UserApplication : public Application {
@@ -61,13 +51,8 @@ public:
   auto setup() -> void;
   auto loop() -> void;
   auto publishSystemEvent(const SystemEvent& event) -> void final;
-  auto getVehicle() -> car::Vehicle* final;
-  auto getVehicleLogger() -> car::VehicleLogger* final;
 
   static auto PublishEvent(const AnyEvent& event) -> void;
-
-  car::Vehicle vehicle{};
-  car::VehicleLogger vehicleLogger{};
 
 protected:
   // Register LEDs, sensors, configure pins, event handlers, and any other static config
@@ -97,16 +82,6 @@ private:
 };
 
 template<typename EventVariantT>
-auto UserApplication<EventVariantT>::getVehicle() -> car::Vehicle* {
-  return &vehicle;
-
-}
-template<typename EventVariantT>
-auto UserApplication<EventVariantT>::getVehicleLogger() -> car::VehicleLogger* {
-  return &vehicleLogger;
-}
-
-template<typename EventVariantT>
 auto UserApplication<EventVariantT>::run() -> void {
   setup();
   while (true) {
@@ -119,23 +94,8 @@ auto UserApplication<EventVariantT>::setup() -> void {
   log::init();
   INFO("Setup Application");
   configureApplication();
-
-#if RGB_OTA
-  Wifi::SetMode(WIFI_STA);
-  Wifi::Start();
-  OTASupport::Start();
-#endif
-
-#if RGB_VEHICLE_CORE_ENABLED
-  Debug::SetBlinker(BlinkerColor::YELLOW, [this] {
-    return vehicleLogger.isStarted();
-  });
-  xTaskCreatePinnedToCore(vehicleReader, "vehicleReader", RGB_VEHICLE_CORE_STACK_SIZE, this, RGB_VEHICLE_CORE_PRIORITY, nullptr, 1);
-#endif
-
   startSubsystems();
   initialize();
-
   PublishEvent(AppReady{{Clock::Now()}});
 }
 
@@ -152,8 +112,10 @@ auto UserApplication<EventVariantT>::startSubsystems() -> void {
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->start(); });
   std::for_each(std::begin(mSensors), std::end(mSensors), [](auto sensor){ sensor->start(); });
 
-#if RGB_VEHICLE_CORE_ENABLED
-  vehicleLogger.start();
+#if RGB_OTA
+  Wifi::SetMode(WIFI_STA);
+  Wifi::Start();
+  OTASupport::Start();
 #endif
 }
 
@@ -185,16 +147,13 @@ auto UserApplication<EventVariantT>::baseDraw() -> void {
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::configureApplication() -> void {
   instance = this;
-  vehicle.instance = &vehicle;
 
 #ifdef RGB_ARDUINO_NANO
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_BLUE, OUTPUT);
 #endif
-
   Debug::SetBlinker(BlinkerColor::RED, [] { return Debug::HasFault(); });
-  Debug::SetBlinker(BlinkerColor::GREEN, [this] { return vehicle.isConnected(); });
 #if RGB_OTA
   Debug::SetBlinker(BlinkerColor::BLUE, [this] { return Wifi::GetStatus() == WL_CONNECTED; });
 #endif
@@ -244,42 +203,6 @@ auto UserApplication<EventVariantT>::PublishEvent(const AnyEvent& event) -> void
     }
   }
 }
-
-#if RGB_VEHICLE_CORE_ENABLED
-void vehicleReader(void* args) {
-  INFO("Vehicle Reader Task Started");
-
-  auto app = static_cast<Application*>(args);
-  auto vehicle = app->getVehicle();
-  auto logger = app->getVehicleLogger();
-
-  vehicle->connect(PinNumber{RGB_VEHICLE_RX}, PinNumber{RGB_VEHICLE_TX});
-  while (true) {
-    if (!vehicle->isConnected()) {
-      if (logger->isStarted()) {
-        logger->flush();
-      }
-      vehicle->connect(PinNumber{RGB_VEHICLE_RX}, PinNumber{RGB_VEHICLE_TX});
-      logger->start();
-    }
-    else {
-      auto result = vehicle->update();
-      if (logger->isStarted()) {
-        logger->record(car::VehicleData{
-          .lastUpdateResult = result,
-          .rpm = vehicle->rpm(),
-          .speed = vehicle->speed(),
-          .coolantTemp = vehicle->coolantTemp(),
-          .fuelLevel = vehicle->fuelLevel(),
-          .throttlePosition = vehicle->throttlePosition(),
-        });
-      }
-    }
-
-    vTaskDelay(pdMS_TO_TICKS(70));
-  }
-}
-#endif
 
 }
 

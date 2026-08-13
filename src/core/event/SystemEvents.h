@@ -21,18 +21,6 @@ struct NullEvent : BaseEvent {
 // Configuration and Initialization completed, emitted only once per-boot
 struct AppReady : BaseEvent {};
 
-// Car's engine has started
-struct VehicleConnected : BaseEvent {};
-
-// Car's engine has stopped
-struct VehicleDisconnected : BaseEvent {};
-
-// Car's engine has started
-struct CarEngineStarted : BaseEvent {};
-
-// Car's engine has stopped
-struct CarEngineStopped : BaseEvent {};
-
 struct IRButtonPressed : BaseEvent {
   IRButtonType button{};
 };
