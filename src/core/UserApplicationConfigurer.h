@@ -2,8 +2,8 @@
 // Created by Brandon on 10/12/25.
 //
 
-#ifndef RGBLIB_VEHICLEAPPLICATIONBUILDER2_H
-#define RGBLIB_VEHICLEAPPLICATIONBUILDER2_H
+#ifndef RGBLIB_USER_APPLICATION_CONFIGURER_H
+#define RGBLIB_USER_APPLICATION_CONFIGURER_H
 
 #include <vector>
 #include <unordered_map>

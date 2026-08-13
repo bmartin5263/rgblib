@@ -2,20 +2,8 @@
 // Created by Brandon on 10/11/25.
 //
 
-#ifndef RGBLIB_VEHICLEAPPLICATION_H
-#define RGBLIB_VEHICLEAPPLICATION_H
-
-#ifndef RGB_VEHICLE_RX
-#define RGB_VEHICLE_RX D11
-#endif
-
-#ifndef RGB_VEHICLE_TX
-#define RGB_VEHICLE_TX D12
-#endif
-
-#ifndef RGB_VEHICLE_CORE_ENABLED
-#define RGB_VEHICLE_CORE_ENABLED 1
-#endif
+#ifndef RGBLIB_USERAPPLICATION_H
+#define RGBLIB_USERAPPLICATION_H
 
 #ifndef RGB_OTA
 #define RGB_OTA 0
@@ -206,4 +194,4 @@ auto UserApplication<EventVariantT>::PublishEvent(const AnyEvent& event) -> void
 
 }
 
-#endif //RGBLIB_VEHICLEAPPLICATION_H
+#endif //RGBLIB_USERAPPLICATION_H
