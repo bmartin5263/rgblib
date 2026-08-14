@@ -66,6 +66,8 @@ private:
 
   std::vector<LEDDevice*> mLeds{};
   std::vector<Sensor*> mSensors{};
+
+protected:
   std::unordered_map<uint, std::vector<EventHandler<AnyEvent>>> mEventMap{};
 };
 
