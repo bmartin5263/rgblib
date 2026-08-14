@@ -20,7 +20,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "ESP32Async/ESPAsyncWebServer": "3.7.4",
+    "ESP32Async/ESPAsyncWebServer": "3.12.0",
     "olikraus/U8g2": "2.36.5",
     "adafruit/Adafruit NeoPixel": "1.13.0",
     "adafruit/Adafruit BusIO": "1.17.1",
