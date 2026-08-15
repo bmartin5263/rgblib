@@ -2,3 +2,4 @@
 .libsrc
 .libbuild
 /NOTES.md
+.DS_Store
