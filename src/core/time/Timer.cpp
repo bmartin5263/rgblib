@@ -213,6 +213,11 @@ auto Timer::stopAll() -> void {
     current->cancelled = true;
     current = current->next;
   }
+  current = pInsertionQueueHead;
+  while (current != nullptr) {
+    current->cancelled = true;
+    current = current->next;
+  }
 }
 
 auto Timer::StopAll() -> void {

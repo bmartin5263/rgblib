@@ -5,7 +5,6 @@
 #ifndef RGBLIB_CORVETTESTATE_H
 #define RGBLIB_CORVETTESTATE_H
 
-#include "EffectHandle.h"
 #include "Types.h"
 
 class Corvette;

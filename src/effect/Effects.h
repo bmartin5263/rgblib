@@ -6,7 +6,6 @@
 #define RGBLIB_EFFECTS_H
 
 #include "Types.h"
-#include "Func.h"
 #include "PriorityNodePool.h"
 #include "EffectHandle.h"
 #include "EffectNode.h"
@@ -59,7 +58,6 @@ private:
   auto draw() -> void;
 
   auto processAdditions(Timestamp now) -> void;
-  auto recycle(EffectNode* timer) -> EffectNode*;
 };
 
 }

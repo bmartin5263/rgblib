@@ -6,9 +6,8 @@
 #define RGBLIB_CORVETTE_H
 
 #include "ChaseEffectSpeedOnly.h"
-#include "Flag.h"
 #include "CorvetteState.h"
-#include "RgbColor.h"
+#include "EffectHandle.h"
 
 class Corvette {
   static ColdStartState COLD_START_STATE;

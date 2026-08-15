@@ -7,7 +7,6 @@
 
 #include "Types.h"
 #include "Assertions.h"
-#include "PriorityNode.h"
 
 namespace rgb {
 
@@ -76,12 +75,12 @@ protected:
     }
   }
 
-  auto recycle(PriorityNode* node) -> void {
-    PriorityNode::InsertFront(pInsertionQueueHead, node);
+  auto recycle(PriorityNode* activeNode) -> void {
+    PriorityNode::InsertFront(pInsertionQueueHead, activeNode);
   }
 
-  auto release(PriorityNode* node) -> void {
-    PriorityNode::InsertFront(pInactiveHead, node);
+  auto release(PriorityNode* activeNode) -> void {
+    PriorityNode::InsertFront(pInactiveHead, activeNode);
     --mActiveCount;
   }
 };

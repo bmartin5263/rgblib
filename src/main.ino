@@ -4,14 +4,14 @@
 // #include "corvette/CorvetteMain.h"
 // auto app = CorvetteApplication{};
 
-#include "../examples/Rainbow/src/RainbowApplication.h"
-auto app = RainbowApplication{};
+// #include "../examples/Rainbow/src/RainbowApplication.h"
+// auto app = RainbowApplication{};
 
 // #include "app/RGBPatternApplication.h"
 // auto app = RGBPatternApplication{};
 
-// #include "app/SandboxApplication.h"
-// auto app = SandboxApplication{};
+#include "app/SandboxApplication.h"
+auto app = SandboxApplication{};
 
 // #include "app/ExampleApplication.h"
 // auto app = ExampleApplication{};

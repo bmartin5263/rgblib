@@ -31,7 +31,6 @@ EffectHandle::~EffectHandle() {
 }
 
 EffectHandle::EffectHandle(EffectHandle&& rhs) noexcept {
-  stop();
   this->node = rhs.node;
   this->handleId = rhs.handleId;
   rhs.detach();

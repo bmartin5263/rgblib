@@ -5,9 +5,7 @@
 #ifndef RGBLIB_EFFECTHANDLE_H
 #define RGBLIB_EFFECTHANDLE_H
 
-#include <memory>
 #include "Handle.h"
-#include "Func.h"
 
 namespace rgb {
 

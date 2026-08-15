@@ -77,13 +77,15 @@ auto Effects::update() -> void {
 
   auto effect = pActiveHead;
   while (effect != nullptr) {
+    auto next = effect->next;
     if (effect->stopped) {
-      effect = recycle(effect);
+      EffectNode::Remove(pActiveHead, effect);
+      release(effect);
     }
     else {
       effect->update(now);
-      effect = effect->next;
     }
+    effect = next;
   }
 }
 
@@ -129,20 +131,6 @@ auto Effects::PeakCount() -> uint {
   return Instance().peakCount();
 }
 
-auto Effects::recycle(EffectNode* effect) -> EffectNode* {
-  auto next = effect->next;
-  TRACE("Head = %p, Next = %p, ToRecycle = %p", activeHead, next, effect);
-  EffectNode::Remove(pActiveHead, effect);
-  effect->clean();
-  TRACE("Head = %p, Next = %p, ToRecycle = %p", activeHead, next, effect);
-  EffectNode::InsertFront(pInactiveHead, effect);
-  TRACE(
-    "Recycled Effect '%i'. To Add Effects: %i. Active Effects %i. Unused Effects %i",
-    effect->id, EffectNode::Size(toAddHead), EffectNode::Size(activeHead), EffectNode::Size(unusedHead));
-  TRACE("Head = %p, Next = %p, ToRecycle = %p", activeHead, next, effect);
-  return next;
-}
-
 auto Effects::Stop(Effect& effect) -> void {
   Instance().stop(effect);
 }
@@ -155,10 +143,22 @@ auto Effects::stop(Effect& effect) -> void {
     }
     current = current->next;
   }
+  current = pInsertionQueueHead;
+  while (current != nullptr) {
+    if (current->effect == &effect) {
+      current->stopped = true;
+    }
+    current = current->next;
+  }
 }
 
 auto Effects::stopAll() -> void {
   auto current = pActiveHead;
+  while (current != nullptr) {
+    current->stopped = true;
+    current = current->next;
+  }
+  current = pInsertionQueueHead;
   while (current != nullptr) {
     current->stopped = true;
     current = current->next;

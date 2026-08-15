@@ -15,6 +15,7 @@
 #include "Clock.h"
 #include "Timer.h"
 #include "Effects.h"
+#include "Animations.h"
 #include "LEDCore.h"
 #include "Monitor.h"
 #include "Debug.h"
@@ -129,6 +130,7 @@ auto UserApplication<EventVariantT>::baseDraw() -> void {
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->reset(); });
   draw();
   Effects::Draw();
+  Animations::Update();
   Debug::Draw();
   postDraw();
   std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->display(); });

@@ -52,7 +52,6 @@ It's Shader has more information about what cycle the effect is in, what positio
 |:-----------|:--------------------------------------------|:--------|
 | Pixellate  | All pixels randomly over time               | Yes     |
 
-
 ## Debugging Tools
 
 ### Built-in LED
