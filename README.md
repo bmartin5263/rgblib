@@ -21,18 +21,19 @@ It's Shader has more information about what cycle the effect is in, what positio
 
 #### Builtin
 
-| Effect             | Cycles | Activation Pattern (for a given PixelList)                                |
-|--------------------|--------|---------------------------------------------------------------------------|
-| Fill               | No     | All pixels uniformly                                                      |
-| Chase              | Yes    | Segment of pixels that moves along a linear path                          |
-| Chase (speed only) | Yes    | Chase, but with speed-only restriction optimized for smooth speed changes |
-| Wipe               | Yes    | Overlapping linear fills                                                  |
+| Effect              | Cycles  | Activation Pattern (for a given PixelList)                                 |
+|:--------------------|:--------|:---------------------------------------------------------------------------|
+| Fill                | No      | All pixels uniformly                                                       |
+| Chase               | Yes     | Segment of pixels that moves along a linear path                           |
+| Chase (speed only)  | Yes     | Chase, but with speed-only restriction optimized for smooth speed changes  |
+| Wipe                | Yes     | Overlapping linear fills                                                   |
 
 `TODO`
 
-| Effect    | Activation Pattern (for a given PixelList) | Cycles |
-|-----------|--------------------------------------------|--------|
-| Pixellate | All pixels randomly over time              | Yes    |
+| Effect     | Activation Pattern (for a given PixelList)  | Cycles  |
+|:-----------|:--------------------------------------------|:--------|
+| Pixellate  | All pixels randomly over time               | Yes     |
+
 
 ## Debugging Tools
 

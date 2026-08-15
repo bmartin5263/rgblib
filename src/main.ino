@@ -4,8 +4,8 @@
 // #include "corvette/CorvetteMain.h"
 // auto app = CorvetteApplication{};
 
-#include "app/SandboxApplication.h"
-auto app = SandboxApplication{};
+#include "../examples/Rainbow/src/RainbowApplication.h"
+auto app = RainbowApplication{};
 
 // #include "app/RGBPatternApplication.h"
 // auto app = RGBPatternApplication{};
