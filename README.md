@@ -4,9 +4,11 @@
 C++ framework for complex LED-based Applications running on Arduino Nano ESP32
 
 Features:
-- Allocation-free after initialization design, memory pools used for entities that are created/destroyed repeatedly
+- Allocation-free after initialization, memory pools used for entities that are created/destroyed repeatedly during runtime
 - Strongly-typed extensible event system
 - Built-in effects with extensibility through shader functions
+- Over-the-Air update support enabled with `RGB_OTA` flag
+- Printf-style logging using enabled with `RGB_DEBUG` flag
 
 ## Example
 
@@ -53,16 +55,18 @@ It's Shader has more information about what cycle the effect is in, what positio
 
 ## Debugging Tools
 
-### Built-in LED (todo)
+### Built-in LED
 
-| Color  | Default Meaning         |
-|--------|-------------------------|
-| Red    | Debug Fault Triggered   |
-| Yellow |                         |
-| Green  |                         |
-| Cyan   |                         |
-| Blue   | TODO: Connected to WiFi |
-| Purple | Optional Heartbeat      |
+Use `Debug::SetBlinker(color, predicate)` to 
+
+| Color  | Default Meaning                           |
+|--------|-------------------------------------------|
+| Red    | Debug Fault Triggered                     |
+| Yellow | (rgbcar uses for Vehicle Logging Running) |
+| Green  | (rgbcar uses for Vehicle Connected)       |
+| Cyan   |                                           |
+| Blue   | Connected to WiFi                         |
+| Purple |                                           |
 
 ### Logs
 Macros such as `INFO()` and `ERROR()` can be used to print logs to the Serial output. The library makes
