@@ -52,6 +52,23 @@ It's Shader has more information about what cycle the effect is in, what positio
 |:-----------|:--------------------------------------------|:--------|
 | Pixellate  | All pixels randomly over time               | Yes     |
 
+## Animations
+Animations let you define a sequence of steps to run where each step is composed of a callback to execute and a duration for how long to keep calling it for.
+
+```c++
+auto animation = ArrayAnimation{ std::array {
+  AnimationFrame{Duration::Seconds(1), [](auto& ctx) { strip.fill(Color::RED() * (1.0f - ctx.percentComplete)); }},
+  AnimationFrame{Duration::Seconds(1)}, // Does Nothing
+  AnimationFrame{Duration::Seconds(1), [](auto& ctx) { strip.fill(Color::GREEN() * (1.0f - ctx.percentComplete)); }},
+  AnimationFrame{Duration::Seconds(1)}, // Does Nothing
+  AnimationFrame{Duration::Seconds(1), [](auto& ctx) { strip.fill(Color::BLUE() * (1.0f - ctx.percentComplete)); }},
+  AnimationFrame{Duration::Seconds(1)}, // Does Nothing
+}};
+
+auto loop = true;
+auto handle = Animations::start(animation, loop);
+```
+
 ## Debugging Tools
 
 ### Built-in LED
