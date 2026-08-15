@@ -1,11 +1,26 @@
 # RGBLib
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/bdon/library/rgblib.svg)](https://registry.platformio.org/libraries/bdon/rgblib)
-C++ framework for complex LED-based Applications.
+
+C++ framework for complex LED-based Applications running on Arduino Nano ESP32
 
 Features:
 - Allocation-free after initialization design, memory pools used for entities that are created/destroyed repeatedly
 - Strongly-typed extensible event system
 - Built-in effects with extensibility through shader functions
+
+## Example
+
+```cpp
+#include "UserApplication.h"
+#include "FastLEDStrip.h"
+
+class BlueFillApplication : public rgb::UserApplication<> {
+  rgb::FastLEDStrip<40, D5, rgb::RgbwSupport::ENABLE> ledStrip{};
+protected:
+  auto configure(Configurer& app) -> void override { app.addLEDs(ledStrip); }
+  auto draw() -> void override { ledStrip.fill(rgb::Color::BLUE()); }
+};
+```
 
 ## Rendering
 

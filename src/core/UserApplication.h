@@ -43,19 +43,20 @@ public:
   static auto PublishEvent(const AnyEvent& event) -> void;
 
 protected:
-  // Register LEDs, sensors, configure pins, event handlers, and any other static config
+  // For registering LEDs, sensors, configure pins, event handlers, and any other static config.
+  // Subsystems are not guaranteed to be available, safer to use 'initialize()' for Effects/Timers
   virtual auto configure(Configurer& app) -> void = 0;
 
-  // Runs once before beginning the main loop, all subsystems are ready at this time. Best time to start effects
+  // For starting effects/timers. Runs right before main loop starts
   virtual auto initialize() -> void {}
 
   // Called once per-frame, used for updating the state of the application
   virtual auto update() -> void {};
 
-  // Called once per-frame before Effects run, used for manually drawing individual LEDs
+  // Called once per-frame before Effects run, used for manually drawing individual pixels
   virtual auto draw() -> void {};
 
-  // Called once per-frame after Effects run, used for manually drawing individual LEDs
+  // Called once per-frame after Effects run, used for manually drawing individual pixels
   virtual auto postDraw() -> void {}
 
 private:
