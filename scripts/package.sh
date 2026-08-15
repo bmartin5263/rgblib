@@ -47,5 +47,6 @@ find "$INPUT_DIR" -type d -name "main" -prune -o -type f ! -name "main.ino" -pri
 done
 
 cp "library.json" "$OUTPUT_DIR"
+cp "README.md" "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_BUILD_DIR"
 pio pkg pack "$OUTPUT_DIR" -o "$OUTPUT_BUILD_DIR/rgblib.tar.gz"
