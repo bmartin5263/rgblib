@@ -28,5 +28,12 @@
     "adafruit/RTClib": "2.1.4"
   },
   "frameworks": "arduino",
-  "platforms": "*"
+  "platforms": "*",
+  "examples": [
+    {
+      "name": "Rainbow",
+      "base": "examples/Rainbow",
+      "files": ["platformio.ini", "src/main.cpp", "src/RainbowApplication.h"]
+    }
+  ]
 }

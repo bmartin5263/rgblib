@@ -1,4 +1,5 @@
 # RGBLib
+[![PlatformIO Registry](https://badges.registry.platformio.org/packages/bdon/library/rgblib.svg)](https://registry.platformio.org/libraries/bdon/rgblib)
 C++ framework for complex LED-based Applications.
 
 Features:
