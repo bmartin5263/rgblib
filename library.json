@@ -3,12 +3,11 @@
   "version": "0.0.98",
   "description": "LED effects library",
   "keywords": "LED, neopixels",
-  "repository":
-  {
+  "homepage": "https://github.com/bmartin5263/rgblib",
+  "repository": {
     "type": "git",
     "url": "https://github.com/bmartin5263/rgblib.git"
   },
-  "homepage": "https://github.com/bmartin5263/rgblib#readme",
   "authors":
   [
     {

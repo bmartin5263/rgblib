@@ -1,5 +1,10 @@
 # RGBLib
-C++ framework for complex LED-based Applications
+C++ framework for complex LED-based Applications.
+
+Features:
+- Allocation-free after initialization design, memory pools used for entities that are created/destroyed repeatedly
+- Strongly-typed extensible event system
+- Built-in effects with extensibility through shader functions
 
 ## Rendering
 
@@ -57,16 +62,6 @@ use of these macros for reporting issues at runtime
 | `RGB_DEBUG`         | Sets `RGB_LOG_LEVEL` to `1`. Meant to do other debug-related things as well |
 | `RGB_LOG_LEVEL`     | `0=ERROR`, `1=INFO`, `2=TRACE`. Defaults to `0`                             |
 
-## Instrumentation
-
-If an SD card is detected, the Vehicle process will log vehicle data at a configurable interval to a log file on the SD card
-
-The format is in binary, use `vlog-to-csv.py` to convert it to CSV for analysis
-
-See Also
-- `class VehicleLogger`
-- `struct VehicleData`
-
 ## Terminology
 
 ### LED vs Pixel vs RGBW
@@ -79,8 +74,4 @@ See Also
 
 (in no particular order)
 
-- Extract out Vehicle stuff, make a generic vehicle-less application
-  - Some projects exist outside a vehicle (obviously), shouldn't have to bring in the vehicle connection stuff if not needed
 - Effects should have a delay until they start again, so we don't _need_ DeadPixelLists to pad the endings
-- Unit Tests
-  - Lots of stuff can be unit tested, let's start

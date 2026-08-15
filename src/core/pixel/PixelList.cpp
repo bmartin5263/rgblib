@@ -11,12 +11,6 @@
 
 namespace rgb {
 
-#ifdef RGB_DEBUG
-constexpr auto DEBUG = true;
-#else
-constexpr auto DEBUG = false;
-#endif
-
 auto PixelList::fill(const Color& color) -> void {
   fill(color, 0, length());
 }
