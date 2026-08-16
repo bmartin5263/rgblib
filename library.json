@@ -1,7 +1,7 @@
 {
   "name": "rgblib",
   "version": "0.0.108",
-  "description": "C++ framework for complex LED-based Applications running on Arduino Nano ESP32",
+  "description": "C++ framework for LED-based Applications running on Arduino Nano ESP32",
   "keywords": "LED, neopixels",
   "homepage": "https://github.com/bmartin5263/rgblib",
   "repository": {

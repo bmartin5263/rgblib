@@ -11,7 +11,7 @@
 #include "EffectNode.h"
 
 #ifndef RGB_MAX_EFFECTS
-#define RGB_MAX_EFFECTS 10
+#define RGB_MAX_EFFECTS 7
 #endif
 
 namespace rgb {

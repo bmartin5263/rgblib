@@ -1,7 +1,7 @@
 # RGBLib
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/bdon/library/rgblib.svg)](https://registry.platformio.org/libraries/bdon/rgblib)
 
-C++ framework for complex LED-based Applications running on Arduino Nano ESP32
+C++ framework for LED-based Applications running on Arduino Nano ESP32
 
 Features:
 - Allocation-free after initialization, memory pools used for entities that are created/destroyed repeatedly during runtime
@@ -42,7 +42,6 @@ In addition, the following methods may optionally be overridden:
 
 
 ### Pixels & LEDs
-
 The framework distinguishes between **Pixels**, which are just color data, from `LEDs`, which are the physical components that light up.
 Pixel-related classes, like `PixelList` and `PixelGrid`, deal with reading/writing raw color data.
 LED-related classes, like `FastLEDStrip` and `FastLEDGrid`, deal with interfacing with the actual hardware.
@@ -51,6 +50,7 @@ The rendering system doesn't care about hardware so it uses the pixel-related cl
 `UserApplication::addLEDs()` needs the actual LED-related class.
 
 ### Configuration
+The following compile-time flags can be used to change application behavior, configure memory, and enable features.
 
 | Macro                | Usage                                                                     | Default                          |
 |----------------------|---------------------------------------------------------------------------|----------------------------------|
@@ -61,9 +61,9 @@ The rendering system doesn't care about hardware so it uses the pixel-related cl
 | `RGB_OTA`            | Enables Over-the-Air firmware updates and WiFi connectivity               | `0` (disabled)                   |
 | `RGB_WIFI_SSID`      | WiFi network SSID used for OTA connectivity                               | `""` (empty)                     |
 | `RGB_WIFI_PASSWORD`  | WiFi network password used for OTA connectivity                           | `""` (empty)                     |
-| `RGB_MAX_ANIMATIONS` | Maximum number of concurrently active animations in the `Animations` pool | `5`                              |
-| `RGB_MAX_EFFECTS`    | Maximum number of concurrently active effects in the `Effects` pool       | `5`                              |
-| `RGB_MAX_TIMERS`     | Maximum number of concurrently active timers in the `Timer` pool          | `5`                              |
+| `RGB_MAX_ANIMATIONS` | Maximum number of concurrently active animations in the `Animations` pool | `7`                              |
+| `RGB_MAX_EFFECTS`    | Maximum number of concurrently active effects in the `Effects` pool       | `7`                              |
+| `RGB_MAX_TIMERS`     | Maximum number of concurrently active timers in the `Timer` pool          | `7`                              |
 | `RGB_IIC_SDA`        | GPIO pin used for the I2C SDA line                                        | `SDA`                            |
 | `RGB_IIC_SCL`        | GPIO pin used for the I2C SCL line                                        | `SCL`                            |
 | `RGB_SPI_CS`         | GPIO pin used for the SPI chip-select line                                | `A0`                             |
@@ -74,7 +74,6 @@ The rendering system doesn't care about hardware so it uses the pixel-related cl
 ## Features
 
 ### Animations
-
 Animations let you define a sequence of steps to run where each step is composed of a callback to execute and a duration for how long to keep calling it for.
 
 ```c++
@@ -122,7 +121,7 @@ auto ice = MirroredGradient(std::array {
   GradientStop{Color::CYAN()},              // position defaulted to 0.0f
   GradientStop{Color::BLUE()},              // position defaulted to 1 / 3
   GradientStop{Color::PURPLE()},            // position defaulted to 2 / 3
-  GradientStop{Color::MAGENTA()},           // position defaulted to 0.0f
+  GradientStop{Color::MAGENTA()},           // position defaulted to 1.0f
 });
 ```
 
@@ -132,7 +131,7 @@ auto ice = MirroredGradient(std::array {
 
 ### Built-in LED
 
-Use `Debug::SetBlinker(color, predicate)` to 
+Use `Debug::SetBlinker(color, predicate)` to cause the built-in LED to periodically blink `color` if `predicate` is returning true.
 
 | Color  | Default Meaning                           |
 |--------|-------------------------------------------|
@@ -147,11 +146,11 @@ Use `Debug::SetBlinker(color, predicate)` to
 Macros such as `INFO()` and `ERROR()` can be used to print logs to the Serial output. The library makes
 use of these macros for reporting issues at runtime
 
-| Logging Macro      | Description                                                                                |
-|--------------------|--------------------------------------------------------------------------------------------|
-| `TRACE(msg, ...)`  | Print a log message with level _Trace_. Intended for low-level or frequent messages        |
-| `INFO(msg, ...)`   | Print a log message with level _Info_. Intended for high-level messages                    |
-| `ERROR(msg, ...)`  | Print a log message with level _Error_. Intended for abnormal events                       |
+| Logging Macro     | Minimum `RGB_LOG_LEVEL` | Description                                                                         |
+|-------------------|-------------------------|-------------------------------------------------------------------------------------|
+| `TRACE(msg, ...)` | 3                       | Print a log message with level _Trace_. Intended for low-level or frequent messages |
+| `INFO(msg, ...)`  | 2                       | Print a log message with level _Info_. Intended for high-level messages             |
+| `ERROR(msg, ...)` | 1                       | Print a log message with level _Error_. Intended for abnormal events                |
 
 | Configuration Macro | Description                                                                 |
 |---------------------|-----------------------------------------------------------------------------|

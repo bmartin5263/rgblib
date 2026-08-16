@@ -11,7 +11,7 @@
 #include "TimerHandle.h"
 
 #ifndef RGB_MAX_TIMERS
-#define RGB_MAX_TIMERS 10
+#define RGB_MAX_TIMERS 7
 #endif
 
 namespace rgb {

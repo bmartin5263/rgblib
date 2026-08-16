@@ -10,7 +10,7 @@
 #include "AnimationNode.h"
 
 #ifndef RGB_MAX_ANIMATIONS
-#define RGB_MAX_ANIMATIONS 10
+#define RGB_MAX_ANIMATIONS 7
 #endif
 
 namespace rgb {
