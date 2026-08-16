@@ -10,9 +10,13 @@
 #include "TimerNode.h"
 #include "TimerHandle.h"
 
+#ifndef RGB_MAX_TIMERS
+#define RGB_MAX_TIMERS 10
+#endif
+
 namespace rgb {
 
-class Timer : public PriorityNodePool<TimerNode, 10> {
+class Timer : public PriorityNodePool<TimerNode, RGB_MAX_TIMERS> {
 public:
   [[nodiscard]]
   static auto SetTimeout(Duration duration, const Runnable& function) -> TimerHandle;

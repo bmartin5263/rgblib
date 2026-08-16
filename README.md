@@ -35,7 +35,7 @@ In addition, the following methods may optionally be overridden:
 
 | Method Name                 | Purpose                                                                                              |
 |-----------------------------|------------------------------------------------------------------------------------------------------|
-| `auto initialize() -> void` | For starting effects/timers. Runs right before main loop starts                                      |
+| `auto initialize() -> void` | For starting effects/timers/animations. Runs right before main loop starts                           |
 | `auto update() -> void`     | Called once per-frame before drawing any pixels, used for updating the state of the application      |
 | `auto draw() -> void`       | Called once per-frame **before** Effects/Animations run, used for manually drawing individual pixels |
 | `auto postDraw() -> void`   | Called once per-frame **after** Effects/Animations run, used for manually drawing individual pixels  |
@@ -51,6 +51,25 @@ The rendering system doesn't care about hardware so it uses the pixel-related cl
 `UserApplication::addLEDs()` needs the actual LED-related class.
 
 ### Configuration
+
+| Macro                | Usage                                                                     | Default                          |
+|----------------------|---------------------------------------------------------------------------|----------------------------------|
+| `RGB_ARDUINO`        | Uses Arduino implementation of hardware abstractions                      | `0` (disabled)                   |
+| `RGB_ARDUINO_NANO`   | Uses Arduino ESP32 implementation of hardware abstractions                | `0` (disabled)                   |
+| `RGB_DEBUG`          | Enables debugging features like printf-style logging and monitoring       | `0` (disabled)                   |
+| `RGB_LOG_LEVEL`      | Log verbosity: `0`=none, `1`=Error, `2`=Info, `3`=Trace                   | `2` if `RGB_DEBUG` set, else `0` |
+| `RGB_OTA`            | Enables Over-the-Air firmware updates and WiFi connectivity               | `0` (disabled)                   |
+| `RGB_WIFI_SSID`      | WiFi network SSID used for OTA connectivity                               | `""` (empty)                     |
+| `RGB_WIFI_PASSWORD`  | WiFi network password used for OTA connectivity                           | `""` (empty)                     |
+| `RGB_MAX_ANIMATIONS` | Maximum number of concurrently active animations in the `Animations` pool | `5`                              |
+| `RGB_MAX_EFFECTS`    | Maximum number of concurrently active effects in the `Effects` pool       | `5`                              |
+| `RGB_MAX_TIMERS`     | Maximum number of concurrently active timers in the `Timer` pool          | `5`                              |
+| `RGB_IIC_SDA`        | GPIO pin used for the I2C SDA line                                        | `SDA`                            |
+| `RGB_IIC_SCL`        | GPIO pin used for the I2C SCL line                                        | `SCL`                            |
+| `RGB_SPI_CS`         | GPIO pin used for the SPI chip-select line                                | `A0`                             |
+| `RGB_SPI_MOSI`       | GPIO pin used for the SPI MOSI line                                       | `A1`                             |
+| `RGB_SPI_SCK`        | GPIO pin used for the SPI clock line                                      | `A2`                             |
+| `RGB_SPI_MISO`       | GPIO pin used for the SPI MISO line                                       | `A3`                             |
 
 ## Features
 
