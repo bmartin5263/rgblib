@@ -18,8 +18,10 @@ inline auto strip = FastLEDStrip<40, D5_RGB>();
 inline auto fiber = FastLEDStrip<100, D6_RGB>();
 inline auto gradient = ArrayGradient{ std::array {
   GradientStop{Color::ORANGE()},
-  GradientStop{.5f, Color::RED()},
-  GradientStop{1.0f, Color::BLUE()},
+  GradientStop{Color::RED()},
+  GradientStop{Color::BLUE()},
+  GradientStop{Color::RED()},
+  GradientStop{Color::ORANGE()},
 }};
 
 inline auto animation = ArrayAnimation{ std::array {
@@ -49,7 +51,8 @@ protected:
   }
 
   auto postDraw() -> void override {
-    strip.fill(gradient, Clock::Now().percentOfWrapped(Duration::Seconds(1)));
+    strip.fill(gradient, Clock::Now().percentOfWrapped(Duration::Seconds(5)));
+    fiber.fill(gradient, Clock::Now().percentOfWrapped(Duration::Seconds(5)));
   }
 };
 

@@ -70,6 +70,32 @@ TEST(ArrayGradientTest, LeadingStopPositionDefaultsToZeroWhenOmitted) {
   ExpectColorEq(withoutPosition.sample(.1f), withPosition.sample(.1f));
 }
 
+TEST(ArrayGradientTest, AllPositionsOmittedAreSpreadEvenlyForThreeStops) {
+  ArrayGradient gradient{std::array {
+    GradientStop {Color::RED()},
+    GradientStop {Color::GREEN()},
+    GradientStop {Color::BLUE()},
+  }};
+
+  ExpectColorEq(gradient.sample(0.0f), Color::RED());
+  ExpectColorEq(gradient.sample(.5f), Color::GREEN());
+  ExpectColorEq(gradient.sample(1.0f), Color::BLUE());
+}
+
+TEST(ArrayGradientTest, AllPositionsOmittedAreSpreadEvenlyForFourStops) {
+  ArrayGradient gradient{std::array {
+    GradientStop {Color::RED()},
+    GradientStop {Color::GREEN()},
+    GradientStop {Color::BLUE()},
+    GradientStop {Color::YELLOW()},
+  }};
+
+  ExpectColorEq(gradient.sample(0.0f), Color::RED());
+  ExpectColorEq(gradient.sample(1.0f / 3.0f), Color::GREEN());
+  ExpectColorEq(gradient.sample(2.0f / 3.0f), Color::BLUE());
+  ExpectColorEq(gradient.sample(1.0f), Color::YELLOW());
+}
+
 TEST(ArrayGradientTest, SingleStopGradientReturnsConstantColor) {
   ArrayGradient gradient{std::array{GradientStop {Color::RED()}}};
 
