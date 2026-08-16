@@ -52,13 +52,11 @@ class ArrayGradient : public Gradient {
 
 public:
   explicit ArrayGradient(std::array<GradientStop, N> stops) : mStops(std::move(stops)) {
-    auto allPositionsOmitted = std::all_of(mStops.begin(), mStops.end(), [](const GradientStop& stop) {
+    auto allPositionsOmitted = std::all_of(mStops.begin(), mStops.end(), [](auto& stop) {
       return !stop.hasPosition;
     });
     if (allPositionsOmitted) {
-      for (size_t i = 0; i < N; ++i) {
-        mStops[i].position = N == 1 ? 0.0f : static_cast<normal>(i) / static_cast<normal>(N - 1);
-      }
+      computePositionsEvenly();
     }
   }
 
@@ -87,7 +85,58 @@ public:
 
 private:
   std::array<GradientStop, N> mStops;
+
+  auto computePositionsEvenly() {
+    if (N == 1) {
+      return;
+    }
+    for (size_t i = 0; i < N; ++i) {
+      mStops[i].position = static_cast<normal>(i) / static_cast<normal>(N - 1);
+    }
+  }
 };
+
+namespace detail {
+
+template<size_t M, size_t... I>
+constexpr auto MirrorStops(const std::array<GradientStop, M>& half, std::index_sequence<I...>)
+    -> std::array<GradientStop, 2 * M - 1> {
+  return {half[I <= M - 1 ? M - 1 - I : I - (M - 1)]...};
+}
+
+}
+
+/**
+ * Builds a symmetric ArrayGradient from just one "half" of its stops. The first
+ * stop is the center of the gradient; the rest fan outward from it. The half is
+ * mirrored around the center to produce the full, symmetric gradient, so this:
+ *
+ *   auto ocean = MirroredGradient(std::array {
+ *     GradientStop {Color::CYAN()}, // center
+ *     GradientStop {Color::BLUE()},
+ *     GradientStop {Color::PURPLE()},
+ *     GradientStop {Color::MAGENTA()},
+ *   });
+ *
+ * is equivalent to:
+ *
+ *   auto ocean = ArrayGradient{std::array {
+ *     GradientStop {Color::MAGENTA()},
+ *     GradientStop {Color::PURPLE()},
+ *     GradientStop {Color::BLUE()},
+ *     GradientStop {Color::CYAN()},
+ *     GradientStop {Color::BLUE()},
+ *     GradientStop {Color::PURPLE()},
+ *     GradientStop {Color::MAGENTA()},
+ *   }};
+ *
+ *   This is useful for gradient effects that have wrapping behavior
+ */
+template<size_t M>
+constexpr auto MirroredGradient(std::array<GradientStop, M> half) -> ArrayGradient<2 * M - 1> {
+  static_assert(M >= 1, "MirroredGradient requires at least one stop");
+  return ArrayGradient<2 * M - 1>{detail::MirrorStops(half, std::make_index_sequence<2 * M - 1>{})};
+}
 
 }
 

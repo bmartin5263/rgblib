@@ -8,6 +8,7 @@ using rgb::ArrayGradient;
 using rgb::Color;
 using rgb::Gradient;
 using rgb::GradientStop;
+using rgb::MirroredGradient;
 
 namespace {
 
@@ -94,6 +95,36 @@ TEST(ArrayGradientTest, AllPositionsOmittedAreSpreadEvenlyForFourStops) {
   ExpectColorEq(gradient.sample(1.0f / 3.0f), Color::GREEN());
   ExpectColorEq(gradient.sample(2.0f / 3.0f), Color::BLUE());
   ExpectColorEq(gradient.sample(1.0f), Color::YELLOW());
+}
+
+TEST(ArrayGradientTest, MirroredGradientReflectsHalfStopsAroundCenter) {
+  auto mirrored = MirroredGradient(std::array {
+    GradientStop {Color::CYAN()},
+    GradientStop {Color::BLUE()},
+    GradientStop {Color::PURPLE()},
+    GradientStop {Color::MAGENTA()},
+  });
+  ArrayGradient expanded{std::array {
+    GradientStop {Color::MAGENTA()},
+    GradientStop {Color::PURPLE()},
+    GradientStop {Color::BLUE()},
+    GradientStop {Color::CYAN()},
+    GradientStop {Color::BLUE()},
+    GradientStop {Color::PURPLE()},
+    GradientStop {Color::MAGENTA()},
+  }};
+
+  for (auto t = 0.0f; t <= 1.0f; t += 0.05f) {
+    ExpectColorEq(mirrored.sample(t), expanded.sample(t));
+  }
+}
+
+TEST(ArrayGradientTest, MirroredGradientWithSingleStopIsConstantColor) {
+  auto mirrored = MirroredGradient(std::array {GradientStop {Color::RED()}});
+
+  ExpectColorEq(mirrored.sample(-1.0f), Color::RED());
+  ExpectColorEq(mirrored.sample(0.5f), Color::RED());
+  ExpectColorEq(mirrored.sample(2.0f), Color::RED());
 }
 
 TEST(ArrayGradientTest, SingleStopGradientReturnsConstantColor) {

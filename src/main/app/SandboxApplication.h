@@ -15,14 +15,18 @@
 using namespace rgb;
 
 inline auto strip = FastLEDStrip<40, D5_RGB>();
-inline auto fiber = FastLEDStrip<100, D6_RGB>();
-inline auto gradient = ArrayGradient{ std::array {
-  GradientStop{Color::ORANGE()},
-  GradientStop{Color::RED()},
+inline auto fiber = FastLEDStrip<130, D6_RGB>();
+inline auto sunset = MirroredGradient(std::array {
   GradientStop{Color::BLUE()},
   GradientStop{Color::RED()},
   GradientStop{Color::ORANGE()},
-}};
+});
+inline auto ocean = MirroredGradient(std::array {
+  GradientStop{Color::CYAN()},
+  GradientStop{Color::BLUE()},
+  GradientStop{Color::PURPLE()},
+  GradientStop{Color::MAGENTA()},
+});
 
 inline auto animation = ArrayAnimation{ std::array {
   AnimationFrame{Duration::Seconds(1), [](auto& ctx) {
@@ -51,8 +55,8 @@ protected:
   }
 
   auto postDraw() -> void override {
-    strip.fill(gradient, Clock::Now().percentOfWrapped(Duration::Seconds(5)));
-    fiber.fill(gradient, Clock::Now().percentOfWrapped(Duration::Seconds(5)));
+    strip.fill(sunset, Clock::Now().percentOfWrapped(Duration::Seconds(1)));
+    fiber.fill(ocean, Clock::Now().percentOfWrapped(Duration::Seconds(1)));
   }
 };
 

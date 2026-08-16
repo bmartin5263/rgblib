@@ -27,6 +27,7 @@ using rgb::SinWave;
 using rgb::Timestamp;
 using rgb::ToKph;
 using rgb::ToMph;
+using rgb::WrapUnit;
 
 constexpr auto EPSILON = 1e-5f;
 
@@ -40,6 +41,18 @@ TEST(UtilsTest, ClampWrapKeepsValueBetween0And1) {
   EXPECT_FLOAT_EQ(ClampWrap(1.25f), 0.25f);
   EXPECT_FLOAT_EQ(ClampWrap(2.0f), 0.0f);
   EXPECT_FLOAT_EQ(ClampWrap(3.75f), 0.75f);
+}
+
+TEST(UtilsTest, WrapUnitKeepsValueBetween0And1) {
+  EXPECT_FLOAT_EQ(WrapUnit(-1.5f), 0.5f);
+  EXPECT_FLOAT_EQ(WrapUnit(-1.0f), 0.0f);
+  EXPECT_FLOAT_EQ(WrapUnit(-0.25f), 0.75f);
+  EXPECT_FLOAT_EQ(WrapUnit(0.0f), 0.0f);
+  EXPECT_FLOAT_EQ(WrapUnit(0.5f), 0.5f);
+  EXPECT_FLOAT_EQ(WrapUnit(1.0f), 1.0f);
+  EXPECT_FLOAT_EQ(WrapUnit(1.25f), 0.25f);
+  EXPECT_FLOAT_EQ(WrapUnit(2.0f), 0.0f);
+  EXPECT_FLOAT_EQ(WrapUnit(3.75f), 0.75f);
 }
 
 TEST(UtilsTest, ClampKeepsValueWithinInclusiveBounds) {

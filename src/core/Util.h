@@ -39,13 +39,22 @@ constexpr auto Lerp(T a, T b, N t) -> T {
   return a + (b - a) * t;
 }
 
+/*
+ * Wraps a value into the range [0.0, 1.0] by dropping its integer part,
+ * preserving the fractional position for negative values as well
+ * (e.g. -0.25 wraps to 0.75, not 0.0).
+ */
+constexpr auto WrapUnit(float value) -> float {
+  if (value < 0.0f || value > 1.0f) {
+    value = value - std::floor(value);
+  }
+  return value;
+}
+
 template<typename T, typename N>
 constexpr auto LerpWrap(T a, T b, N t) -> T {
   static_assert(std::is_floating_point_v<N>, "LerpWrap t parameter must be floating point");
-  if (t < 0.0f || t > 1.0f) {
-    t = t - std::floor(t);
-  }
-  return Lerp(a, b, t);
+  return Lerp(a, b, WrapUnit(t));
 }
 
 template<typename T, typename N>

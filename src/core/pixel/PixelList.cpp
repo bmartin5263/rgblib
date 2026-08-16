@@ -54,7 +54,7 @@ auto PixelList::fill(const Gradient& gradient, normal offset, normal scale) -> v
   for (uint i = 0; i < length(); ++i) {
     auto percentBetween = PercentBetween(static_cast<float>(i), 0.0f, lastIndex);
     auto dividedByScale = percentBetween / scale;
-    auto position = dividedByScale + offset;
+    auto position = WrapUnit(dividedByScale + offset);
     INFO("i=%i, percentBetween=%f, dividedByScale=%f, position=%f", i, percentBetween, dividedByScale, position);
     set(i, gradient.sample(position));
   }
