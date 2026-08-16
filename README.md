@@ -29,7 +29,7 @@ protected:
 ### UserApplication
 
 To create an application, define a subclass of `UserApplication` and implement the pure virtual method `auto configure(Configurer& app) -> void`.
-This method is used to register various LEDs, sensors, event handlers, and other application properties before runtime begins.
+This method is used to register various LEDs (`app.addLEDs()`), sensors (`app.addSensor()`), event handlers (`app.on<AppReady>([](auto& event){})`), and other application properties before runtime begins.
 
 In addition, the following methods may optionally be overridden:
 
@@ -42,12 +42,12 @@ In addition, the following methods may optionally be overridden:
 
 
 ### Pixels & LEDs
+
 The framework distinguishes between **Pixels**, which are just color data, from `LEDs`, which are the physical components that light up.
 Pixel-related classes, like `PixelList` and `PixelGrid`, deal with reading/writing raw color data.
 LED-related classes, like `FastLEDStrip` and `FastLEDGrid`, deal with interfacing with the actual hardware.
 
-The rendering system doesn't care about hardware so it uses the pixel-related classes.
-`UserApplication::addLEDs()` needs the actual LED-related class.
+Sometimes the distinction isn't perfect in code, but that is the goal of the framework
 
 ### Configuration
 The following compile-time flags can be used to change application behavior, configure memory, and enable features.
@@ -101,7 +101,6 @@ In contrast, a Chase effect activates only a subset of Pixels on a given strip b
 It's Shader has more information about what cycle the effect is in, what position within the segment the pixel is, its overall position in the strip, etc.
 
 ### Gradients
-
 Gradients are a smooth blending of 2 or more colors that have a `sample(position)` method that returns a color linearly interpolated between the base colors.
 `Gradient` is the interface used by other parts of the system, while `ArrayGradient` is an implementation using a `std::array` as a backing storage.
 `MirroredGradient` is a helper that can be used to create a gradient that wraps its colors back around.
@@ -130,7 +129,6 @@ auto ice = MirroredGradient(std::array {
 ## Debugging Tools
 
 ### Built-in LED
-
 Use `Debug::SetBlinker(color, predicate)` to cause the built-in LED to periodically blink `color` if `predicate` is returning true.
 
 | Color  | Default Meaning                           |
@@ -170,3 +168,7 @@ use of these macros for reporting issues at runtime
 (in no particular order)
 
 - Effects should have a delay until they start again, so we don't _need_ DeadPixelLists to pad the endings
+- Native-mode, being able to write an application without a microcontroller. LEDs rendered on computer UI. Mainly for testing/experimentation before going to real hardware
+  - Maybe `RGB_NATIVE` to contract with `RGB_ARDUINO_ESP32`
+  - This means `app.addLEDs()` really no longer makes sense, arguably it is already working with the wrong layer of the stack
+  - `app.addPixels(...)`

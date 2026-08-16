@@ -34,6 +34,7 @@ auto Clock::Instance() -> Clock& {
 auto Clock::start() -> void {
   lastWakeTime = xTaskGetTickCount();
   mFrameStartTime = System::MicroTime();
+  mLastFrameRateCheck = mFrameStartTime;
 }
 
 auto Clock::fps() const -> uint {

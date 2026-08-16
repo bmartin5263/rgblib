@@ -18,7 +18,6 @@ namespace rgb {
 class Animation;
 class Animations : public PriorityNodePool<AnimationNode, RGB_MAX_ANIMATIONS> {
 public:
-  static auto Initialize() -> void;
   [[nodiscard]]
   static auto Start(Animation& animation, bool loop = false) -> AnimationHandle;
   static auto Stop(Animation& animation) -> void;
@@ -43,15 +42,12 @@ public:
   ~Animations() = default;
 
 private:
-  Timestamp startTime{};
-
-  auto initialize() -> void;
   auto start(Animation& animation, bool loop) -> AnimationHandle;
   auto stop(Animation& animation) -> void;
   auto stopAll() -> void;
   auto update() -> void;
 
-  auto processAdditions(Timestamp now) -> void;
+  auto processAdditions() -> void;
 };
 
 

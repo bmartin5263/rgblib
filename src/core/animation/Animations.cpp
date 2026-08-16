@@ -13,13 +13,6 @@ Animations::Animations() {
   INFO("Initializing Animations");
 }
 
-auto Animations::Initialize() -> void {
-  Instance().initialize();
-}
-
-auto Animations::initialize() -> void {
-  startTime = Clock::Now();
-}
 auto Animations::Start(Animation& animation, bool loop) -> AnimationHandle {
   return Instance().start(animation, loop);
 }
@@ -47,11 +40,8 @@ auto Animations::Update() -> void {
 }
 
 auto Animations::update() -> void {
-  if (startTime.isZero()) {
-    startTime = Clock::Now();
-  }
-  auto now = Clock::Now() - startTime;
-  processAdditions(now);
+  auto delta = Clock::Delta();
+  processAdditions();
 
   auto animation = pActiveHead;
   while (animation != nullptr) {
@@ -60,7 +50,7 @@ auto Animations::update() -> void {
       AnimationNode::Remove(pActiveHead, animation);
       release(animation);
     }
-    else if (!animation->update(now)) {
+    else if (!animation->update(delta)) {
       AnimationNode::Remove(pActiveHead, animation);
       if (animation->loop) {
         recycle(animation);
@@ -73,10 +63,10 @@ auto Animations::update() -> void {
   }
 }
 
-auto Animations::processAdditions(Timestamp now) -> void {
+auto Animations::processAdditions() -> void {
   while (pInsertionQueueHead != nullptr) {
     auto nodeToInsert = pInsertionQueueHead;
-    nodeToInsert->start(now);
+    nodeToInsert->start();
     pInsertionQueueHead = pInsertionQueueHead->next;
 
     nodeToInsert->prev = nullptr;

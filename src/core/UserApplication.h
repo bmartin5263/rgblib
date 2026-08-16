@@ -88,7 +88,19 @@ auto UserApplication<EventVariantT>::setup() -> void {
   configureApplication();
   startSubsystems();
   initialize();
+
+#if defined(RGB_DEBUG)
+  static Monitor monitor;
+  monitor.initialize();
+  // Monitoring only enabled for Debug configurations since Debug does logging and the monitor depends on that
+  Timer::SetTimeout(Duration::Seconds(1), [](auto& context){
+    monitor.update();
+    context.repeatIn = Duration::Seconds(1);
+  }).detach();
+#endif
+
   PublishEvent(AppReady{{Clock::Now()}});
+  Clock::Start();
 }
 
 template<typename EventVariantT>
@@ -162,15 +174,6 @@ auto UserApplication<EventVariantT>::configureApplication() -> void {
   if (appConfig.mHeartbeat) {
     Debug::SetBlinker(BlinkerColor::PURPLE, []() { return true; });
   }
-
-#if defined(RGB_DEBUG)
-  // Monitoring only enabled for Debug configurations since Debug does logging and the monitor depends on that
-  Timer::SetTimeout(Duration::Seconds(1), [](auto& context){
-    static Monitor monitor;
-    monitor.update();
-    context.repeatIn = Duration::Seconds(1);
-  }).detach();
-#endif
 }
 
 template<typename EventVariantT>

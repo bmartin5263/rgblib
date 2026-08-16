@@ -10,6 +10,7 @@ namespace rgb {
 
 class Monitor {
 public:
+  auto initialize() -> void;
   auto update() -> void;
 
 };

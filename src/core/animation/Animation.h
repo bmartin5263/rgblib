@@ -17,7 +17,8 @@ public:
   Animation& operator=(Animation&& rhs) noexcept = default;
   virtual ~Animation() = default;
 
-  virtual auto update(Timestamp now) -> bool = 0;
+  virtual auto update(Duration delta) -> bool = 0;
+  virtual auto reset() -> void = 0;
   virtual auto frameCount() const -> u32 = 0;
 };
 }

@@ -15,12 +15,15 @@ namespace rgb {
 template <u32 FRAMES>
 class ArrayAnimation : public Animation{
 public:
-  ArrayAnimation(std::array<AnimationFrame, FRAMES> frames);
-  auto update(Timestamp now) -> bool override;
+  explicit ArrayAnimation(std::array<AnimationFrame, FRAMES> frames);
+  auto reset() -> void override;
+  auto update(Duration delta) -> bool override;
   auto frameCount() const -> u32 override { return FRAMES; }
 
 private:
   std::array<AnimationFrame, FRAMES> mFrames{};
+  Timestamp mCurrentFrameElapsed{};
+  u32 mCurrentFrame{};
 
 };
 
@@ -29,18 +32,31 @@ ArrayAnimation<FRAMES>::ArrayAnimation(std::array<AnimationFrame, FRAMES> frames
 }
 
 template<u32 FRAMES>
-auto ArrayAnimation<FRAMES>::update(Timestamp now) -> bool {
-  auto time = Timestamp{};
-  for (auto& frame : mFrames) {
-    auto frameStart = time;
-    time += frame.duration();
-    if (now < time) {
-      frame((now - frameStart).percentOf(frame.duration()));
-      return true;
-    }
-  }
-  return false;
+auto ArrayAnimation<FRAMES>::reset() -> void {
+  mCurrentFrameElapsed = Timestamp{};
+  mCurrentFrame = 0;
 }
+
+template<u32 FRAMES>
+auto ArrayAnimation<FRAMES>::update(Duration delta) -> bool {
+  mCurrentFrameElapsed += delta;
+
+  // A large delta can span multiple frames; walk through each one so its
+  // function still fires instead of jumping straight to the landing frame.
+  while (mCurrentFrame < FRAMES && mCurrentFrameElapsed >= mFrames[mCurrentFrame].duration()) {
+    mFrames[mCurrentFrame](1.0f);
+    mCurrentFrameElapsed -= mFrames[mCurrentFrame].duration();
+    ++mCurrentFrame;
+  }
+
+  if (mCurrentFrame >= FRAMES) {
+    return false; // animation is over
+  }
+
+  mFrames[mCurrentFrame](mCurrentFrameElapsed.percentOf(mFrames[mCurrentFrame].duration()));
+  return true; // continue the animation
+}
+
 }
 
 #endif //RGBLIB_ARRAYANIMATION_H

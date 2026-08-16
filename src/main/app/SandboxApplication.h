@@ -21,26 +21,26 @@ inline auto sunset = MirroredGradient(std::array {
   GradientStop{Color::RED()},
   GradientStop{Color::ORANGE()},
 });
-inline auto ocean = MirroredGradient(std::array {
-  GradientStop{Color::CYAN()},
-  GradientStop{Color::BLUE()},
-  GradientStop{Color::PURPLE()},
-  GradientStop{Color::MAGENTA()},
-});
-
+// inline auto ocean = MirroredGradient(std::array {
+//   GradientStop{Color::CYAN()},
+//   GradientStop{Color::BLUE()},
+//   GradientStop{Color::PURPLE()},
+//   GradientStop{Color::MAGENTA()},
+// });
+//
 inline auto animation = ArrayAnimation{ std::array {
-  AnimationFrame{Duration::Seconds(1), [](auto& ctx) {
+  AnimationFrame{Duration::Seconds(1), [](auto&) {
     strip.fill(Color::RED());
   }},
-  AnimationFrame{Duration::Seconds(1)},
-  AnimationFrame{Duration::Seconds(1), [](auto& ctx) {
+  AnimationFrame{Duration::Seconds(1), [](auto&) {
     strip.fill(Color::GREEN());
   }},
-  AnimationFrame{Duration::Seconds(1)},
-  AnimationFrame{Duration::Seconds(1), [](auto& ctx) {
+  AnimationFrame{Duration::Seconds(1), [](auto&) {
     strip.fill(Color::BLUE());
   }},
-  AnimationFrame{Duration::Seconds(1)},
+  AnimationFrame::Once([](auto&) {
+    INFO("Success!");
+  }),
 }};
 
 class SandboxApplication : public UserApplication<> {
@@ -56,7 +56,7 @@ protected:
 
   auto postDraw() -> void override {
     strip.fill(sunset, Clock::Now().percentOfWrapped(Duration::Seconds(1)));
-    fiber.fill(ocean, Clock::Now().percentOfWrapped(Duration::Seconds(1)));
+    // fiber.fill(ocean, Clock::Now().percentOfWrapped(Duration::Seconds(1)));
   }
 };
 

@@ -22,13 +22,12 @@ public:
       mFunction(function) {
   }
 
-  AnimationFrame(Duration duration)
-    : mDuration(duration),
-      mFunction(DoNothing) {
+  static auto Wait(Duration duration) {
+    return AnimationFrame{duration, DoNothing};
   }
 
-  static auto Wait(Duration duration) {
-    return AnimationFrame{duration};
+  static auto Once(const AnimationFrameFunction& function) -> AnimationFrame {
+    return AnimationFrame{Duration::Zero(), function};
   }
 
   auto duration() const -> Duration;

@@ -5,7 +5,6 @@
 #include "RpmGauge.h"
 #include "Brightness.h"
 #include "Timer.h"
-#include "corvette/CorvetteMain.h"
 
 using namespace rgb;
 
