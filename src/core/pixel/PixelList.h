@@ -12,6 +12,7 @@ namespace rgb {
 
 struct Point;
 class PixelList;
+class Gradient;
 
 template<typename PixelType>
 class PixelIteratorBase;
@@ -31,6 +32,7 @@ public:
   auto fillReverse(const Color& color, uint range) -> void;
   auto fillRatioReverse(const Color& color, normal fillPercent) -> void;
   auto fill(const Color& color, uint start, uint endExclusive) -> void;
+  auto fill(const Gradient& gradient, normal offset = 0.0f, normal scale = 1.0f) -> void;
   auto clear() -> void;
   auto size() const -> uint { return length(); };
 

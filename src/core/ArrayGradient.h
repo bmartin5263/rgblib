@@ -17,10 +17,10 @@ namespace rgb {
 
 struct GradientStop {
   constexpr GradientStop(normal position, Color color) : position(position), color(std::move(color)) {}
-  constexpr GradientStop(Color color) : color(std::move(color)) {}
+  constexpr GradientStop(Color color) : position(0.0f), color(std::move(color)) {}
 
-  normal position{0.0f};
-  Color color{};
+  normal position;
+  Color color;
 };
 
 /**

@@ -10,10 +10,17 @@
 #include "FastLEDMatrix.h"
 #include "ArrayAnimation.h"
 #include "FastLEDStrip.h"
+#include "ArrayGradient.h"
 
 using namespace rgb;
 
-inline auto strip = FastLEDStrip<40, D2_RGB, RgbwSupport::ENABLE>();
+inline auto strip = FastLEDStrip<40, D5_RGB>();
+inline auto fiber = FastLEDStrip<100, D6_RGB>();
+inline auto gradient = ArrayGradient{ std::array {
+  GradientStop{Color::ORANGE()},
+  GradientStop{.5f, Color::RED()},
+  GradientStop{1.0f, Color::BLUE()},
+}};
 
 inline auto animation = ArrayAnimation{ std::array {
   AnimationFrame{Duration::Seconds(1), [](auto& ctx) {
@@ -34,6 +41,7 @@ class SandboxApplication : public UserApplication<> {
 protected:
   auto configure(Configurer& app) -> void override {
     app.addLEDs(strip);
+    app.addLEDs(fiber);
   }
 
   auto initialize() -> void override {
@@ -41,6 +49,7 @@ protected:
   }
 
   auto postDraw() -> void override {
+    strip.fill(gradient, Clock::Now().percentOfWrapped(Duration::Seconds(1)));
   }
 };
 

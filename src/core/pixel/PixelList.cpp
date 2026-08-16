@@ -4,6 +4,7 @@
 
 #include <utility>
 #include "Assertions.h"
+#include "Gradient.h"
 #include "PixelList.h"
 #include "PixelSlice.h"
 #include "RgbColor.h"
@@ -45,6 +46,17 @@ auto PixelList::fill(const Color& color, uint start, uint endExclusive) -> void 
   endExclusive = std::min(length(), endExclusive);
   for (auto i = start; i < endExclusive; ++i) {
     set(i, color);
+  }
+}
+
+auto PixelList::fill(const Gradient& gradient, normal offset, normal scale) -> void {
+  auto lastIndex = static_cast<float>(length() - 1);
+  for (uint i = 0; i < length(); ++i) {
+    auto percentBetween = PercentBetween(static_cast<float>(i), 0.0f, lastIndex);
+    auto dividedByScale = percentBetween / scale;
+    auto position = dividedByScale + offset;
+    INFO("i=%i, percentBetween=%f, dividedByScale=%f, position=%f", i, percentBetween, dividedByScale, position);
+    set(i, gradient.sample(position));
   }
 }
 
