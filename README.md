@@ -24,35 +24,38 @@ protected:
 };
 ```
 
-## Rendering
+## Basics
 
-### Effect System
-Effects are one of the ways to color pixels. 
+### UserApplication
 
-The primary way to customize the coloring behavior of Effects is through a **Shader**.
-A shader is a function that is invoked for each "activated" pixel. 
-It takes in the pixel's current color and a set of parameters that vary depending on the effect and returns a new color for that pixel
+To create an application, define a subclass of `UserApplication` and implement the pure virtual method `auto configure(Configurer& app) -> void`.
+This method is used to register various LEDs, sensors, event handlers, and other application properties before runtime begins.
 
-Different effects activate pixels in different ways, for example a fill effect will activate all pixels uniformly and has no concept of cycles. Its only shader parameter is the pixel's position.
-In contrast, a Chase effect activates only a subset of Pixels on a given strip based on the position of activated segment. 
-It's Shader has more information about what cycle the effect is in, what position within the segment the pixel is, its overall position in the strip, etc.
+In addition, the following methods may optionally be overridden:
 
-#### Builtin
+| Method Name                 | Purpose                                                                                              |
+|-----------------------------|------------------------------------------------------------------------------------------------------|
+| `auto initialize() -> void` | For starting effects/timers. Runs right before main loop starts                                      |
+| `auto update() -> void`     | Called once per-frame before drawing any pixels, used for updating the state of the application      |
+| `auto draw() -> void`       | Called once per-frame **before** Effects/Animations run, used for manually drawing individual pixels |
+| `auto postDraw() -> void`   | Called once per-frame **after** Effects/Animations run, used for manually drawing individual pixels  |
 
-| Effect              | Cycles  | Activation Pattern (for a given PixelList)                                 |
-|:--------------------|:--------|:---------------------------------------------------------------------------|
-| Fill                | No      | All pixels uniformly                                                       |
-| Chase               | Yes     | Segment of pixels that moves along a linear path                           |
-| Chase (speed only)  | Yes     | Chase, but with speed-only restriction optimized for smooth speed changes  |
-| Wipe                | Yes     | Overlapping linear fills                                                   |
 
-`TODO`
+### Pixels & LEDs
 
-| Effect     | Activation Pattern (for a given PixelList)  | Cycles  |
-|:-----------|:--------------------------------------------|:--------|
-| Pixellate  | All pixels randomly over time               | Yes     |
+The framework distinguishes between **Pixels**, which are just color data, from `LEDs`, which are the physical components that light up.
+Pixel-related classes, like `PixelList` and `PixelGrid`, deal with reading/writing raw color data.
+LED-related classes, like `FastLEDStrip` and `FastLEDGrid`, deal with interfacing with the actual hardware.
 
-## Animations
+The rendering system doesn't care about hardware so it uses the pixel-related classes.
+`UserApplication::addLEDs()` needs the actual LED-related class.
+
+### Configuration
+
+## Features
+
+### Animations
+
 Animations let you define a sequence of steps to run where each step is composed of a callback to execute and a duration for how long to keep calling it for.
 
 ```c++
@@ -65,9 +68,46 @@ auto animation = ArrayAnimation{ std::array {
   AnimationFrame{Duration::Seconds(1)}, // Does Nothing
 }};
 
-auto loop = true;
-auto handle = Animations::start(animation, loop);
+auto handle = Animations::start(animation, true /* loop */ ));
 ```
+
+### Effects
+Effects are one of the ways to color pixels.
+
+The primary way to customize the coloring behavior of Effects is through a **Shader**.
+A shader is a function that is invoked for each "activated" pixel.
+It takes in the pixel's current color and a set of parameters that vary depending on the effect and returns a new color for that pixel
+
+Different effects activate pixels in different ways, for example a fill effect will activate all pixels uniformly and has no concept of cycles. Its only shader parameter is the pixel's position.
+In contrast, a Chase effect activates only a subset of Pixels on a given strip based on the position of activated segment.
+It's Shader has more information about what cycle the effect is in, what position within the segment the pixel is, its overall position in the strip, etc.
+
+### Gradients
+
+Gradients are a smooth blending of 2 or more colors that have a `sample(position)` method that returns a color linearly interpolated between the base colors.
+`Gradient` is the interface used by other parts of the system, while `ArrayGradient` is an implementation using a `std::array` as a backing storage.
+`MirroredGradient` is a helper that can be used to create a gradient that wraps its colors back around.
+
+Gradients are composed of an ordered list of `GradientStops`. Each stop has a `float position` and a `Color color`;
+Position must be between `0` and `1` and each stop must have a position greater than the one before it.
+If position is not specified for all the stops, they are defaulted to be evenly spaced apart.
+
+```c++
+auto sunset = ArrayGradient(std::array {
+  GradientStop{0.0f, Color::BLUE()},
+  GradientStop{0.5f, Color::RED()},
+  GradientStop{1.0f, Color::ORANGE()},
+});
+
+auto ice = MirroredGradient(std::array {
+  GradientStop{Color::CYAN()},              // position defaulted to 0.0f
+  GradientStop{Color::BLUE()},              // position defaulted to 1 / 3
+  GradientStop{Color::PURPLE()},            // position defaulted to 2 / 3
+  GradientStop{Color::MAGENTA()},           // position defaulted to 0.0f
+});
+```
+
+### Timers
 
 ## Debugging Tools
 

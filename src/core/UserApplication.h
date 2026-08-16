@@ -54,10 +54,10 @@ protected:
   // Called once per-frame, used for updating the state of the application
   virtual auto update() -> void {};
 
-  // Called once per-frame before Effects run, used for manually drawing individual pixels
+  // Called once per-frame before Effects/Animations run, used for manually drawing individual pixels
   virtual auto draw() -> void {};
 
-  // Called once per-frame after Effects run, used for manually drawing individual pixels
+  // Called once per-frame after Effects/Animations run, used for manually drawing individual pixels
   virtual auto postDraw() -> void {}
 
 private:
