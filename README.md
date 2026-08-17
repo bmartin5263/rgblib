@@ -79,11 +79,12 @@ Animations let you define a sequence of steps to run where each step is composed
 ```c++
 auto animation = ArrayAnimation{ std::array {
   AnimationFrame{Duration::Seconds(1), [](auto& ctx) { strip.fill(Color::RED() * (1.0f - ctx.percentComplete)); }},
-  AnimationFrame{Duration::Seconds(1)}, // Does Nothing
+  AnimationFrame::Wait(Duration::Seconds(1)), // Does Nothing
   AnimationFrame{Duration::Seconds(1), [](auto& ctx) { strip.fill(Color::GREEN() * (1.0f - ctx.percentComplete)); }},
-  AnimationFrame{Duration::Seconds(1)}, // Does Nothing
+  AnimationFrame::Wait(Duration::Seconds(1)), // Does Nothing
   AnimationFrame{Duration::Seconds(1), [](auto& ctx) { strip.fill(Color::BLUE() * (1.0f - ctx.percentComplete)); }},
-  AnimationFrame{Duration::Seconds(1)}, // Does Nothing
+  AnimationFrame::Wait(Duration::Seconds(1)), // Does Nothing
+  AnimationFrame::Once([](auto&) { INFO("Done!"); }) // only called once
 }};
 
 auto handle = Animations::start(animation, true /* loop */ ));
@@ -125,6 +126,25 @@ auto ice = MirroredGradient(std::array {
 ```
 
 ### Timers
+Timers let you perform an action either: at a later time, every-frame for a specified amount of time, or every-frame until a condition is met.
+
+Like all pooled resources, the Timer systems return handles that cancel themselves on destruction, so use `detach()` for fire-and-forget.
+
+```c++
+auto handle = Timer::SetTimeout(Duration::Seconds(1), [] {
+  INFO("Hello 1 Second Later!");
+});
+// handle.cancel();   // Cancel the timer
+// handle.detach();   // Release ownership (prevents RAII cleanup)
+
+handle = Timer::ContinuouslyWhile([] {
+  doWork();
+  auto shouldContiue = stopConditionIsMet();
+  return shouldContinue;
+});
+
+// end of function - handle is automatically cancelled if not explictly detached()'ed
+```
 
 ## Debugging Tools
 
