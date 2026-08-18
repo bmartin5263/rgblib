@@ -6,9 +6,11 @@
 #define RGBLIB_TYPES_H
 
 #include <cstdint>
-#include <cstdint>
 #include <limits>
+#if RGB_ARDUINO_ESP32
 #include <pins_arduino.h>
+#endif
+
 
 namespace rgb {
 
@@ -289,6 +291,16 @@ struct Timestamp : number_wrapper<time_t, Timestamp> {
     return Duration { value - earlierTime.value };
   }
 };
+
+#if RGB_NATIVE
+constexpr auto D5 = 5;
+constexpr auto D6 = 6;
+constexpr auto D7 = 7;
+constexpr auto D8 = 8;
+constexpr auto D9 = 9;
+constexpr auto D10 = 10;
+#endif
+
 
 constexpr auto D2_RGB = D5;
 constexpr auto D3_RGB = D6;
