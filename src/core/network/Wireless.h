@@ -5,6 +5,8 @@
 #ifndef RGBLIB_WIRELESS_H
 #define RGBLIB_WIRELESS_H
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include <esp_wifi_types.h>
 #include <WiFiType.h>
 #include "TimerHandle.h"
@@ -81,5 +83,6 @@ private:
 
 }
 
+#endif //defined(RGB_ARDUINO_ESP32)
 
 #endif //RGBLIB_WIRELESS_H

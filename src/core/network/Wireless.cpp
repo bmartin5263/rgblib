@@ -2,9 +2,11 @@
 // Created by Brandon on 2/17/25.
 //
 
-#include <WiFi.h>
-
 #include "Wireless.h"
+
+#if defined(RGB_ARDUINO_ESP32)
+
+#include <WiFi.h>
 #include "Log.h"
 #include "Timer.h"
 #include "Clock.h"
@@ -109,3 +111,5 @@ auto Wifi::mapToString(WifiStatus reason) -> const char* {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

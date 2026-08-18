@@ -2,6 +2,8 @@
 // Created by Brandon on 8/10/26.
 //
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include "IICArduino.h"
 
 namespace rgb::priv {
@@ -25,3 +27,5 @@ auto IICArduino::isStarted() const -> bool {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

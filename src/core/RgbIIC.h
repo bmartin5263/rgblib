@@ -5,6 +5,8 @@
 #ifndef RGBLIB_IIC_H
 #define RGBLIB_IIC_H
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include "IICImpl.h"
 
 namespace rgb {
@@ -24,5 +26,7 @@ private:
 };
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)
 
 #endif //RGBLIB_IIC_H

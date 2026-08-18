@@ -7,37 +7,27 @@
 
 #include "Types.h"
 #include "System.h"
-#include "Log.h"
+#include "ClockImpl.h"
 
 namespace rgb {
 
 class Clock {
 public:
-  auto nextFrame() -> void;
-
-  static auto NextFrame() -> void { Instance().nextFrame(); }
-  static auto Start() -> void { Instance().start(); }
+  static auto NextFrame() -> void { Implementation().nextFrame(); }
+  static auto Start() -> void { Implementation().start(); }
   static auto Now() -> Timestamp { return Timestamp{System::MicroTime()}; }
-  static auto Delta() -> Duration { return Duration{ Instance().mDelta }; }
-  static auto Fps() -> uint { return Instance().fps(); }
+  static auto Delta() -> Duration { return Duration{ Implementation().delta() }; }
+  static auto Fps() -> uint { return Implementation().fps(); }
 
 private:
-
-  static auto Instance() -> Clock&;
-  auto start() -> void;
-  auto fps() const -> uint;
-
-  frames_t mFrames{};
-  frames_t mFpsCounter{};
-  frames_t mLastFps{};
-  u64 mNextFrame{};
-  microseconds_t mFrameStartTime{};
-  microseconds_t mLastFrameRateCheck{};
-  microseconds_t mDelta{};
-  uint lastWakeTime{xTaskGetTickCount()};
-  u64 frequency{pdMS_TO_TICKS(4)}; // ~200 FPS
-  bool mLowFpsDetected{};
+  static auto Implementation() -> priv::ClockImpl&;
+  priv::ClockImpl impl;
 };
+
+inline auto Clock::Implementation() -> priv::ClockImpl& {
+  static Clock instance;
+  return instance.impl;
+}
 
 }
 

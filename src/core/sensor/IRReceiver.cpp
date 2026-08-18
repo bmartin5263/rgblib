@@ -4,6 +4,8 @@
 
 #include "IRReceiver.h"
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #undef LOCAL_TRACE
 #undef LOCAL_DEBUG
 #undef DEBUG
@@ -79,3 +81,5 @@ auto IRReceiver::doRead() -> void {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

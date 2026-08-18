@@ -5,6 +5,8 @@
 #ifndef RGBLIB_SPI_H
 #define RGBLIB_SPI_H
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include "SPIImpl.h"
 
 namespace rgb {
@@ -26,5 +28,7 @@ private:
 };
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)
 
 #endif //RGBLIB_SPI_H

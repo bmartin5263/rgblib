@@ -5,7 +5,7 @@
 #ifndef RGBLIB_IICIMPLEMENTATION_H
 #define RGBLIB_IICIMPLEMENTATION_H
 
-#if defined(RGB_ARDUINO)
+#if defined(RGB_ARDUINO_ESP32)
 #include "IICArduino.h"
 namespace rgb::priv { class IICImpl : public IICArduino {}; };
 #else

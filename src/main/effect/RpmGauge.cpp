@@ -5,6 +5,7 @@
 #include "RpmGauge.h"
 #include "Brightness.h"
 #include "Timer.h"
+#include "Util.h"
 
 using namespace rgb;
 
@@ -53,7 +54,7 @@ auto RpmGauge::draw(Timestamp now, PixelList& pixels) -> void {
   calcs.redLevel = (calcs.effectiveRedLineStart - rpmStart) / calcs.rpmPerLevel;
 
   rpm = smoothRpmSupplier();
-  calcs.rpmLevelAchieved = (rpm - min(rpm, rpmStart)) / calcs.rpmPerLevel;
+  calcs.rpmLevelAchieved = (rpm - Min(rpm, rpmStart)) / calcs.rpmPerLevel;
 
   if (calcs.rpmLevelAchieved == 0 && rpm > 100) {
     ++calcs.rpmLevelAchieved;

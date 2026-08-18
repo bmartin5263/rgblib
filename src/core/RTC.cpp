@@ -4,6 +4,8 @@
 
 #include "RTC.h"
 
+#if defined(RGB_ARDUINO_ESP32)
+
 namespace rgb {
 
 auto RTC::Implementation() -> priv::RTCImpl& {
@@ -24,3 +26,5 @@ auto RTC::Now() -> DateTime {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

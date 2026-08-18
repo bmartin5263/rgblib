@@ -66,7 +66,7 @@ private:
   auto baseUpdate() -> void;
   auto baseDraw() -> void;
 
-  std::vector<LEDDevice*> mLeds{};
+  std::vector<LEDDevice*> mPixels{};
   std::vector<Sensor*> mSensors{};
 
 protected:
@@ -113,7 +113,7 @@ auto UserApplication<EventVariantT>::loop() -> void {
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::startSubsystems() -> void {
   SetupLEDs();
-  std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->start(); });
+  std::for_each(std::begin(mPixels), std::end(mPixels), [](auto led){ led->start(); });
   std::for_each(std::begin(mSensors), std::end(mSensors), [](auto sensor){ sensor->start(); });
 
 #if RGB_OTA
@@ -139,13 +139,13 @@ auto UserApplication<EventVariantT>::baseUpdate() -> void {
 
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::baseDraw() -> void {
-  std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->reset(); });
+  std::for_each(std::begin(mPixels), std::end(mPixels), [](auto* led){ led->reset(); });
   draw();
   Effects::Draw();
   Animations::Update();
   Debug::Draw();
   postDraw();
-  std::for_each(std::begin(mLeds), std::end(mLeds), [](auto led){ led->display(); });
+  std::for_each(std::begin(mPixels), std::end(mPixels), [](auto* led){ led->display(); });
   DisplayLEDs();
 }
 
@@ -153,7 +153,7 @@ template<typename EventVariantT>
 auto UserApplication<EventVariantT>::configureApplication() -> void {
   instance = this;
 
-#ifdef RGB_ARDUINO_NANO
+#ifdef RGB_ARDUINO_ESP32
   pinMode(LED_RED, OUTPUT);
   pinMode(LED_GREEN, OUTPUT);
   pinMode(LED_BLUE, OUTPUT);
@@ -167,7 +167,7 @@ auto UserApplication<EventVariantT>::configureApplication() -> void {
   auto appConfig = Configurer{};
   configure(appConfig);
 
-  mLeds = std::move(appConfig.mLeds);
+  mPixels = std::move(appConfig.mPixels);
   mSensors = std::move(appConfig.mSensors);
   mEventMap = std::move(appConfig.mEventMap);
 

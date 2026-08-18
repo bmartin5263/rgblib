@@ -19,7 +19,7 @@ public:
 
   virtual auto update(Duration delta) -> bool = 0;
   virtual auto reset() -> void = 0;
-  virtual auto frameCount() const -> u32 = 0;
+  virtual auto frameCount() const -> size_t = 0;
 };
 }
 

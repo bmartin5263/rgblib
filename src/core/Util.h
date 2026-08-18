@@ -6,6 +6,7 @@
 #define RGBLIB_UTIL_H
 
 #include <cmath>
+#include "Types.h"
 
 namespace rgb {
 
@@ -191,6 +192,15 @@ constexpr auto Min(T first, Ts... args) -> T {
   auto result = first;
   ((result = args < result ? args : result), ...);
   return result;
+}
+
+// Wraps `index + offset` into [0, length), correctly handling a negative offset
+constexpr auto WrapIndex(u16 index, int offset, u16 length) -> u16 {
+  auto wrapped = (static_cast<int>(index) + offset) % static_cast<int>(length);
+  if (wrapped < 0) {
+    wrapped += static_cast<int>(length);
+  }
+  return static_cast<u16>(wrapped);
 }
 
 }

@@ -19,7 +19,7 @@ Features:
 class BlueFillApplication : public rgb::UserApplication<> {
   rgb::FastLEDStrip<40, D5, rgb::RgbwSupport::ENABLE> ledStrip{};
 protected:
-  auto configure(Configurer& app) -> void override { app.addLEDs(ledStrip); }
+  auto configure(Configurer& app) -> void override { app.addPixels(ledStrip); }
   auto draw() -> void override { ledStrip.fill(rgb::Color::BLUE()); }
 };
 ```
@@ -29,7 +29,7 @@ protected:
 ### UserApplication
 
 To create an application, define a subclass of `UserApplication` and implement the pure virtual method `auto configure(Configurer& app) -> void`.
-This method is used to register various LEDs (`app.addLEDs()`), sensors (`app.addSensor()`), event handlers (`app.on<AppReady>([](auto& event){})`), and other application properties before runtime begins.
+This method is used to register various LEDs (`app.addPixels()`), sensors (`app.addSensor()`), event handlers (`app.on<AppReady>([](auto& event){})`), and other application properties before runtime begins.
 
 In addition, the following methods may optionally be overridden:
 
@@ -54,10 +54,10 @@ The following compile-time flags can be used to change application behavior, con
 
 | Macro                | Usage                                                                     | Default                          |
 |----------------------|---------------------------------------------------------------------------|----------------------------------|
-| `RGB_ARDUINO`        | Uses Arduino implementation of hardware abstractions                      | `0` (disabled)                   |
-| `RGB_ARDUINO_NANO`   | Uses Arduino ESP32 implementation of hardware abstractions                | `0` (disabled)                   |
+| `RGB_ARDUINO_ESP32`  | Uses Arduino ESP32 implementation of hardware abstractions                | `0` (disabled)                   |
+| `RGB_NATIVE`         | Uses Native implementation of hardware abstractions                       | `0` (disabled)                   |
 | `RGB_DEBUG`          | Enables debugging features like printf-style logging and monitoring       | `0` (disabled)                   |
-| `RGB_LOG_LEVEL`      | Log verbosity: `0`=none, `1`=Error, `2`=Info, `3`=Trace                   | `2` if `RGB_DEBUG` set, else `0` |
+| `RGB_LOG_LEVEL`      | Log verbosity: `0`=None, `1`=Error, `2`=Info, `3`=Trace                   | `2` if `RGB_DEBUG` set, else `0` |
 | `RGB_OTA`            | Enables Over-the-Air firmware updates and WiFi connectivity               | `0` (disabled)                   |
 | `RGB_WIFI_SSID`      | WiFi network SSID used for OTA connectivity                               | `""` (empty)                     |
 | `RGB_WIFI_PASSWORD`  | WiFi network password used for OTA connectivity                           | `""` (empty)                     |
@@ -151,14 +151,14 @@ handle = Timer::ContinuouslyWhile([] {
 ### Built-in LED
 Use `Debug::SetBlinker(color, predicate)` to cause the built-in LED to periodically blink `color` if `predicate` is returning true.
 
-| Color  | Default Meaning                           |
-|--------|-------------------------------------------|
-| Red    | Debug Fault Triggered                     |
-| Yellow | (rgbcar uses for Vehicle Logging Running) |
-| Green  | (rgbcar uses for Vehicle Connected)       |
-| Cyan   |                                           |
-| Blue   | Connected to WiFi                         |
-| Purple |                                           |
+| Color  | Default Meaning                                                                    |
+|--------|------------------------------------------------------------------------------------|
+| Red    | Debug Fault Triggered                                                              |
+| Yellow | ([rgbcar](https://github.com/bmartin5263/rgbcar) uses for Vehicle Logging Running) |
+| Green  | ([rgbcar](https://github.com/bmartin5263/rgbcar) uses for Vehicle Connected)       |
+| Cyan   |                                                                                    |
+| Blue   | Connected to WiFi                                                                  |
+| Purple |                                                                                    |
 
 ### Logs
 Macros such as `INFO()` and `ERROR()` can be used to print logs to the Serial output. The library makes
@@ -169,11 +169,6 @@ use of these macros for reporting issues at runtime
 | `TRACE(msg, ...)` | 3                       | Print a log message with level _Trace_. Intended for low-level or frequent messages |
 | `INFO(msg, ...)`  | 2                       | Print a log message with level _Info_. Intended for high-level messages             |
 | `ERROR(msg, ...)` | 1                       | Print a log message with level _Error_. Intended for abnormal events                |
-
-| Configuration Macro | Description                                                                 |
-|---------------------|-----------------------------------------------------------------------------|
-| `RGB_DEBUG`         | Sets `RGB_LOG_LEVEL` to `1`. Meant to do other debug-related things as well |
-| `RGB_LOG_LEVEL`     | `0=ERROR`, `1=INFO`, `2=TRACE`. Defaults to `0`                             |
 
 ## Terminology
 
@@ -188,7 +183,3 @@ use of these macros for reporting issues at runtime
 (in no particular order)
 
 - Effects should have a delay until they start again, so we don't _need_ DeadPixelLists to pad the endings
-- Native-mode, being able to write an application without a microcontroller. LEDs rendered on computer UI. Mainly for testing/experimentation before going to real hardware
-  - Maybe `RGB_NATIVE` to contract with `RGB_ARDUINO_ESP32`
-  - This means `app.addLEDs()` really no longer makes sense, arguably it is already working with the wrong layer of the stack
-  - `app.addPixels(...)`

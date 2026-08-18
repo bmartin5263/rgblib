@@ -4,6 +4,8 @@
 
 #include "WebServer.h"
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include <utility>
 #include "Wireless.h"
 #include "Assertions.h"
@@ -60,3 +62,5 @@ auto WebServerHandleDeleter::operator()(WebHandler* ptr) -> void {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

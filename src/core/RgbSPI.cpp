@@ -4,6 +4,8 @@
 
 #include "RgbSPI.h"
 
+#if defined(RGB_ARDUINO_ESP32)
+
 namespace rgb {
 
 auto SPI::Implementation() -> priv::SPIImpl& {
@@ -24,3 +26,5 @@ auto SPI::IsStarted() -> bool {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

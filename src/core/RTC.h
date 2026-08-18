@@ -5,6 +5,8 @@
 #ifndef RGBLIB_RTC_H
 #define RGBLIB_RTC_H
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include "RTCImpl.h"
 
 namespace rgb {
@@ -21,5 +23,7 @@ private:
 };
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)
 
 #endif //RGBLIB_RTC_H

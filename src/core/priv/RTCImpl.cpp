@@ -2,6 +2,8 @@
 // Created by Brandon on 8/10/26.
 //
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include "RTCImpl.h"
 
 namespace rgb::priv {
@@ -27,3 +29,5 @@ auto RTCImpl::now() -> DateTime {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

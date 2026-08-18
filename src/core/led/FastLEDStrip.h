@@ -12,6 +12,7 @@
 #include "LEDDevice.h"
 #include "Log.h"
 #include "RgbwSupport.h"
+#include "Util.h"
 
 namespace rgb {
 
@@ -107,7 +108,7 @@ public:
   }
 
   auto mapPixelToLED(u16 pixel) -> u16 {
-    return (pixel + offset) % N;
+    return WrapIndex(pixel, offset, N);
   }
 
   FastLEDStrip(const FastLEDStrip&) = delete;

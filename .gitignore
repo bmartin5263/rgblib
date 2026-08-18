@@ -3,3 +3,4 @@
 .libbuild
 /NOTES.md
 .DS_Store
+*.ino.cpp
