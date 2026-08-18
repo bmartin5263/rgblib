@@ -173,7 +173,13 @@ auto NativeDisplay::present() -> void {
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
       case SDL_QUIT:
+        // Automatically fires when single-window app window closes
         std::exit(0);
+      case SDL_WINDOWEVENT:
+        if (event.window.event == SDL_WINDOWEVENT_CLOSE && event.window.windowID == SDL_GetWindowID(mWindow.get())) {
+          std::exit(0);
+        }
+        break;
       case SDL_KEYDOWN:
         if (mKeyEventsEnabled) {
           if (auto irButton = mapToIRButtonType(event.key.keysym); irButton && event.key.repeat == 0) {
