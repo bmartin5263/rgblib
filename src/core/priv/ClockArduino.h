@@ -25,7 +25,7 @@ public:
 
 private:
   uint lastWakeTime{xTaskGetTickCount()};
-  u64 frequency{pdMS_TO_TICKS(4)}; // ~200 FPS
+  u64 frequency{pdMS_TO_TICKS(4)}; // ~250 FPS
 };
 
 }

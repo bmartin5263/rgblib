@@ -2,19 +2,17 @@
 // Created by Brandon on 2/9/26.
 //
 
-#include <cstdio>
-#include <cstdlib>
 #include <atomic>
 
 #include "Monitor.h"
-
-#if defined(RGB_ARDUINO_ESP32)
 
 #include "Timer.h"
 #include "Effects.h"
 #include "Animations.h"
 #include "Clock.h"
+#if RGB_ARDUINO_ESP32
 #include "Wireless.h"
+#endif
 
 namespace {
 std::atomic setupAllocations{0u};
@@ -49,12 +47,13 @@ void operator delete(void* p) noexcept {
 namespace rgb {
 
 auto Monitor::initialize() -> void {
-  setupAllocations = 0;
   runtimeAllocations = 0;
   liveAllocations = 0;
+  afterSetup = true;
 }
 
 auto Monitor::update() -> void {
+#if RGB_ARDUINO_ESP32
   auto ip = Wifi::GetAddress();
   INFO("FPS: %i, Timers: %i / %i (peak=%i), Effects: %i / %i (peak=%i), Animations: %i / %i (peak=%i), Allocations: %i Live / %i Setup / %i Runtime, WiFi: %u.%u.%u.%u",
     Clock::Fps(),
@@ -64,8 +63,15 @@ auto Monitor::update() -> void {
     liveAllocations.load(), setupAllocations.load(), runtimeAllocations.load(),
     ip[0], ip[1], ip[2], ip[3]
   );
+#elif RGB_NATIVE
+  INFO("FPS: %i, Timers: %i / %i (peak=%i), Effects: %i / %i (peak=%i), Animations: %i / %i (peak=%i), Allocations: %i Live / %i Setup / %i Runtime",
+    Clock::Fps(),
+    Timer::ActiveCount(), Timer::Capacity(), Timer::PeakCount(),
+    Effects::ActiveCount(), Effects::Capacity(), Effects::PeakCount(),
+    Animations::ActiveCount(), Animations::Capacity(), Animations::PeakCount(),
+    liveAllocations.load(), setupAllocations.load(), runtimeAllocations.load()
+  );
+#endif
 }
 
 }
-
-#endif //defined(RGB_ARDUINO_ESP32)

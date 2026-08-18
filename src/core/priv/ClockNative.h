@@ -28,7 +28,7 @@ public:
   }
 
 private:
-  static constexpr microseconds_t FRAME_PERIOD = 4'000; // ~200 FPS
+  static constexpr microseconds_t FRAME_PERIOD = 4'000; // ~250 FPS
   microseconds_t mNextFrameDeadline{};
 };
 
