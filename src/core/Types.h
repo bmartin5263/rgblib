@@ -292,16 +292,7 @@ struct Timestamp : number_wrapper<time_t, Timestamp> {
   }
 };
 
-#if RGB_NATIVE
-constexpr auto D5 = 5;
-constexpr auto D6 = 6;
-constexpr auto D7 = 7;
-constexpr auto D8 = 8;
-constexpr auto D9 = 9;
-constexpr auto D10 = 10;
-#endif
-
-
+#if RGB_ARDUINO_ESP32
 constexpr auto D2_RGB = D5;
 constexpr auto D3_RGB = D6;
 constexpr auto D4_RGB = D7;
@@ -309,11 +300,21 @@ constexpr auto D5_RGB = D8;
 constexpr auto D6_RGB = D9;
 constexpr auto D7_RGB = D10;
 constexpr auto D8_RGB = 17;
-
 constexpr auto A4_RGB = 11;
 constexpr auto A5_RGB = 12;
 constexpr auto A6_RGB = 13;
-
+#else
+constexpr auto D2_RGB = 5;
+constexpr auto D3_RGB = 6;
+constexpr auto D4_RGB = 7;
+constexpr auto D5_RGB = 8;
+constexpr auto D6_RGB = 9;
+constexpr auto D7_RGB = 10;
+constexpr auto D8_RGB = 17;
+constexpr auto A4_RGB = 11;
+constexpr auto A5_RGB = 12;
+constexpr auto A6_RGB = 13;
+#endif
 }
 
 #endif //RGBLIB_TYPES_H
