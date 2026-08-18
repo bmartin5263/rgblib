@@ -27,7 +27,7 @@
     "fastled/FastLED": "^3.9.0",
     "adafruit/RTClib": "2.1.4"
   },
-  "frameworks": "arduino",
+  "frameworks": "*",
   "platforms": "*",
   "examples": [
     {
