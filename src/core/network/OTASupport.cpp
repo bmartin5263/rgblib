@@ -4,6 +4,8 @@
 
 #include "OTASupport.h"
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include "ArduinoOTA.h"
 #include "Stopwatch.h"
 #include "Log.h"
@@ -51,3 +53,5 @@ auto OTASupport::Instance() -> OTASupport& {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

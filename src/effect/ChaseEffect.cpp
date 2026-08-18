@@ -36,9 +36,9 @@ auto ChaseEffect::draw(Timestamp now, PixelList& pixels) -> void {
   }
 
 
-  auto paddingLength = static_cast<ulong>(static_cast<float>(pixelLength) * idleRatio);
+  auto paddingLength = static_cast<uint>(static_cast<float>(pixelLength) * idleRatio);
   auto effectiveLength = pixelLength + paddingLength;
-  auto effectPosition = static_cast<ulong>(static_cast<float>(effectiveLength) * percentComplete); // round down
+  auto effectPosition = static_cast<uint>(static_cast<float>(effectiveLength) * percentComplete); // round down
 
   auto params = ShaderParameters {
     .now = now,

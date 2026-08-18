@@ -2,6 +2,8 @@
 // Created by Brandon on 5/6/26.
 //
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include "SPIArduino.h"
 
 namespace rgb::priv {
@@ -23,3 +25,4 @@ auto SPIArduino::isStarted() const -> bool {
 
 }
 
+#endif //defined(RGB_ARDUINO_ESP32)

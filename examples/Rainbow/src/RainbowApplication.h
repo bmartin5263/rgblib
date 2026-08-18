@@ -6,7 +6,7 @@
 #define RGBLIB_RAINBOWAPPLICATION_H
 
 #include "UserApplication.h"
-#include "FastLEDStrip.h"
+#include "LEDStrip.h"
 #include "ChaseEffect.h"
 #include "ReversePixelList.h"
 
@@ -15,7 +15,7 @@ using namespace rgb;
 static constexpr auto LED_COUNT = 40;
 static constexpr auto LED_PIN = D5;
 
-inline auto ledStrip = FastLEDStrip<LED_COUNT, LED_PIN, RgbwSupport::ENABLE>();
+inline auto ledStrip = LEDStrip<LED_COUNT, LED_PIN, RgbwSupport::ENABLE>();
 inline auto reverseStrip = ReversePixelList{ledStrip};
 inline auto group = std::array<PixelList*, 2> { &ledStrip, &reverseStrip };
 inline auto chaseEffect = ChaseEffect{};
@@ -28,7 +28,7 @@ protected:
     INFO("Configuring Application");
 
     ledStrip.setBrightness(.2f);
-    app.addLEDs(ledStrip);
+    app.addPixels(ledStrip);
     app.on<AppReady>([](auto&) {
       chaseEffectHandle = Effects::Start(chaseEffect, group);
     });

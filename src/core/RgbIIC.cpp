@@ -4,6 +4,8 @@
 
 #include "RgbIIC.h"
 
+#if defined(RGB_ARDUINO_ESP32)
+
 namespace rgb {
 
 auto IIC::Implementation() -> priv::IICImpl& {
@@ -24,3 +26,5 @@ auto IIC::IsStarted() -> bool {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

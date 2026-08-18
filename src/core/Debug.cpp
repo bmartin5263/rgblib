@@ -3,7 +3,9 @@
 //
 
 #include "Debug.h"
+#if defined(RGB_ARDUINO_ESP32)
 #include <Arduino.h>
+#endif
 
 #include "PixelList.h"
 
@@ -94,7 +96,7 @@ auto Debug::nextActiveBlinker() -> bool {
 }
 
 auto Debug::setLed(BlinkerColor color) -> void {
-#ifdef RGB_ARDUINO_NANO
+#ifdef RGB_ARDUINO_ESP32
   // Active-low: LOW = on, HIGH = off
   auto r = HIGH;
   auto g = HIGH;
@@ -118,7 +120,7 @@ auto Debug::setLed(BlinkerColor color) -> void {
 }
 
 auto Debug::clearLed() -> void {
-#ifdef RGB_ARDUINO_NANO
+#ifdef RGB_ARDUINO_ESP32
   digitalWrite(LED_RED, HIGH);
   digitalWrite(LED_GREEN, HIGH);
   digitalWrite(LED_BLUE, HIGH);

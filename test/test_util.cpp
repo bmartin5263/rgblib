@@ -27,6 +27,7 @@ using rgb::SinWave;
 using rgb::Timestamp;
 using rgb::ToKph;
 using rgb::ToMph;
+using rgb::WrapIndex;
 using rgb::WrapUnit;
 
 constexpr auto EPSILON = 1e-5f;
@@ -118,6 +119,26 @@ TEST(UtilsTest, MaxAndMinWorkWithCustomTimestampType) {
 
   EXPECT_EQ(Max(mid, early, late), late);
   EXPECT_EQ(Min(mid, early, late), early);
+}
+
+TEST(UtilsTest, WrapIndexReturnsIndexUnchangedWhenNoOffset) {
+  EXPECT_EQ(WrapIndex(3, 0, 10), 3);
+}
+
+TEST(UtilsTest, WrapIndexWrapsPositiveOffsetPastLength) {
+  EXPECT_EQ(WrapIndex(8, 5, 10), 3);
+}
+
+TEST(UtilsTest, WrapIndexWrapsNegativeOffsetIntoRange) {
+  EXPECT_EQ(WrapIndex(2, -5, 10), 7);
+}
+
+TEST(UtilsTest, WrapIndexHandlesOffsetMoreNegativeThanLength) {
+  EXPECT_EQ(WrapIndex(0, -15, 10), 5);
+}
+
+TEST(UtilsTest, WrapIndexHandlesOffsetEqualToLength) {
+  EXPECT_EQ(WrapIndex(4, 10, 10), 4);
 }
 
 TEST(UtilsTest, EaseOutBounceMatchesKnownValues) {

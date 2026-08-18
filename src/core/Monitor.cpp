@@ -7,6 +7,9 @@
 #include <atomic>
 
 #include "Monitor.h"
+
+#if defined(RGB_ARDUINO_ESP32)
+
 #include "Timer.h"
 #include "Effects.h"
 #include "Animations.h"
@@ -64,3 +67,5 @@ auto Monitor::update() -> void {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

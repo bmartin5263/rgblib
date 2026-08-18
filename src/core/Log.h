@@ -5,7 +5,9 @@
 #ifndef NEOPIXELS_LOG_H
 #define NEOPIXELS_LOG_H
 
+#if defined(RGB_ARDUINO_ESP32)
 #include <Arduino.h>
+#endif
 #include "Types.h"
 
 #if defined (RGB_DEBUG)

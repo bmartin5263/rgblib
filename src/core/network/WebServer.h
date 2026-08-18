@@ -5,6 +5,8 @@
 #ifndef RGBLIB_WEBSERVER_H
 #define RGBLIB_WEBSERVER_H
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include "WebServerFwd.h"
 #include "Types.h"
 #include "Log.h"
@@ -50,5 +52,6 @@ private:
 
 }
 
+#endif //defined(RGB_ARDUINO_ESP32)
 
 #endif //RGBLIB_WEBSERVER_H

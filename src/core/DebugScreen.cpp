@@ -3,6 +3,9 @@
 //
 
 #include "DebugScreen.h"
+
+#if defined(RGB_ARDUINO_ESP32)
+
 #include "Clock.h"
 #include "Assertions.h"
 
@@ -46,3 +49,5 @@ auto DebugScreen::printLine(const std::string& msg) -> void {
 }
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)

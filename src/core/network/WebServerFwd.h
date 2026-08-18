@@ -5,6 +5,8 @@
 #ifndef RGBLIB_WEBSERVERFWD_H
 #define RGBLIB_WEBSERVERFWD_H
 
+#if defined(RGB_ARDUINO_ESP32)
+
 #include <utility>
 #include "ESPAsyncWebServer.h"
 #include "Types.h"
@@ -29,5 +31,7 @@ template<typename T, int N>
 using ParameterTable = std::array<ParameterMapping<T>, N>;
 
 }
+
+#endif //defined(RGB_ARDUINO_ESP32)
 
 #endif //RGBLIB_WEBSERVERFWD_H

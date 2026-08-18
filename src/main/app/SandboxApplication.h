@@ -7,27 +7,26 @@
 
 #include "Animations.h"
 #include "UserApplication.h"
-#include "FastLEDMatrix.h"
 #include "ArrayAnimation.h"
-#include "FastLEDStrip.h"
+#include "LEDStrip.h"
 #include "ArrayGradient.h"
 
 using namespace rgb;
 
-inline auto strip = FastLEDStrip<40, D5_RGB>();
-inline auto fiber = FastLEDStrip<130, D6_RGB>();
+inline auto strip = LEDStrip<40, D5_RGB>();
+inline auto fiber = LEDStrip<130, D6_RGB>();
 inline auto sunset = MirroredGradient(std::array {
   GradientStop{Color::BLUE()},
   GradientStop{Color::RED()},
   GradientStop{Color::ORANGE()},
 });
-// inline auto ocean = MirroredGradient(std::array {
-//   GradientStop{Color::CYAN()},
-//   GradientStop{Color::BLUE()},
-//   GradientStop{Color::PURPLE()},
-//   GradientStop{Color::MAGENTA()},
-// });
-//
+inline auto ocean = MirroredGradient(std::array {
+  GradientStop{Color::CYAN()},
+  GradientStop{Color::BLUE()},
+  GradientStop{Color::PURPLE()},
+  GradientStop{Color::MAGENTA()},
+});
+
 inline auto animation = ArrayAnimation{ std::array {
   AnimationFrame{Duration::Seconds(1), [](auto&) {
     strip.fill(Color::RED());
@@ -46,8 +45,8 @@ inline auto animation = ArrayAnimation{ std::array {
 class SandboxApplication : public UserApplication<> {
 protected:
   auto configure(Configurer& app) -> void override {
-    app.addLEDs(strip);
-    app.addLEDs(fiber);
+    app.addPixels(strip);
+    app.addPixels(fiber);
   }
 
   auto initialize() -> void override {
@@ -56,7 +55,7 @@ protected:
 
   auto postDraw() -> void override {
     strip.fill(sunset, Clock::Now().percentOfWrapped(Duration::Seconds(1)));
-    // fiber.fill(ocean, Clock::Now().percentOfWrapped(Duration::Seconds(1)));
+    fiber.fill(ocean, Clock::Now().percentOfWrapped(Duration::Seconds(1)));
   }
 };
 

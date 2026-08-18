@@ -42,7 +42,7 @@ class CorvetteMetalArtApplication : public UserApplication<> {
 protected:
   auto configure(Configurer& app) -> void override {
     s1.setBrightness(.8f);
-    app.addLEDs(s1);
+    app.addPixels(s1);
     app.addSensor(irRemote);
 
     wipeEffect.shader = [](auto color, auto& params){

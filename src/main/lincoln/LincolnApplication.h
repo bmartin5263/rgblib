@@ -264,12 +264,12 @@ protected:
   auto configure(Configurer& app) -> void override {
     ring.setOffset(11);
 
-    app.addLEDs(ring);
-    app.addLEDs(leftFoot);
-    app.addLEDs(rightFoot);
-    app.addLEDs(dashFiber1);
-    app.addLEDs(dashFiber2);
-    app.addLEDs(dashFiber3);
+    app.addPixels(ring);
+    app.addPixels(leftFoot);
+    app.addPixels(rightFoot);
+    app.addPixels(dashFiber1);
+    app.addPixels(dashFiber2);
+    app.addPixels(dashFiber3);
     app.addSensor(irRemote);
 
     ringChase1.buildup = true;

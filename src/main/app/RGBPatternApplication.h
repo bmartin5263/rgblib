@@ -15,7 +15,7 @@ inline auto pixels = FastLEDStrip<300, D2_RGB>();
 class RGBPatternApplication : public UserApplication<> {
 protected:
   auto configure(Configurer& app) -> void override {
-    app.addLEDs(pixels);
+    app.addPixels(pixels);
   }
 
   auto update() -> void override {

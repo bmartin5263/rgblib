@@ -6,19 +6,20 @@
 #define RGBLIB_ARRAYANIMATION_H
 
 #include <array>
+#include <cstddef>
 
 #include "Animation.h"
 #include "AnimationFrame.h"
 
 namespace rgb {
 
-template <u32 FRAMES>
+template <size_t FRAMES>
 class ArrayAnimation : public Animation{
 public:
   explicit ArrayAnimation(std::array<AnimationFrame, FRAMES> frames);
   auto reset() -> void override;
   auto update(Duration delta) -> bool override;
-  auto frameCount() const -> u32 override { return FRAMES; }
+  auto frameCount() const -> size_t override { return FRAMES; }
 
 private:
   std::array<AnimationFrame, FRAMES> mFrames{};
@@ -27,17 +28,17 @@ private:
 
 };
 
-template<u32 FRAMES>
+template<size_t FRAMES>
 ArrayAnimation<FRAMES>::ArrayAnimation(std::array<AnimationFrame, FRAMES> frames): mFrames(std::move(frames)) {
 }
 
-template<u32 FRAMES>
+template<size_t FRAMES>
 auto ArrayAnimation<FRAMES>::reset() -> void {
   mCurrentFrameElapsed = Timestamp{};
   mCurrentFrame = 0;
 }
 
-template<u32 FRAMES>
+template<size_t FRAMES>
 auto ArrayAnimation<FRAMES>::update(Duration delta) -> bool {
   mCurrentFrameElapsed += delta;
 

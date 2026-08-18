@@ -16,21 +16,21 @@ class LEDDevice;
 
 template<typename EventVariantT = SystemEvent>
 struct UserApplicationConfigurer {
-  constexpr auto addLEDs(LEDDevice& circuit) -> UserApplicationConfigurer&;
+  constexpr auto addPixels(LEDDevice& circuit) -> UserApplicationConfigurer&;
   constexpr auto addSensor(Sensor& sensor) -> UserApplicationConfigurer&;
 
   template<typename T>
   constexpr auto on(EventHandler<T> action) -> UserApplicationConfigurer&;
 
-  std::vector<LEDDevice*> mLeds{};
+  std::vector<LEDDevice*> mPixels{};
   std::vector<Sensor*> mSensors{};
   std::unordered_map<uint, std::vector<EventHandler<EventVariantT>>> mEventMap{};
   bool mHeartbeat{};
 };
 
 template<typename EventVariantT>
-constexpr auto UserApplicationConfigurer<EventVariantT>::addLEDs(LEDDevice& circuit) -> UserApplicationConfigurer& {
-  mLeds.push_back(&circuit);
+constexpr auto UserApplicationConfigurer<EventVariantT>::addPixels(LEDDevice& circuit) -> UserApplicationConfigurer& {
+  mPixels.push_back(&circuit);
   return *this;
 }
 
