@@ -16,7 +16,7 @@ public:
   virtual auto data() -> Pixel* = 0;
   virtual auto data() const -> const Pixel* = 0;
 
-  auto slice(uint length) -> PixelSlice;
+  auto slice(uint endExclusive) -> PixelSlice;
   auto slice(uint start, uint endExclusive) -> PixelSlice;
   auto get(uint pixel) const -> Pixel override;
   auto set(uint pixel, const Color& color) -> void override;

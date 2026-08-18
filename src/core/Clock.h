@@ -13,7 +13,7 @@ namespace rgb {
 
 class Clock {
 public:
-  static auto NextFrame() -> void { Implementation().nextFrame(); }
+  static auto _NextFrame() -> void { Implementation().nextFrame(); }
   static auto Start() -> void { Implementation().start(); }
   static auto Now() -> Timestamp { return Timestamp{System::MicroTime()}; }
   static auto Delta() -> Duration { return Duration{ Implementation().delta() }; }

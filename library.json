@@ -33,7 +33,7 @@
     {
       "name": "Rainbow",
       "base": "examples/Rainbow",
-      "files": ["platformio.ini", "src/main.ino", "src/RainbowApplication.h"]
+      "files": ["platformio.ini", "src/main.ino", "src/native_main.cpp", "src/RainbowApplication.h"]
     }
   ]
 }

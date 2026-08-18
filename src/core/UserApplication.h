@@ -105,7 +105,7 @@ auto UserApplication<EventVariantT>::setup() -> void {
 
 template<typename EventVariantT>
 auto UserApplication<EventVariantT>::loop() -> void {
-  Clock::NextFrame();
+  Clock::_NextFrame();
   baseUpdate();
   baseDraw();
 }
