@@ -10,6 +10,7 @@
 #include <vector>
 #include <memory>
 #include <SDL2/SDL.h>
+
 #include "NativeRenderable.h"
 
 namespace rgb {
@@ -33,14 +34,14 @@ struct SDLVideoGuard {
 };
 
 /**
- * Shared SDL window that renders every registered NativeLEDStrip, one
- * horizontal row per strip, pulling each strip's pixel data directly at
- * present() time.
+ * Shared SDL window that renders every registered strip/matrix
  */
 class NativeDisplay {
 public:
   static auto Setup() -> void { Instance(); }
-  static auto Register(NativeRenderable& strip) -> void { Instance().registerStrip(strip); }
+  static auto RegisterStrip(NativeRenderable& strip) -> void { Instance().registerStrip(strip); }
+  static auto RegisterMatrix(NativeRenderable& matrix) -> void { Instance().registerMatrix(matrix); }
+  static auto EnableKeyEvents() -> void { Instance().enableKeyEvents(); }
   static auto Present() -> void { Instance().present(); }
 
   NativeDisplay(const NativeDisplay& rhs) = delete;
@@ -55,6 +56,8 @@ private:
   static auto Instance() -> NativeDisplay&;
 
   auto registerStrip(NativeRenderable& strip) -> void;
+  auto registerMatrix(NativeRenderable& matrix) -> void;
+  auto enableKeyEvents() -> void { mKeyEventsEnabled = true; }
   auto present() -> void;
 
   // Window created lazily so it can be properly sized to the LED load
@@ -64,7 +67,11 @@ private:
   SDLVideoGuard mVideo;
   std::unique_ptr<SDL_Window, SDLWindowDeleter> mWindow;
   std::unique_ptr<SDL_Renderer, SDLRendererDeleter> mRenderer;
-  std::vector<NativeRenderable*> mRows{};
+  std::vector<NativeRenderable*> mStrips{};
+  std::vector<NativeRenderable*> mMatrices{};
+  // Matrices packed left-to-right into lines; computed once, alongside the window, in ensureWindow().
+  std::vector<std::vector<NativeRenderable*>> mMatrixLines{};
+  bool mKeyEventsEnabled{false};
 };
 
 }

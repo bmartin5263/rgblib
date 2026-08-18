@@ -2,28 +2,29 @@
 // Created by Brandon on 8/17/26.
 //
 
-#ifndef RGBLIB_NATIVELEDSTRIP_H
-#define RGBLIB_NATIVELEDSTRIP_H
+#ifndef RGBLIB_NATIVELEDMATRIX_H
+#define RGBLIB_NATIVELEDMATRIX_H
 
 #include "Types.h"
 #include "Util.h"
-#include "ContiguousPixelList.h"
+#include "ContiguousPixelGrid.h"
 #include "LEDDevice.h"
 #include "NativeDisplay.h"
 #include "NativeRenderable.h"
-#include "RenderScale.h"
 
 namespace rgb {
 
 /**
- * Backs a PixelList with an SDL-rendered window instead of physical LEDs,
+ * Backs a PixelGrid with an SDL-rendered window instead of physical LEDs,
  * for running an application with no hardware present.
  */
-template <u16 N, RenderScale SCALE = RenderScale::FULL>
-class NativeLEDStrip : public ContiguousPixelList, public LEDDevice, public NativeRenderable {
+template <uint COLUMNS, uint ROWS>
+class NativeLEDMatrix : public ContiguousPixelGrid, public LEDDevice, public NativeRenderable {
 public:
-  constexpr explicit NativeLEDStrip(
-    u16 offset = 0
+  static constexpr auto N = COLUMNS * ROWS;
+
+  constexpr explicit NativeLEDMatrix(
+    int offset = 0
   ):
     pixels{}, offset{offset}, brightness(1.0f), reversed{false}, started{false}
   {
@@ -34,7 +35,7 @@ public:
       return;
     }
 
-    NativeDisplay::RegisterStrip(*this);
+    NativeDisplay::RegisterMatrix(*this);
     started = true;
   }
 
@@ -48,6 +49,19 @@ public:
 
   auto length() const -> uint override {
     return N;
+  }
+
+  auto rows() const -> uint override {
+    return ROWS;
+  }
+
+  // Satisfies both PixelGrid::columns() and NativeRenderable::columns().
+  auto columns() const -> uint override {
+    return COLUMNS;
+  }
+
+  auto pixelScale() const -> normal override {
+    return 1.0f;
   }
 
   auto getOffset() const -> int {
@@ -88,35 +102,22 @@ public:
   }
 
   auto mapPixelToLED(u16 pixel) const -> u16 {
-    return WrapIndex(pixel, offset, N);
+    return WrapIndex(pixel, offset, static_cast<u16>(N));
   }
 
   auto pixelCount() const -> u16 override {
-    return N;
-  }
-
-  auto columns() const -> uint override {
-    return N;
-  }
-
-  auto pixelScale() const -> normal override {
-    switch (SCALE) {
-      case RenderScale::HALF:
-        return 0.5f;
-      default:
-        return 1.0f;
-    }
+    return static_cast<u16>(N);
   }
 
   auto renderedPixel(u16 index) const -> Pixel override {
-    auto mapped = reversed ? mapPixelToLED(N - 1 - index) : mapPixelToLED(index);
+    auto mapped = reversed ? mapPixelToLED(static_cast<u16>(N - 1 - index)) : mapPixelToLED(index);
     return pixels[mapped] * brightness;
   }
 
-  NativeLEDStrip(const NativeLEDStrip&) = delete;
-  NativeLEDStrip& operator=(const NativeLEDStrip&) = delete;
-  NativeLEDStrip(NativeLEDStrip&&) = default;
-  NativeLEDStrip& operator=(NativeLEDStrip&&) = default;
+  NativeLEDMatrix(const NativeLEDMatrix&) = delete;
+  NativeLEDMatrix& operator=(const NativeLEDMatrix&) = delete;
+  NativeLEDMatrix(NativeLEDMatrix&&) = default;
+  NativeLEDMatrix& operator=(NativeLEDMatrix&&) = default;
 
 private:
   Pixel pixels[N];
@@ -128,4 +129,4 @@ private:
 
 }
 
-#endif //RGBLIB_NATIVELEDSTRIP_H
+#endif //RGBLIB_NATIVELEDMATRIX_H

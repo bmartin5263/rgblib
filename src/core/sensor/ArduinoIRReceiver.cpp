@@ -2,7 +2,7 @@
 // Created by Brandon on 5/13/25.
 //
 
-#include "IRReceiver.h"
+#include "ArduinoIRReceiver.h"
 
 #if defined(RGB_ARDUINO_ESP32)
 
@@ -17,15 +17,15 @@
 
 namespace rgb {
 
-IRReceiver::IRReceiver(PinNumber pin): pin(pin) {}
+ArduinoIRReceiver::ArduinoIRReceiver(PinNumber pin): pin(pin) {}
 
-auto IRReceiver::doStart() -> bool {
+auto ArduinoIRReceiver::doStart() -> bool {
   IrReceiver.begin(pin.to<uint_fast8_t>(), false);
   INFO("Started IRReceiver on Pin %i", pin.to<uint_fast8_t>());
   return true;
 }
 
-auto IRReceiver::doRead() -> void {
+auto ArduinoIRReceiver::doRead() -> void {
   if (IrReceiver.decode()) {
 //    if (IrReceiver.decodedIRData.protocol == UNKNOWN) {
 //      IrReceiver.resume();

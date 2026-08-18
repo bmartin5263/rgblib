@@ -1,32 +1,23 @@
 //
-// Created by Brandon on 5/13/25.
+// Created by Brandon on 8/17/26.
 //
 
-#ifndef RGBLIB_IRREMOTE_H
-#define RGBLIB_IRREMOTE_H
+#ifndef RGBLIB_IRRECEIVER_SELECTOR_H
+#define RGBLIB_IRRECEIVER_SELECTOR_H
 
-#include <functional>
-#include "Sensor.h"
-#include "PushButton.h"
-#include "IRButton.h"
-
+#if defined(RGB_ARDUINO_ESP32)
+#include "ArduinoIRReceiver.h"
 namespace rgb {
-
-class IRReceiver : public Sensor {
-public:
-  explicit IRReceiver(PinNumber pin);
-
-  std::optional<IRButtonType> lastCommand;
-
-protected:
-  auto doStart() -> bool override;
-  auto doRead() -> void override;
-
-private:
-  PinNumber pin;
-};
-
+using IRReceiver = ArduinoIRReceiver;
 }
+#elif defined(RGB_NATIVE)
+#include "NativeIRReceiver.h"
+namespace rgb {
+using IRReceiver = NativeIRReceiver;
+}
+#else
+#error Unknown platform for IRReceiver
+#endif
 
 
-#endif //RGBLIB_IRREMOTE_H
+#endif //RGBLIB_IRRECEIVER_SELECTOR_H

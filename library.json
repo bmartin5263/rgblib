@@ -1,6 +1,6 @@
 {
   "name": "rgblib",
-  "version": "0.0.113",
+  "version": "0.0.112",
   "description": "C++ framework for LED-based Applications running on Arduino Nano ESP32",
   "keywords": "LED, neopixels",
   "homepage": "https://github.com/bmartin5263/rgblib",
@@ -33,7 +33,7 @@
     {
       "name": "Rainbow",
       "base": "examples/Rainbow",
-      "files": ["platformio.ini", "src/main.cpp", "src/RainbowApplication.h"]
+      "files": ["platformio.ini", "src/main.ino", "src/RainbowApplication.h"]
     }
   ]
 }

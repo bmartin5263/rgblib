@@ -7,10 +7,7 @@
 
 #include <FastLED.h>
 #include "Types.h"
-#include "Pin.h"
-#include "Assertions.h"
 #include "RgbColor.h"
-#include "ContiguousPixelList.h"
 #include "LEDDevice.h"
 #include "Log.h"
 #include "ContiguousPixelGrid.h"
@@ -112,9 +109,6 @@ public:
         if (ledPosition >= N) {
           break;
         }
-//        if constexpr (STAGGER) {
-//          ledPosition = zigzagToLinearIndex(ledPosition);
-//        }
         leds[ledPosition] = CRGB(FloatToByte(pixel.r), FloatToByte(pixel.g), FloatToByte(pixel.b));
       }
     }
