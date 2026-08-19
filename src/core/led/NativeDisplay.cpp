@@ -74,6 +74,8 @@ static constexpr auto LOG_CURVE_INPUT_FLOOR = 50.0f;
 static constexpr auto LOG_CURVE_OUTPUT_FLOOR = 127.0f;
 // Displayed brightness for the dimmest nonzero channel, so it stays visible against black.
 static constexpr auto LOG_CURVE_MIN_VISIBLE = 50.0f;
+// Higher values steepen the curve's rise near zero, spreading low channel values further apart.
+static constexpr auto LOG_CURVE_STEEPNESS = 15.0f;
 
 namespace {
 // Logarithmic brightness curve for on-screen debug visibility only.
@@ -81,13 +83,14 @@ auto LogarithmicBrightness(u8 channel) -> u8 {
   if (channel == 0) {
     return 0;
   }
+  auto curveNorm = std::log1p(LOG_CURVE_STEEPNESS);
   if (static_cast<float>(channel) <= LOG_CURVE_INPUT_FLOOR) {
     auto t = static_cast<float>(channel) / LOG_CURVE_INPUT_FLOOR;
-    auto curved = std::log1p(t * static_cast<float>(M_E - 1.0));
+    auto curved = std::log1p(t * LOG_CURVE_STEEPNESS) / curveNorm;
     return static_cast<u8>(LOG_CURVE_MIN_VISIBLE + curved * (LOG_CURVE_OUTPUT_FLOOR - LOG_CURVE_MIN_VISIBLE));
   }
   auto t = (static_cast<float>(channel) - LOG_CURVE_INPUT_FLOOR) / (255.0f - LOG_CURVE_INPUT_FLOOR);
-  auto curved = std::log1p(t * static_cast<float>(M_E - 1.0));
+  auto curved = std::log1p(t * LOG_CURVE_STEEPNESS) / curveNorm;
   return static_cast<u8>(LOG_CURVE_OUTPUT_FLOOR + curved * (255.0f - LOG_CURVE_OUTPUT_FLOOR));
 }
 
