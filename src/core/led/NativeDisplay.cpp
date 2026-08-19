@@ -73,7 +73,7 @@ static constexpr auto MAX_CONTENT_WIDTH_PIXELS = MAX_ROW_PIXELS * (PIXEL_SIZE + 
 static constexpr auto LOG_CURVE_INPUT_FLOOR = 50.0f;
 static constexpr auto LOG_CURVE_OUTPUT_FLOOR = 127.0f;
 // Displayed brightness for the dimmest nonzero channel, so it stays visible against black.
-static constexpr auto LOG_CURVE_MIN_VISIBLE = 25.0f;
+static constexpr auto LOG_CURVE_MIN_VISIBLE = 50.0f;
 
 namespace {
 // Logarithmic brightness curve for on-screen debug visibility only.

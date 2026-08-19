@@ -9,6 +9,7 @@ Features:
 - Built-in effects with extensibility through shader functions
 - Over-the-Air update support enabled with `RGB_OTA` flag
 - Printf-style logging using enabled with `RGB_DEBUG` flag
+- Native Mode for local testing enabled with `RGB_NATIVE` flag
 
 ## Example
 
@@ -124,6 +125,13 @@ auto ice = MirroredGradient(std::array {
   GradientStop{Color::MAGENTA()},           // position defaulted to 1.0f
 });
 ```
+
+### Native Mode
+Native mode uses `SDL` to render LED strips in a virtual environment. The `LEDStrip`, `LEDFiber`, and `LEDMatrix` abstractions must be used instead of platform-specific classes.
+
+There is limited support for microcontroller-specific functionality. Some classes have mocks that can substitute, others do not.
+
+Enable with `RGB_NATVIE` instead of `RGB_ARDUINO_ESP32`.
 
 ### Timers
 Timers let you perform an action either: at a later time, every-frame for a specified amount of time, or every-frame until a condition is met.
