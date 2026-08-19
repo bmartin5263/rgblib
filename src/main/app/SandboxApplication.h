@@ -18,13 +18,13 @@
 using namespace rgb;
 
 inline auto strip = LEDStrip<40, D5_RGB>();
-inline auto right = strip.slice(0, 20);
-inline auto left = strip.slice(20, 40);
-
-inline auto fiber = LEDFiber<130, D6_RGB>();
-inline auto fiberRight = fiber.slice(0, 65);
-inline auto fiberLeft = fiber.slice(65, 130);
-
+// inline auto right = strip.slice(0, 20);
+// inline auto left = strip.slice(20, 40);
+//
+// inline auto fiber = LEDFiber<130, D6_RGB>();
+// inline auto fiberRight = fiber.slice(0, 65);
+// inline auto fiberLeft = fiber.slice(65, 130);
+//
 inline auto matrix = LEDMatrix<8, 8, D2_RGB, RgbwSupport::ENABLE>();
 inline auto irReceiver = IRReceiver{PinNumber{7}};
 inline auto sunset = MirroredGradient(std::array {
@@ -64,7 +64,7 @@ class SandboxApplication : public UserApplication<> {
 protected:
   auto configure(Configurer& app) -> void override {
     app.addPixels(strip);
-    app.addPixels(fiber);
+    // app.addPixels(fiber);
     app.addPixels(matrix);
     app.addSensor(irReceiver);
 
@@ -118,12 +118,13 @@ protected:
   auto postDraw() -> void override {
     auto now = Clock::Now();
     auto x = now.percentOfWrapped(Duration::Seconds(1));
-    fiber.fill(ocean, now.percentOfWrapped(Duration::Seconds(1)));
-    matrix.fill(sunset);
-    right.fill(redToGreen.sample(x));
-    left.fill(Color::RED().lerpWrap(Color::GREEN(), x));
-    fiberRight.fill(redToGreen.sample(x));
-    fiberLeft.fill(Color::RED().lerpWrap(Color::GREEN(), x));
+    // fiber.fill(ocean, now.percentOfWrapped(Duration::Seconds(1)));
+    matrix.fill(Color::FromBytes(0, 1, 0));
+    matrix.fill(Color::FromBytes(0, 4, 0), 8);
+    // right.set(0, redToGreen.sample(x));
+    // left.set(0, Color::RED().lerpWrap(Color::GREEN(), x));
+    // fiberRight.fill(redToGreen.sample(x));
+    // fiberLeft.fill(Color::RED().lerpWrap(Color::GREEN(), x));
   }
 };
 
