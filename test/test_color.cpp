@@ -54,8 +54,8 @@ TEST(ColorTest, FromBytesPackedValueMatchesComponentOverload) {
 }
 
 TEST(ColorTest, EqualityComparesAllChannels) {
-  EXPECT_EQ(Color{.1f, .2f, .3f, .4f}, Color{.1f, .2f, .3f, .4f});
-  EXPECT_NE(Color{.1f, .2f, .3f, .4f}, Color{.1f, .2f, .3f, .5f});
+  EXPECT_EQ((Color{.1f, .2f, .3f, .4f}), (Color{.1f, .2f, .3f, .4f}));
+  EXPECT_NE((Color{.1f, .2f, .3f, .4f}), (Color{.1f, .2f, .3f, .5f}));
 }
 
 TEST(ColorTest, AdditionAndSubtractionAreComponentWise) {
