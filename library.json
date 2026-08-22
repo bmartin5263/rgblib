@@ -1,6 +1,6 @@
 {
   "name": "rgblib",
-  "version": "0.0.124",
+  "version": "0.0.125",
   "description": "C++ framework for LED-based Applications running on Arduino Nano ESP32",
   "keywords": "LED, neopixels",
   "homepage": "https://github.com/bmartin5263/rgblib",
@@ -19,7 +19,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "ESP32Async/ESPAsyncWebServer": "3.12.0",
+    "esp32async/ESPAsyncWebServer": "3.12.0",
     "olikraus/U8g2": "2.36.5",
     "adafruit/Adafruit NeoPixel": "1.13.0",
     "adafruit/Adafruit BusIO": "1.17.1",
