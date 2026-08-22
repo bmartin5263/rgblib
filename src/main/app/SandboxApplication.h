@@ -25,7 +25,7 @@ inline auto strip = LEDStrip<40, D5_RGB>();
 // inline auto fiberRight = fiber.slice(0, 65);
 // inline auto fiberLeft = fiber.slice(65, 130);
 //
-inline auto matrix = LEDMatrix<8, 8, D2_RGB, RgbwSupport::ENABLE>();
+inline auto matrix = LEDMatrix<16, 16, D2_RGB, RgbwSupport::ENABLE>();
 inline auto irReceiver = IRReceiver{PinNumber{7}};
 inline auto sunset = MirroredGradient(std::array {
   GradientStop{Color::BLUE()},
@@ -125,6 +125,10 @@ protected:
     // left.set(0, Color::RED().lerpWrap(Color::GREEN(), x));
     // fiberRight.fill(redToGreen.sample(x));
     // fiberLeft.fill(Color::RED().lerpWrap(Color::GREEN(), x));
+
+    for (int i = 0; i < matrix.size(); i++) {
+      matrix.set(i, Color::FromBytes(0, i, 0));
+    }
   }
 };
 

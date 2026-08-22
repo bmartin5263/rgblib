@@ -75,7 +75,7 @@ static constexpr auto LOG_CURVE_OUTPUT_FLOOR = 127.0f;
 // Displayed brightness for the dimmest nonzero channel, so it stays visible against black.
 static constexpr auto LOG_CURVE_MIN_VISIBLE = 50.0f;
 // Higher values steepen the curve's rise near zero, spreading low channel values further apart.
-static constexpr auto LOG_CURVE_STEEPNESS = 15.0f;
+static constexpr auto LOG_CURVE_STEEPNESS = 75.0f;
 
 namespace {
 // Logarithmic brightness curve for on-screen debug visibility only.

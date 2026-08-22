@@ -6,24 +6,21 @@
 #define RGBLIB_EXAMPLEAPPLICATION_H
 
 #include "UserApplication.h"
-#include "FastLEDMatrix.h"
-#include "FastLEDStrip.h"
-#include "IRReceiver.h"
+#include "LEDStrip.h"
 #include "ReversePixelList.h"
-#include "ChaseEffect.h"
 #include "PixelSlice.h"
+#include "ChaseEffect.h"
 
 using namespace rgb;
 
 // Set up the LED Strip and Sensors
-inline auto ledCircuit = FastLEDStrip<38, D4_RGB>();
-inline auto irRemote = IRReceiver{PinNumber{A7}};
+inline auto ledCircuit = LEDStrip<38, D4_RGB>();
 
 // Effects
 inline auto chaseEffect = ChaseEffect{};     // A chase effect template, can be applied to multiple segments simultaneously
 inline auto effectHandle = EffectHandle{};   // Resource handle to control the running effect, not strictly needed
 
-// Segments carved out from the primary circuit
+// 2 Segments carved out from the primary strip
 inline auto leftSide = ledCircuit.slice(16);
 inline auto rightSide = ledCircuit.slice(16, 38);
 inline auto leftSideReversed = ReversePixelList{leftSide};
@@ -35,28 +32,23 @@ using MyAppEvents = Event<MyCustomEvent>;
 class ExampleApplication : public UserApplication<MyAppEvents> {
 protected:
   auto configure(Configurer& app) -> void override {
-    app.addLEDs(ledCircuit);   // Register the circuit to the app
-    app.addSensor(irRemote);   // Register the IR Remote to the app
+    app.addPixels(ledCircuit);   // Register the circuit to the app
 
     // Defines what color the wipe effect should apply to each pixel
     chaseEffect.shader = [](auto currentColor, auto& params){
       return Color::GREEN() * params.positionRatio;
     };
-    // 2 seconds for a full cycle
+    // 1 seconds for a full cycle
     chaseEffect.progression = EffectProgression::ConstantTime(Duration::Seconds(1));
 
     // Start the effect on the group
     effectHandle = Effects::Start(chaseEffect, chaseGroup);
+  }
 
-    // Configure Event Handlers
-    app.on<IRButtonPressed>([](auto& event) {
-      if (event.button == IRButtonType::BUTTON_OK) {
-        PublishEvent(MyCustomEvent{Clock::Now()});  // Publish an event
-      }
-    });
-    app.on<MyCustomEvent>([](auto& event) {
-      effectHandle.stop();  // Stop the effect
-    });
+  auto initialize() -> void override {
+    Timer::SetTimeout(Duration::Seconds(60), [](){
+      effectHandle.stop(); // cancel the effect acter a minute
+    }).detach();
   }
 };
 
