@@ -127,6 +127,15 @@ struct Color {
     return Color{ByteToFloat(r), ByteToFloat(g), ByteToFloat(b), ByteToFloat(w)};
   }
 
+  static constexpr auto FromBytes(u32 wrgb) -> Color {
+    return FromBytes(
+      static_cast<u8>(wrgb >> 16),
+      static_cast<u8>(wrgb >> 8),
+      static_cast<u8>(wrgb),
+      static_cast<u8>(wrgb >> 24)
+    );
+  }
+
   static constexpr auto RED() -> Color {
     return {1.0f, 0, 0, 0};
   }
