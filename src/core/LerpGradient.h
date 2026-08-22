@@ -39,6 +39,20 @@ private:
 
 auto lerp(const Gradient& from, Color to, normal factor) -> LerpColorGradient;
 
+class ColorLerpGradient : public Gradient {
+public:
+  ColorLerpGradient(Color from, const Gradient& to, normal factor) : mFrom(from), mTo(to), mFactor(factor) {}
+
+  [[nodiscard]] auto sample(normal position) const -> Color override;
+
+private:
+  Color mFrom;
+  const Gradient& mTo;
+  normal mFactor;
+};
+
+auto lerp(Color from, const Gradient& to, normal factor) -> ColorLerpGradient;
+
 }
 
 #endif //RGBLIB_LERPGRADIENT_H

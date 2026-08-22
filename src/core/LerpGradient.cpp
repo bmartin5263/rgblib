@@ -22,4 +22,12 @@ auto lerp(const Gradient& from, Color to, normal factor) -> LerpColorGradient {
   return LerpColorGradient{from, to, factor};
 }
 
+auto ColorLerpGradient::sample(normal position) const -> Color {
+  return mFrom.lerpClamp(mTo.sample(position), mFactor);
+}
+
+auto lerp(Color from, const Gradient& to, normal factor) -> ColorLerpGradient {
+  return ColorLerpGradient{from, to, factor};
+}
+
 }
