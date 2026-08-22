@@ -5,7 +5,7 @@
 #ifndef RGBLIB_LEDCORE_H
 #define RGBLIB_LEDCORE_H
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 #include "FastLED.h"
 
 namespace rgb {

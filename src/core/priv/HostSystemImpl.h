@@ -6,7 +6,7 @@
 #define RGBLIB_HOSTSYSTEMIMPL_H
 
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 #include "HostSystemArduino.h"
 namespace rgb::priv { class HostSystemImpl : public HostSystemArduino {}; }
 #elif defined(RGB_ESP32)

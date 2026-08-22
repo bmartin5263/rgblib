@@ -4,7 +4,7 @@
 
 #include "OTASupport.h"
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 
 #include "ArduinoOTA.h"
 #include "Stopwatch.h"

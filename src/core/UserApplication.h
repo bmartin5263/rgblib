@@ -89,7 +89,7 @@ auto UserApplication<EventVariantT>::setup() -> void {
   startSubsystems();
   initialize();
 
-#if defined(RGB_DEBUG)
+#if RGB_DEBUG
   static Monitor monitor;
   monitor.initialize();
   // Monitoring only enabled for Debug configurations since Debug does logging and the monitor depends on that

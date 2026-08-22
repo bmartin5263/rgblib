@@ -5,7 +5,7 @@
 #ifndef RGBLIB_IIC_H
 #define RGBLIB_IIC_H
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 
 #include "IICImpl.h"
 

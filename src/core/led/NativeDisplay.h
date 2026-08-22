@@ -5,7 +5,7 @@
 #ifndef RGBLIB_NATIVEDISPLAY_H
 #define RGBLIB_NATIVEDISPLAY_H
 
-#if defined(RGB_NATIVE)
+#if RGB_NATIVE
 
 #include <vector>
 #include <memory>

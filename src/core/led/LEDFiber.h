@@ -10,7 +10,7 @@
 
 #define TEMPLATE_DECLARATION template <u16 N, uint PIN, RgbwSupport RGBW_SUPPORT = RgbwSupport::DISABLE>
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 #include "FastLEDStrip.h"
 namespace rgb {
 TEMPLATE_DECLARATION

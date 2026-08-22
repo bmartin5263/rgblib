@@ -5,7 +5,7 @@
 #ifndef RGBLIB_SPIIMPLEMENTATION_H
 #define RGBLIB_SPIIMPLEMENTATION_H
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 #include "SPIArduino.h"
 namespace rgb::priv { class SPIImpl : public SPIArduino {}; };
 #else

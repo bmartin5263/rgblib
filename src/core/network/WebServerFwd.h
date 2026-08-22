@@ -5,7 +5,7 @@
 #ifndef RGBLIB_WEBSERVERFWD_H
 #define RGBLIB_WEBSERVERFWD_H
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 
 #include <utility>
 #include "ESPAsyncWebServer.h"

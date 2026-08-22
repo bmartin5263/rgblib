@@ -4,7 +4,7 @@
 
 #include "DebugScreen.h"
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 
 #include "Clock.h"
 #include "Assertions.h"

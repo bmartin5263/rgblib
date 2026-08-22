@@ -5,7 +5,7 @@
 #ifndef RGBLIB_RTC_H
 #define RGBLIB_RTC_H
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 
 #include "RTCImpl.h"
 

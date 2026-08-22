@@ -5,7 +5,7 @@
 #ifndef RGBLIB_DEBUGSCREEN_H
 #define RGBLIB_DEBUGSCREEN_H
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 
 #include "U8g2lib.h"
 #include "Types.h"

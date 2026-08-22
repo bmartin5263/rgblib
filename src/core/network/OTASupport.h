@@ -5,7 +5,7 @@
 #ifndef RGBLIB_OTA_SUPPORT_H
 #define RGBLIB_OTA_SUPPORT_H
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 
 #include <esp_wifi_types.h>
 #include "Wireless.h"

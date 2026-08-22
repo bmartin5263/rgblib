@@ -4,7 +4,7 @@
 
 #include "NativeIRReceiver.h"
 
-#if defined(RGB_NATIVE)
+#if RGB_NATIVE
 
 #include "NativeDisplay.h"
 

@@ -5,7 +5,7 @@
 #ifndef RGBLIB_WEBSERVER_H
 #define RGBLIB_WEBSERVER_H
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 
 #include "WebServerFwd.h"
 #include "Types.h"

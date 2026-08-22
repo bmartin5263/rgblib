@@ -2,7 +2,7 @@
 // Created by Brandon on 8/10/26.
 //
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 
 #include "IICArduino.h"
 

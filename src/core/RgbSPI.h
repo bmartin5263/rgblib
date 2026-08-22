@@ -5,7 +5,7 @@
 #ifndef RGBLIB_SPI_H
 #define RGBLIB_SPI_H
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 
 #include "SPIImpl.h"
 

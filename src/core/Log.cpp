@@ -7,7 +7,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
 #include <Arduino.h>
 #endif
 
@@ -15,7 +15,7 @@ namespace rgb::log {
 bool initialized = false;
 
 auto init(u32 baud) -> void {
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
   if (!initialized) {
     Serial.begin(baud);
     initialized = true;
@@ -40,7 +40,7 @@ static auto writeBuffer(const char* buffer, int length) -> void {
   auto written = static_cast<size_t>(length) < BUFFER_SIZE
     ? static_cast<size_t>(length)
     : BUFFER_SIZE - 1;
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
   Serial.write(reinterpret_cast<const uint8_t*>(buffer), written);
 #else
   std::fwrite(buffer, 1, written, stdout);
@@ -80,7 +80,7 @@ auto printMessage(const char* format, ...) -> void {
   writeBuffer(buffer, length);
 
   static constexpr char newline[] = "\r\n";
-#if defined(RGB_ARDUINO_ESP32)
+#if RGB_ARDUINO_ESP32
   Serial.write(reinterpret_cast<const uint8_t*>(newline), sizeof(newline) - 1);
 #else
   std::fwrite(newline, 1, sizeof(newline) - 1, stdout);

@@ -4,7 +4,7 @@
 
 #include "NativeDisplay.h"
 
-#if defined(RGB_NATIVE)
+#if RGB_NATIVE
 
 #include <cmath>
 #include <optional>
