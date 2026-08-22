@@ -13,17 +13,19 @@ namespace rgb {
 
 class GradientView : public Gradient {
 public:
-  GradientView(const Gradient& source, normal brightness) : mSource(source), mBrightness(brightness) {}
+  GradientView(const Gradient& source, Color tint) : mSource(source), mTint(tint) {}
 
   [[nodiscard]] auto sample(normal position) const -> Color override;
 
+  auto operator*(const Color& tint) const -> GradientView;
   auto operator*(normal brightness) const -> GradientView;
 
 private:
   const Gradient& mSource;
-  normal mBrightness;
+  Color mTint;
 };
 
+auto operator*(const Gradient& gradient, const Color& tint) -> GradientView;
 auto operator*(const Gradient& gradient, normal brightness) -> GradientView;
 
 }
