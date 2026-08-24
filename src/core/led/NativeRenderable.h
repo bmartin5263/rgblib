@@ -17,9 +17,14 @@ public:
 
   virtual auto pixelCount() const -> u16 = 0;
   virtual auto columns() const -> uint = 0;
-  // Multiplier applied to NativeDisplay's base pixel size/pitch, so visually smaller devices
-  // (e.g. fiber strands) can render smaller than a full LED strip/matrix pixel.
-  virtual auto pixelScale() const -> normal = 0;
+
+  // How big pixels should render relatively, smaller scales are meant for more
+  // compacted LED strips (i.e. fibers)
+  virtual auto pixelScale() const -> normal {
+    return 1.0f;
+  }
+
+  // The actual pixel value after offset/reverse/brightness applied
   virtual auto renderedPixel(u16 index) const -> Pixel = 0;
 
 protected:

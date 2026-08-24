@@ -4,7 +4,6 @@
 
 #include "PixelList.h"
 
-#include "Assertions.h"
 #include "Gradient.h"
 #include "RgbColor.h"
 
@@ -78,8 +77,7 @@ auto PixelList::fill(const Gradient& gradient, uint range, normal offset, normal
 }
 
 auto PixelList::fill(const Gradient& gradient, uint start, uint endExclusive, normal offset, normal scale) -> void {
-  ASSERT(start < endExclusive, "start must be less than endExclusive");
-  ASSERT(endExclusive <= length(), "endExclusive out of range");
+  endExclusive = Min(length(), endExclusive);
   auto lastIndex = static_cast<float>(endExclusive - start - 1);
   for (uint i = start; i < endExclusive; ++i) {
     auto percentBetween = PercentBetween(static_cast<float>(i - start), 0.0f, lastIndex);

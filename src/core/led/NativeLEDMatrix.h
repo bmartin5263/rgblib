@@ -60,10 +60,6 @@ public:
     return COLUMNS;
   }
 
-  auto pixelScale() const -> normal override {
-    return 1.0f;
-  }
-
   auto getOffset() const -> int {
     return offset;
   }

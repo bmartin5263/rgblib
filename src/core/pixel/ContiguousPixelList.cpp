@@ -17,17 +17,17 @@ auto ContiguousPixelList::slice(uint endExclusive) -> PixelSlice {
 }
 
 auto ContiguousPixelList::slice(uint start, uint endExclusive) -> PixelSlice {
-  auto N = length();
-  ASSERT(endExclusive < N, "Slice end is beyond length of chain");
-  ASSERT(start < endExclusive, "Start must be before end");
-
+  ASSERT(start < endExclusive, "Slice start must be before end");
+  endExclusive = Min(endExclusive, length());
   auto* newData = data() + start;
   auto length = endExclusive - start;
   return PixelSlice{newData, length};
 }
 
 auto ContiguousPixelList::set(uint pixel, const Color& color) -> void {
-  ASSERT(pixel < length(), "Pixel is out of bounds");
+  if (pixel >= length()) {
+    return;
+  }
   if (mReversed) {
     data()[length() - 1 - pixel] = color;
   }
@@ -37,7 +37,9 @@ auto ContiguousPixelList::set(uint pixel, const Color& color) -> void {
 }
 
 auto ContiguousPixelList::get(uint pixel) const -> Pixel {
-  ASSERT(pixel < length(), "Pixel is out of bounds");
+  if (pixel >= length()) {
+    return Color::OFF();
+  }
   if (mReversed) {
     return data()[length() - 1 - pixel];
   }
