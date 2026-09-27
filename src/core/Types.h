@@ -287,7 +287,10 @@ struct Timestamp : number_wrapper<time_t, Timestamp> {
   constexpr friend auto operator<=(Duration lhs, Timestamp rhs) -> bool { return lhs.value <= rhs.value; }
   constexpr friend auto operator>=(Duration lhs, Timestamp rhs) -> bool { return lhs.value >= rhs.value; }
 
-  constexpr auto timeSince(const Timestamp& earlierTime) -> Duration {
+  constexpr auto timeSince(const Timestamp& earlierTime) const -> Duration {
+    if (earlierTime.value > value) {
+      return Duration::Zero();
+    }
     return Duration { value - earlierTime.value };
   }
 };
