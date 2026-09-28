@@ -20,11 +20,11 @@
   "license": "MIT",
   "dependencies": {
     "esp32async/ESPAsyncWebServer": "3.12.0",
-    "olikraus/U8g2": "2.36.5",
-    "adafruit/Adafruit NeoPixel": "1.13.0",
-    "adafruit/Adafruit BusIO": "1.17.1",
+    "olikraus/U8g2": "2.36.18",
+    "adafruit/Adafruit NeoPixel": "1.15.5",
+    "adafruit/Adafruit BusIO": "1.17.4",
     "z3t0/IRremote": "4.4.2",
-    "fastled/FastLED": "^3.9.0",
+    "fastled/FastLED": "3.10.3",
     "adafruit/RTClib": "2.1.4"
   },
   "frameworks": "*",
