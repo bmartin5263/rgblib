@@ -5,5 +5,8 @@ image_resource:
     repository: alpine
 inputs:
   - name: rgblib
+caches:
+  - path: root/.platformio
+  - path: root/.local
 run:
   path: rgblib/cicd/tasks/build.sh
