@@ -10,10 +10,12 @@
 #endif
 #include "Types.h"
 
-#if defined (RGB_DEBUG)
+#if RGB_DEBUG
 #if !defined(RGB_LOG_LEVEL)
 #define RGB_LOG_LEVEL 2
 #endif
+#else
+#define RGB_LOG_LEVEL 0
 #endif
 
 namespace rgb::log {

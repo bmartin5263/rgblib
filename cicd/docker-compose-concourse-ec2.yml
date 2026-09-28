@@ -24,7 +24,7 @@ services:
       CONCOURSE_POSTGRES_PASSWORD: concourse_pass
       CONCOURSE_POSTGRES_DATABASE: concourse
       CONCOURSE_EXTERNAL_URL: http://$EC2_DNS:8080
-      CONCOURSE_ADD_LOCAL_USER: rgblib:rgblib
+      CONCOURSE_ADD_LOCAL_USER: rgblib:$PASSWORD
       CONCOURSE_MAIN_TEAM_LOCAL_USER: rgblib
       # instead of relying on the default "detect"
       CONCOURSE_WORKER_BAGGAGECLAIM_DRIVER: overlay
