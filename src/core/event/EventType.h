@@ -8,8 +8,8 @@
 #include <cstddef>
 #include <variant>
 #include <optional>
-#include <functional>
 #include "SystemEvents.h"
+#include "Func.h"
 
 namespace rgb {
 
@@ -67,7 +67,7 @@ using Event = extend_variant_t<SystemEvent, UserEvents...>;
 
 
 template<typename T>
-using EventHandler = std::function<void(const T&)>;
+using EventHandler = Function<void(const T&)>;
 
 }
 #endif //RGBLIB_EVENTTYPE_H

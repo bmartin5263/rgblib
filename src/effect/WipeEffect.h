@@ -27,7 +27,7 @@ public:
     normal positionRatio{};
     normal brightness{};
   };
-  using Shader = std::function<Pixel(Pixel, const ShaderParameters&)>;
+  using Shader = Function<Pixel(Pixel, const ShaderParameters&)>;
   static constexpr auto DefaultShader = [](auto pixel, const ShaderParameters& params){
     if (params.pixelPosition <= params.wipeLength) {
       return Color::Sequential12(params.wipeCycle) * params.brightness;

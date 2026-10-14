@@ -10,6 +10,7 @@
 #include <functional>
 #include <array>
 
+#include "Func.h"
 #include "RgbColor.h"
 
 namespace rgb {
@@ -27,7 +28,7 @@ public:
   static constexpr auto BLINKER_COUNT = static_cast<u8>(BlinkerColor::COUNT);
   static constexpr auto DEFAULT_FAULT_COLOR = Color::MAGENTA() * .3f;
 
-  using BlinkerCallback = std::function<bool()>;
+  using BlinkerCallback = Function<bool()>;
 
   static auto TriggerFault() -> void { Instance().triggerFault(); }
   static auto RecoverFault() -> void { Instance().recoverFault(); }

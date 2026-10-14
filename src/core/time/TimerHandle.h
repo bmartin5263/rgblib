@@ -11,8 +11,7 @@
 
 namespace rgb {
 
-class TimerNode;
-
+struct TimerNode;
 class TimerHandle {
 public:
   TimerHandle();

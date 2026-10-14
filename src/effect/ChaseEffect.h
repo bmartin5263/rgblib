@@ -37,7 +37,7 @@ public:
     float positionRatio{};
     float brightness{};
   };
-  using Shader = std::function<Color(Color, const ShaderParameters&)>;
+  using Shader = Function<Color(Color, const ShaderParameters&)>;
   static constexpr auto DefaultShader = [](auto color, auto& params){
     return Color::MAGENTA() * .3f;
   };

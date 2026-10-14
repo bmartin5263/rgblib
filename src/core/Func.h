@@ -5,18 +5,19 @@
 #ifndef RGBLIB_FUNC_H
 #define RGBLIB_FUNC_H
 
-#include <functional>
+#define SG14_INPLACE_FUNCTION_THROW(x) std::abort()
+#include "inplace_function.h"
 
-using Runnable = std::function<void()>;
+template<typename Sig>
+using Function = stdext::inplace_function<Sig, 32>;
+
+using Runnable = Function<void()>;
 
 template <typename T>
-using Consumer = std::function<void(T)>;
+using Consumer = Function<void(T)>;
 
 template <typename T>
-using Supplier = std::function<T()>;
-
-template <typename In, typename Out>
-using Function = std::function<Out(In)>;
+using Supplier = Function<T()>;
 
 using Predicate = Supplier<bool>;
 

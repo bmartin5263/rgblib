@@ -22,7 +22,7 @@ struct FillEffectShaderParameters {
     return static_cast<float>(position) / static_cast<float>(length);
   }
 };
-using FillEffectShader = std::function<Color(Color, const FillEffectShaderParameters&)>;
+using FillEffectShader = Function<Color(Color, const FillEffectShaderParameters&)>;
 
 class FillEffect : public Effect {
   static auto RainbowShader(Color pixel, const FillEffectShaderParameters& params) -> Color {

@@ -18,7 +18,7 @@ struct TimerContext {
   normal percentComplete{1.0f};
 };
 
-using TimerFunction = Consumer<TimerContext&>;
+using TimerFunction = stdext::inplace_function<void(TimerContext&), 48>;
 
 struct TimerNode : PriorityNode<TimerNode> {
   TimerFunction timerFunction{};
