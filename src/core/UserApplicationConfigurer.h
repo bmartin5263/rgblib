@@ -24,7 +24,7 @@ struct UserApplicationConfigurer {
 
   std::vector<LEDDevice*> mPixels{};
   std::vector<Sensor*> mSensors{};
-  std::unordered_map<uint, std::vector<EventHandler<EventVariantT>>> mEventMap{};
+  EventMap<EventVariantT> mEventMap{};
   bool mHeartbeat{};
 };
 

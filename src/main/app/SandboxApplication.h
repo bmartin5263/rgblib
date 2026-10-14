@@ -113,19 +113,14 @@ protected:
 
   auto initialize() -> void override {
     animationHandle = Animations::Start(animation, true);
+    //
+    Timer::SetTimeout(Duration::Seconds(1), [](auto& context) {
+    }).detach();
   }
 
   auto postDraw() -> void override {
-    auto now = Clock::Now();
-    auto x = now.percentOfWrapped(Duration::Seconds(1));
-    // fiber.fill(ocean, now.percentOfWrapped(Duration::Seconds(1)));
     matrix.fill(Color::FromBytes(0, 1, 0), 8);
     matrix.fill(Color::FromBytes(0, 4, 0), 8, 16);
-    // right.set(0, redToGreen.sample(x));
-    // left.set(0, Color::RED().lerpWrap(Color::GREEN(), x));
-    // fiberRight.fill(redToGreen.sample(x));
-    // fiberLeft.fill(Color::RED().lerpWrap(Color::GREEN(), x));
-
     for (int i = 0; i < matrix.size(); i++) {
       matrix.set(i, Color::FromBytes(0, i, 0));
     }
