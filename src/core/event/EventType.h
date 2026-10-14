@@ -69,11 +69,15 @@ using Event = extend_variant_t<SystemEvent, UserEvents...>;
 template<typename T>
 using EventHandler = Function<void(const T&)>;
 
+#if RGB_INPLACE_FUNCTION
 template<typename T>
 using ErasedEventHandler = stdext::inplace_function<void(const T&), sizeof(EventHandler<T>)>;
-
 template<typename EventVariantT>
 using EventMap = std::unordered_map<uint, std::vector<ErasedEventHandler<EventVariantT>>>;
+#else
+template<typename EventVariantT>
+using EventMap = std::unordered_map<uint, std::vector<EventHandler<EventVariantT>>>;
+#endif
 
 }
 #endif //RGBLIB_EVENTTYPE_H

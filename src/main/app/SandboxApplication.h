@@ -113,9 +113,6 @@ protected:
 
   auto initialize() -> void override {
     animationHandle = Animations::Start(animation, true);
-    //
-    Timer::SetTimeout(Duration::Seconds(1), [](auto& context) {
-    }).detach();
   }
 
   auto postDraw() -> void override {

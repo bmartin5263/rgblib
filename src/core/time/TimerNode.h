@@ -18,7 +18,11 @@ struct TimerContext {
   normal percentComplete{1.0f};
 };
 
+#if RGB_INPLACE_FUNCTION
 using TimerFunction = stdext::inplace_function<void(TimerContext&), 48>;
+#else
+using TimerFunction = std::function<void(TimerContext&)>;
+#endif
 
 struct TimerNode : PriorityNode<TimerNode> {
   TimerFunction timerFunction{};
