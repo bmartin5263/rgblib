@@ -6,6 +6,7 @@
 #define RGBLIB_TIMERNODE_H
 
 #include <optional>
+#include <variant>
 #include "Types.h"
 #include "Assertions.h"
 #include "PriorityNode.h"
@@ -18,14 +19,11 @@ struct TimerContext {
   normal percentComplete{1.0f};
 };
 
-#if RGB_INPLACE_FUNCTION
-using TimerFunction = stdext::inplace_function<void(TimerContext&), 48>;
-#else
-using TimerFunction = std::function<void(TimerContext&)>;
-#endif
+using TimerFunction = Function<void(TimerContext&)>;
+using TimerCallback = std::variant<Runnable, Predicate, TimerFunction>;
 
 struct TimerNode : PriorityNode<TimerNode> {
-  TimerFunction timerFunction{};
+  TimerCallback callback{};
   Runnable cancelFunction{DoNothing};
   Timestamp executeAt{};
   Timestamp startedAt{};
@@ -37,7 +35,7 @@ struct TimerNode : PriorityNode<TimerNode> {
   auto clean() -> void {
     prev = nullptr;
     next = nullptr;
-    timerFunction = {};
+    callback = {};
     cancelFunction = DoNothing;
     executeAt = Timestamp{};
     startedAt = Timestamp{};
@@ -46,11 +44,28 @@ struct TimerNode : PriorityNode<TimerNode> {
     cancelled = false;
   }
 
-  auto isContinuous() -> bool {
+  auto execute(TimerContext& context) const -> void {
+    if (auto runnable = std::get_if<Runnable>(&callback)) {
+      (*runnable)();
+    }
+    else if (auto predicate = std::get_if<Predicate>(&callback)) {
+      if ((*predicate)()) {
+        context.repeatIn = Duration::Immediately();
+      }
+    }
+    else if (auto timerFunction = std::get_if<TimerFunction>(&callback)) {
+      (*timerFunction)(context);
+    }
+    else {
+      FAIL("Unhandled TimerContext callback type");
+    }
+  }
+
+  auto isContinuous() const -> bool {
     return finishAt != Timestamp{0};
   }
 
-  auto isTombstone() -> bool {
+  auto isTombstone() const -> bool {
     return cancelled;
   }
 

@@ -34,7 +34,7 @@ public:
   static auto ContinuouslyWhile(const Predicate& function) -> TimerHandle;
 
   static auto ProcessTimers() -> void;
-  static auto Cancel(TimerNode* node) -> void;
+  static auto Cancel(TimerNode* timer) -> void;
   static auto StopAll() -> void;
   static auto ActiveCount() -> uint;
   static auto PeakCount() -> uint;
@@ -45,8 +45,8 @@ public:
   auto setImmediateTimeout(const Runnable& function) -> TimerHandle;
   auto setImmediateTimeout(const TimerFunction& function) -> TimerHandle;
   auto continuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle;
-  auto continuouslyWhile(const Predicate& function) -> TimerHandle;
-  auto cancel(TimerNode* node) -> void;
+  auto scheduleWhile(const Predicate& function) -> TimerHandle;
+  auto cancel(TimerNode* timer) -> void;
   auto processTimers() -> void;
 
   Timer();
@@ -57,11 +57,14 @@ public:
   ~Timer() = default;
 
 private:
-  auto executeTimer(TimerNode* node, Timestamp now) -> void;
+  auto executeTimer(TimerNode* timer, Timestamp now) -> void;
   auto processAdditions() -> void;
   auto stopAll() -> void;
   auto executeRegularTimer(TimerNode* timer, Timestamp now) -> void;
   auto executeContinuousTimer(TimerNode* timer, Timestamp now) -> void;
+  auto continuouslyFor(Duration duration, const Runnable& function) -> TimerHandle;
+  auto scheduleContinuous(Duration duration, const TimerCallback& callback) -> TimerHandle;
+  auto scheduleTimeout(Duration duration, const TimerCallback& callback) -> TimerHandle;
 };
 
 }

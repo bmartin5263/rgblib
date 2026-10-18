@@ -17,7 +17,7 @@ auto Timer::SetTimeout(Duration duration, const Runnable& function) -> TimerHand
 }
 
 auto Timer::ContinuouslyFor(Duration duration, const Runnable& function) -> TimerHandle {
-  return Instance().continuouslyFor(duration, [=](const auto& unused){ function(); });
+  return Instance().continuouslyFor(duration, function);
 }
 
 auto Timer::ContinuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle {
@@ -25,7 +25,7 @@ auto Timer::ContinuouslyFor(Duration duration, const TimerFunction& function) ->
 }
 
 auto Timer::ContinuouslyWhile(const Predicate& function) -> TimerHandle {
-  return Instance().continuouslyWhile(function);
+  return Instance().scheduleWhile(function);
 }
 
 auto Timer::SetTimeout(Duration duration, const TimerFunction& function) -> TimerHandle {
@@ -40,7 +40,15 @@ auto Timer::SetImmediateTimeout(const TimerFunction& function) -> TimerHandle {
   return Instance().setImmediateTimeout(function);
 }
 
+auto Timer::setTimeout(Duration duration, const Runnable& function) -> TimerHandle {
+  return scheduleTimeout(duration, TimerCallback{std::in_place_type<Runnable>, function});
+}
+
 auto Timer::setTimeout(Duration duration, const TimerFunction& function) -> TimerHandle {
+  return scheduleTimeout(duration, TimerCallback{std::in_place_type<TimerFunction>, function});
+}
+
+auto Timer::scheduleTimeout(Duration duration, const TimerCallback& callback) -> TimerHandle {
   TRACE("SetTimeout()");
   auto now = Clock::Now();
   auto timer = activate();
@@ -49,7 +57,7 @@ auto Timer::setTimeout(Duration duration, const TimerFunction& function) -> Time
     return TimerHandle{};
   }
 
-  timer->timerFunction = function;
+  timer->callback = callback;
   timer->cancelFunction = DoNothing;
   timer->executeAt = now + duration;
   timer->startedAt = now;
@@ -59,7 +67,7 @@ auto Timer::setTimeout(Duration duration, const TimerFunction& function) -> Time
   return TimerHandle { timer };
 }
 
-auto Timer::continuouslyWhile(const Predicate& function) -> TimerHandle {
+auto Timer::scheduleWhile(const Predicate& function) -> TimerHandle {
   TRACE("ContinuouslyWhile()");
   auto now = Clock::Now();
   auto timer = activate();
@@ -68,12 +76,7 @@ auto Timer::continuouslyWhile(const Predicate& function) -> TimerHandle {
     return TimerHandle{};
   }
 
-  timer->timerFunction = [function](TimerContext& context){
-    auto doContinue = function();
-    if (doContinue) {
-      context.repeatIn = Duration::Immediately();
-    }
-  };
+  timer->callback.emplace<Predicate>(function);
   timer->cancelFunction = DoNothing;
   timer->executeAt = now;
   timer->startedAt = now;
@@ -83,7 +86,15 @@ auto Timer::continuouslyWhile(const Predicate& function) -> TimerHandle {
   return TimerHandle { timer };
 }
 
+auto Timer::continuouslyFor(Duration duration, const Runnable& function) -> TimerHandle {
+  return scheduleContinuous(duration, TimerCallback{function});
+}
+
 auto Timer::continuouslyFor(Duration duration, const TimerFunction& function) -> TimerHandle {
+  return scheduleContinuous(duration, TimerCallback{function});
+}
+
+auto Timer::scheduleContinuous(Duration duration, const TimerCallback& callback) -> TimerHandle {
   TRACE("ContinuouslyFor()");
   auto now = Clock::Now();
   auto timer = activate();
@@ -92,7 +103,7 @@ auto Timer::continuouslyFor(Duration duration, const TimerFunction& function) ->
     return TimerHandle{};
   }
 
-  timer->timerFunction = function;
+  timer->callback = callback;
   timer->cancelFunction = DoNothing;
   timer->finishAt = now + duration;
   timer->executeAt = now;
@@ -103,14 +114,14 @@ auto Timer::continuouslyFor(Duration duration, const TimerFunction& function) ->
   return TimerHandle { timer };
 }
 
-auto Timer::Cancel(TimerNode* node) -> void {
-  Instance().cancel(node);
+auto Timer::Cancel(TimerNode* timer) -> void {
+  Instance().cancel(timer);
 }
 
-auto Timer::cancel(TimerNode* node) -> void {
-  if (node != nullptr) {
-    TRACE("Cancelling Timer '%i'", node->id);
-    node->cancelled = true;
+auto Timer::cancel(TimerNode* timer) -> void {
+  if (timer != nullptr) {
+    TRACE("Cancelling Timer '%i'", timer->id);
+    timer->cancelled = true;
   }
 }
 
@@ -167,7 +178,7 @@ auto Timer::ActiveCount() -> uint {
 auto Timer::executeRegularTimer(TimerNode* timer, Timestamp now) -> void {
   auto context = TimerContext{};
   TRACE("Running Timer '%i'", timer->id);
-  timer->timerFunction(context);
+  timer->execute(context);
   if (context.repeatIn) {
     TRACE("Repeating Timer '%i' in '%llu'", timer->id, context.repeatIn.value().value);
     timer->repeat(now + context.repeatIn.value());
@@ -181,7 +192,7 @@ auto Timer::executeRegularTimer(TimerNode* timer, Timestamp now) -> void {
 auto Timer::executeContinuousTimer(TimerNode* timer, Timestamp now) -> void {
   auto context = TimerContext{};
   context.percentComplete = std::min(1.0f, (now - timer->startedAt).percentOf(timer->finishAt - timer->startedAt));
-  timer->timerFunction(context);
+  timer->execute(context);
   if (now < timer->finishAt) {
     timer->repeat(now);
     recycle(timer);
@@ -191,12 +202,8 @@ auto Timer::executeContinuousTimer(TimerNode* timer, Timestamp now) -> void {
   }
 }
 
-auto Timer::setTimeout(Duration duration, const Runnable& function) -> TimerHandle {
-  return setTimeout(duration, [=](const auto& unused){ function(); });
-}
-
 auto Timer::setImmediateTimeout(const Runnable& function) -> TimerHandle {
-  return setTimeout(Duration::Zero(), [=](const auto& unused){ function(); });
+  return setTimeout(Duration::Zero(), function);
 }
 
 auto Timer::setImmediateTimeout(const TimerFunction& function) -> TimerHandle {
