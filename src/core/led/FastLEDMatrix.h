@@ -46,8 +46,7 @@ public:
 
     if constexpr (RGBW_SUPPORT == RgbwSupport::ENABLE) {
       FastLED.addLeds<WS2812B, PIN, GRB>(leds, N).setRgbw();
-    }
-    else {
+    } else {
       FastLED.addLeds<WS2812B, PIN, GRB>(leds, N);
     }
     INFO("Started %i LEDs on Pin %i", N, PIN);

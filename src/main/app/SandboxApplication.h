@@ -5,67 +5,22 @@
 #ifndef RGBLIB_SANDBOXAPPLICATION_H
 #define RGBLIB_SANDBOXAPPLICATION_H
 
-#include "Animations.h"
 #include "UserApplication.h"
-#include "ArrayAnimation.h"
 #include "LEDStrip.h"
 #include "LEDMatrix.h"
 #include "LEDFiber.h"
 #include "ArrayGradient.h"
 #include "IRReceiver.h"
-#include "PixelSlice.h"
 
 using namespace rgb;
 
-inline auto strip = LEDStrip<40, D5_RGB>();
-// inline auto right = strip.slice(0, 20);
-// inline auto left = strip.slice(20, 40);
-//
-// inline auto fiber = LEDFiber<130, D6_RGB>();
-// inline auto fiberRight = fiber.slice(0, 65);
-// inline auto fiberLeft = fiber.slice(65, 130);
-//
-inline auto matrix = LEDMatrix<16, 16, D2_RGB, RgbwSupport::ENABLE>();
+inline auto ring = LEDMatrix<12, 12, D3_RGB, RgbwSupport::ENABLE>();
 inline auto irReceiver = IRReceiver{PinNumber{7}};
-inline auto sunset = MirroredGradient(std::array {
-  GradientStop{Color::BLUE()},
-  GradientStop{Color::RED()},
-  GradientStop{Color::ORANGE()},
-});
-inline auto ocean = MirroredGradient(std::array {
-  GradientStop{Color::CYAN()},
-  GradientStop{Color::BLUE()},
-  GradientStop{Color::PURPLE()},
-  GradientStop{Color::MAGENTA()},
-});
-inline auto redToGreen = ArrayGradient{std::array {
-  GradientStop{Color::RED()},
-  GradientStop{Color::YELLOW()},
-  GradientStop{Color::GREEN()}
-}};
-
-inline auto animation = ArrayAnimation{ std::array {
-  AnimationFrame{Duration::Seconds(1), [](auto&) {
-    strip.fill(Color::RED());
-  }},
-  AnimationFrame{Duration::Seconds(1), [](auto&) {
-    strip.fill(Color::GREEN());
-  }},
-  AnimationFrame{Duration::Seconds(1), [](auto&) {
-    strip.fill(Color::BLUE());
-  }},
-  AnimationFrame::Once([](auto&) {
-    INFO("Success!");
-  }),
-}};
-inline auto animationHandle = AnimationHandle{};
 
 class SandboxApplication : public UserApplication<> {
 protected:
   auto configure(Configurer& app) -> void override {
-    app.addPixels(strip);
-    // app.addPixels(fiber);
-    app.addPixels(matrix);
+    app.addPixels(ring);
     app.addSensor(irReceiver);
 
     app.on<IRButtonPressed>([](const IRButtonPressed& event) {
@@ -99,27 +54,18 @@ protected:
         case IRButtonType::BUTTON_LEFT:
           break;
         case IRButtonType::BUTTON_STAR:
-          animationHandle = Animations::Start(animation, true);
           break;
         case IRButtonType::BUTTON_HASH:
-          animationHandle = Animations::Start(animation, true);
           break;
         case IRButtonType::BUTTON_OK:
-          animationHandle.stop();
           break;
       }
     });
   }
 
-  auto initialize() -> void override {
-    animationHandle = Animations::Start(animation, true);
-  }
-
   auto postDraw() -> void override {
-    matrix.fill(Color::FromBytes(0, 1, 0), 8);
-    matrix.fill(Color::FromBytes(0, 4, 0), 8, 16);
-    for (int i = 0; i < matrix.size(); i++) {
-      matrix.set(i, Color::FromBytes(0, i, 0));
+    for (int i = 0; i < 12; i++) {
+      ring.set(i, Color::Sequential12(i) * .5);
     }
   }
 };
