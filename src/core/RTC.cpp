@@ -21,6 +21,10 @@ auto RTC::Adjust(const DateTime& dt) -> void {
   Implementation().adjust(dt);
 }
 
+auto RTC::AdjustToCompileTime() -> void {
+  Implementation().adjustToCompileTime();
+}
+
 auto RTC::Now() -> DateTime {
   return Implementation().now();
 }

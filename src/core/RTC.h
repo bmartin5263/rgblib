@@ -11,10 +11,16 @@
 
 namespace rgb {
 
+enum class RTCError {
+  I2C_FAILED,
+  NOT_STARTED
+};
+
 class RTC {
 public:
   static auto Start(TwoWire* wire = &Wire) -> bool;
   static auto Adjust(const DateTime& dt) -> void;
+  static auto AdjustToCompileTime() -> void;
   static auto Now() -> DateTime;
 
 private:

@@ -21,10 +21,24 @@ auto RTCImpl::start(TwoWire* wire) -> bool {
 }
 
 auto RTCImpl::adjust(const DateTime& dt) -> void {
+  if (!mStarted) {
+    ERROR("Cannot adjust - RTC not started");
+  }
   mRtc.adjust(dt);
 }
 
+auto RTCImpl::adjustToCompileTime() -> void {
+  if (!mStarted) {
+    ERROR("Cannot adjust - RTC not started");
+  }
+  mRtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+}
+
 auto RTCImpl::now() -> DateTime {
+  if (!mStarted) {
+    ERROR("Cannot get current time - RTC not started");
+    return DateTime{};
+  }
   return mRtc.now();
 }
 

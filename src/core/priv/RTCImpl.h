@@ -13,6 +13,7 @@ class RTCImpl {
 public:
   auto start(TwoWire* wire = &Wire) -> bool;
   auto adjust(const DateTime& dt) -> void;
+  auto adjustToCompileTime() -> void;
   auto now() -> DateTime;
 
 private:
