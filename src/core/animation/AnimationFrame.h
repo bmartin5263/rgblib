@@ -30,6 +30,10 @@ public:
     return AnimationFrame{Duration::Zero(), function};
   }
 
+  static auto Of(Duration duration, const AnimationFrameFunction& function) -> AnimationFrame {
+    return AnimationFrame{duration, function};
+  }
+
   auto duration() const -> Duration;
   auto operator()(normal percentComplete) const -> void;
 
