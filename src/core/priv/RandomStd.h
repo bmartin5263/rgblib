@@ -14,6 +14,7 @@ namespace rgb::priv {
 class RandomStd : public RandomBase {
 public:
   auto next() -> u32;
+  auto chance(normal c) -> bool;
 
 private:
   std::mt19937 mEngine{std::random_device{}()};

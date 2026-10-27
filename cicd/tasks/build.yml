@@ -6,7 +6,6 @@ image_resource:
 inputs:
   - name: rgblib
 caches:
-  - path: root/.platformio
-  - path: root/.local
+  - path: .platformio
 run:
   path: rgblib/cicd/tasks/build.sh

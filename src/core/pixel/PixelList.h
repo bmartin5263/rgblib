@@ -28,6 +28,7 @@ public:
 
   auto fill(const Color& color) -> void;
   auto fill(const Color& color, uint range) -> void;
+  auto fillReverse(const Color& color, uint range) -> void;
   auto fill(const Color& color, uint start, uint endExclusive) -> void;
 
   auto fill(const Gradient& gradient, normal offset = 0.0f, normal scale = 1.0f) -> void;
@@ -35,12 +36,10 @@ public:
   auto fill(const Gradient& gradient, uint start, uint endExclusive, normal offset = 0.0f, normal scale = 1.0f) -> void;
 
   auto fillRatio(const Color& color, normal fillPercent) -> void;
-  auto fillRatio(const Gradient& gradient, normal fillPercent, normal offset = 0.0f, normal scale = 1.0f) -> void;
-
-  auto fillReverse(const Color& color, uint range) -> void;
-  auto fillReverse(const Gradient& gradient, uint range, normal offset = 0.0f, normal scale = 1.0f) -> void;
-
   auto fillRatioReverse(const Color& color, normal fillPercent) -> void;
+
+  auto fillRatio(const Gradient& gradient, normal fillPercent, normal offset = 0.0f, normal scale = 1.0f) -> void;
+  auto fillReverse(const Gradient& gradient, uint range, normal offset = 0.0f, normal scale = 1.0f) -> void;
   auto fillRatioReverse(const Gradient& gradient, normal fillPercent, normal offset = 0.0f, normal scale = 1.0f) -> void;
 
   auto clear() -> void;
@@ -51,12 +50,9 @@ public:
   auto end() -> PixelIterator;
   auto end() const -> ConstPixelIterator;
 
-  PixelList() = default;
   virtual ~PixelList() = default;
-
 protected:
-  // Copy/move are protected to prevent slicing through a PixelList base
-  // reference; only concrete derived types may copy themselves.
+  PixelList() = default;
   PixelList(const PixelList& rhs) = default;
   PixelList(PixelList&& rhs) noexcept = default;
   PixelList& operator=(const PixelList& rhs) = default;

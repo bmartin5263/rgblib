@@ -50,7 +50,7 @@ auto Animations::update() -> void {
       AnimationNode::Remove(pActiveHead, animation);
       release(animation);
     }
-    else if (!animation->update(delta)) {
+    else if (animation->update(delta) == Animation::UpdateResult::FINISHED) {
       AnimationNode::Remove(pActiveHead, animation);
       if (animation->loop) {
         recycle(animation);
@@ -76,11 +76,6 @@ auto Animations::processAdditions() -> void {
   }
 }
 
-auto Animations::Instance() -> Animations& {
-  static Animations timer;
-  return timer;
-}
-
 auto Animations::ActiveCount() -> uint {
   return Instance().activeCount();
 }
@@ -93,7 +88,7 @@ auto Animations::Stop(Animation& animation) -> void {
   Instance().stop(animation);
 }
 
-auto Animations::stop(Animation& animation) -> void {
+auto Animations::stop(const Animation& animation) -> void {
   auto current = pActiveHead;
   while (current != nullptr) {
     if (current->animation == &animation) {

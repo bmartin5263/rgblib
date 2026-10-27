@@ -34,12 +34,12 @@ This method is used to register various LEDs (`app.addPixels()`), sensors (`app.
 
 In addition, the following methods may optionally be overridden:
 
-| Method Name                 | Purpose                                                                                              |
-|-----------------------------|------------------------------------------------------------------------------------------------------|
-| `auto initialize() -> void` | For starting effects/timers/animations. Runs right before main loop starts                           |
-| `auto update() -> void`     | Called once per-frame before drawing any pixels, used for updating the state of the application      |
-| `auto draw() -> void`       | Called once per-frame **before** Effects/Animations run, used for manually drawing individual pixels |
-| `auto postDraw() -> void`   | Called once per-frame **after** Effects/Animations run, used for manually drawing individual pixels  |
+| Method Name                 | Purpose                                                                                                     |
+|-----------------------------|-------------------------------------------------------------------------------------------------------------|
+| `auto initialize() -> void` | For starting effects/timers/animations. Runs right before main loop starts                                  |
+| `auto update() -> void`     | Called once per-frame before drawing any pixels, used for updating the state of the application             |
+| `auto draw() -> void`       | Called once per-frame **before** effects/timers/animations run, used for manually drawing individual pixels |
+| `auto postDraw() -> void`   | Called once per-frame **after** effects/timers/animations run, used for manually drawing individual pixels  |
 
 
 ### Pixels & LEDs

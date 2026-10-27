@@ -21,3 +21,10 @@ ERROR("Something went wrong...");
 FAIL("Unhandled Value");
 ASSERT(x > 0, "Expected positive number");
 ```
+
+# Docker
+
+Build Dockerfile locally:
+```shell
+docker build --platform linux/arm64 -f cicd/Dockerfile -t rgblib-ci:test .
+```

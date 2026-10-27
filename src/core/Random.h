@@ -13,20 +13,13 @@ namespace rgb {
 class Random {
 public:
   static auto Next() -> u32;
+  static auto Chance(percent c) -> bool;
 
 private:
   static auto Implementation() -> priv::RandomImpl&;
   priv::RandomImpl impl;
 };
 
-inline auto Random::Implementation() -> priv::RandomImpl& {
-  static Random instance;
-  return instance.impl;
-}
-
-inline auto Random::Next() -> u32 {
-  return Implementation().next();
-}
 
 }
 

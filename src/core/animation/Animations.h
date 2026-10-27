@@ -32,7 +32,11 @@ public:
   static auto Update() -> void;
   static auto ActiveCount() -> uint;
   static auto PeakCount() -> uint;
-  static auto Instance() -> Animations&;
+
+  static auto Instance() -> Animations& {
+    static Animations timer;
+    return timer;
+  }
 
   Animations();
   Animations(const Animations& rhs) = default;
@@ -43,7 +47,7 @@ public:
 
 private:
   auto start(Animation& animation, bool loop) -> AnimationHandle;
-  auto stop(Animation& animation) -> void;
+  auto stop(const Animation& animation) -> void;
   auto stopAll() -> void;
   auto update() -> void;
 

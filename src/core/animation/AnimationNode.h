@@ -36,7 +36,7 @@ struct AnimationNode : PriorityNode<AnimationNode> {
     firstUpdate = false;
   }
 
-  auto update(Duration delta) -> bool {
+  auto update(Duration delta) -> Animation::UpdateResult {
     // Set delta to 0 for the first update since the delta is measuring a window the animation was inactive for
     auto result = animation->update(firstUpdate ? delta : Duration::Zero());
     firstUpdate = true;
