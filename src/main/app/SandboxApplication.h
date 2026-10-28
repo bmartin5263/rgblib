@@ -5,6 +5,7 @@
 #ifndef RGBLIB_SANDBOXAPPLICATION_H
 #define RGBLIB_SANDBOXAPPLICATION_H
 
+#include "ArrayAnimation.h"
 #include "UserApplication.h"
 #include "LEDStrip.h"
 #include "LEDMatrix.h"
@@ -18,12 +19,12 @@ using namespace rgb;
 inline auto irReceiver = IRReceiver{PinNumber{A7}};
 
 // LEDs
-using TachometerStrip = rgb::LEDStrip<12, D2_RGB, rgb::RgbwSupport::ENABLE>;
-using LeftFootStrip = rgb::LEDStrip<30, D4_RGB>;
-using RightFootStrip = rgb::LEDStrip<30, D5_RGB>;
-using LongFiberStrip1 = rgb::LEDFiber<30, D6_RGB>;
-using LongFiberStrip2 = rgb::LEDFiber<30, D7_RGB>;
-using ShortFiberStrip = rgb::LEDFiber<30, D8_RGB>;
+using TachometerStrip = LEDStrip<12, D2_RGB, RgbwSupport::ENABLE>;
+using LeftFootStrip = LEDStrip<30, D4_RGB>;
+using RightFootStrip = LEDStrip<30, D5_RGB>;
+using LongFiberStrip1 = LEDFiber<30, D6_RGB>;
+using LongFiberStrip2 = LEDFiber<30, D7_RGB>;
+using ShortFiberStrip = LEDFiber<30, D8_RGB>;
 
 // LEDs
 inline auto ring = TachometerStrip{};
@@ -32,6 +33,48 @@ inline auto rightFoot = RightFootStrip{};
 inline auto dashFiber1 = LongFiberStrip1{};
 inline auto dashFiber2 = LongFiberStrip2{};
 inline auto dashFiber3 = ShortFiberStrip{};
+
+inline auto mIntroAnimation = ArrayAnimation { std::array {
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(0, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(1, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(2, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(3, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(4, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(5, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(6, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(7, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(8, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(9, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(10, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(11, Color::WHITE() * ctx.percentComplete);
+  }),
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) {
+    ring.set(12, Color::WHITE() * ctx.percentComplete);
+  })
+}};
 
 class SandboxApplication : public UserApplication<> {
 protected:
@@ -84,22 +127,26 @@ protected:
     });
   }
 
+  auto initialize() -> void override {
+    Animations::Start(mIntroAnimation).detach();
+  }
+
   auto postDraw() -> void override {
-    for (int i = 0; i < ring.size(); i++) {
-      ring.set(i, Color::Sequential12(i) * .5);
-    }
-    for (int i = 0; i < leftFoot.size(); i++) {
-      leftFoot.set(i, Color::Sequential12(i) * .5);
-    }
-    for (int i = 0; i < rightFoot.size(); i++) {
-      rightFoot.set(i, Color::Sequential12(i) * .5);
-    }
-    for (int i = 0; i < dashFiber1.size(); i++) {
-      dashFiber1.set(i, Color::Sequential12(i) * .5);
-    }
-    for (int i = 0; i < dashFiber2.size(); i++) {
-      dashFiber2.set(i, Color::Sequential12(i) * .5);
-    }
+    // for (int i = 0; i < ring.size(); i++) {
+    //   ring.set(i, Color::Sequential12(i) * .5);
+    // }
+    // for (int i = 0; i < leftFoot.size(); i++) {
+    //   leftFoot.set(i, Color::Sequential12(i) * .5);
+    // }
+    // for (int i = 0; i < rightFoot.size(); i++) {
+    //   rightFoot.set(i, Color::Sequential12(i) * .5);
+    // }
+    // for (int i = 0; i < dashFiber1.size(); i++) {
+    //   dashFiber1.set(i, Color::Sequential12(i) * .5);
+    // }
+    // for (int i = 0; i < dashFiber2.size(); i++) {
+    //   dashFiber2.set(i, Color::Sequential12(i) * .5);
+    // }
   }
 };
 

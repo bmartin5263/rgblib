@@ -14,7 +14,6 @@ TimedFrame::TimedFrame(Duration duration, const TimedFrameFunction& function)
 auto TimedFrame::tryAdvance(FrameState& state) const -> FrameStatus {
   if (isFinished(state)) {
     mFunction(TimedContext{1.0f});
-    finished(state);
     return FrameStatus::FINISHED;
   }
   return FrameStatus::RUNNING;
