@@ -5,6 +5,7 @@
 #ifndef RGBLIB_RAINBOWAPPLICATION_H
 #define RGBLIB_RAINBOWAPPLICATION_H
 
+#include "ArrayAnimation.h"
 #include "UserApplication.h"
 #include "LEDStrip.h"
 #include "ChaseEffect.h"
@@ -20,6 +21,13 @@ inline auto reverseStrip = ReversePixelList{ledStrip};
 inline auto group = std::array<PixelList*, 2> { &ledStrip, &reverseStrip };
 inline auto chaseEffect = ChaseEffect{};
 inline auto chaseEffectHandle = EffectHandle{};
+
+inline auto animation = ArrayAnimation { std::array {
+  Frames::Once([](auto& c) {
+
+  }),
+  Frames::Wait(Duration::Seconds(1)),
+}};
 
 class RainbowApplication : public UserApplication<> {
 protected:

@@ -5,6 +5,10 @@
 #ifndef RGBLIB_FUNC_H
 #define RGBLIB_FUNC_H
 
+#ifndef RGB_INPLACE_FUNCTION
+#define RGB_INPLACE_FUNCTION 1
+#endif
+
 #if RGB_INPLACE_FUNCTION
 #define SG14_INPLACE_FUNCTION_THROW(x) std::abort()
 #include "inplace_function.h"

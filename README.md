@@ -53,42 +53,55 @@ Sometimes the distinction isn't perfect in code, but that is the goal of the fra
 ### Configuration
 The following compile-time flags can be used to change application behavior, configure memory, and enable features.
 
-| Macro                | Usage                                                                     | Default                          |
-|----------------------|---------------------------------------------------------------------------|----------------------------------|
-| `RGB_ARDUINO_ESP32`  | Uses Arduino ESP32 implementation of hardware abstractions                | `0` (disabled)                   |
-| `RGB_NATIVE`         | Uses Native implementation of hardware abstractions                       | `0` (disabled)                   |
-| `RGB_DEBUG`          | Enables debugging features like printf-style logging and monitoring       | `0` (disabled)                   |
-| `RGB_LOG_LEVEL`      | Log verbosity: `0`=None, `1`=Error, `2`=Info, `3`=Trace                   | `2` if `RGB_DEBUG` set, else `0` |
-| `RGB_OTA`            | Enables Over-the-Air firmware updates and WiFi connectivity               | `0` (disabled)                   |
-| `RGB_WIFI_SSID`      | WiFi network SSID used for OTA connectivity                               | `""` (empty)                     |
-| `RGB_WIFI_PASSWORD`  | WiFi network password used for OTA connectivity                           | `""` (empty)                     |
-| `RGB_MAX_ANIMATIONS` | Maximum number of concurrently active animations in the `Animations` pool | `7`                              |
-| `RGB_MAX_EFFECTS`    | Maximum number of concurrently active effects in the `Effects` pool       | `7`                              |
-| `RGB_MAX_TIMERS`     | Maximum number of concurrently active timers in the `Timer` pool          | `7`                              |
-| `RGB_IIC_SDA`        | GPIO pin used for the I2C SDA line                                        | `SDA`                            |
-| `RGB_IIC_SCL`        | GPIO pin used for the I2C SCL line                                        | `SCL`                            |
-| `RGB_SPI_CS`         | GPIO pin used for the SPI chip-select line                                | `A0`                             |
-| `RGB_SPI_MOSI`       | GPIO pin used for the SPI MOSI line                                       | `A1`                             |
-| `RGB_SPI_SCK`        | GPIO pin used for the SPI clock line                                      | `A2`                             |
-| `RGB_SPI_MISO`       | GPIO pin used for the SPI MISO line                                       | `A3`                             |
+| Macro                  | Usage                                                                                                            | Default                          |
+|------------------------|------------------------------------------------------------------------------------------------------------------|----------------------------------|
+| `RGB_ARDUINO_ESP32`    | Uses Arduino ESP32 implementation of hardware abstractions                                                       | `0` (disabled)                   |
+| `RGB_NATIVE`           | Uses Native implementation of hardware abstractions                                                              | `0` (disabled)                   |
+| `RGB_DEBUG`            | Enables debugging features like printf-style logging and monitoring                                              | `0` (disabled)                   |
+| `RGB_LOG_LEVEL`        | Log verbosity: `0`=None, `1`=Error, `2`=Info, `3`=Trace                                                          | `2` if `RGB_DEBUG` set, else `0` |
+| `RGB_OTA`              | Enables Over-the-Air firmware updates and WiFi connectivity                                                      | `0` (disabled)                   |
+| `RGB_WIFI_SSID`        | WiFi network SSID used for OTA connectivity                                                                      | `""` (empty)                     |
+| `RGB_WIFI_PASSWORD`    | WiFi network password used for OTA connectivity                                                                  | `""` (empty)                     |
+| `RGB_INPLACE_FUNCTION` | Uses a fixed-size, non-allocating function wrapper instead of `std::function` for callbacks                      | `1` (enabled)                    |
+| `RGB_FUNCTION_SIZE`    | Storage in bytes for each callback when `RGB_INPLACE_FUNCTION` is set; captures larger than this fail to compile | `32`                             |
+| `RGB_MAX_ANIMATIONS`   | Maximum number of concurrently active animations in the `Animations` pool                                        | `7`                              |
+| `RGB_MAX_EFFECTS`      | Maximum number of concurrently active effects in the `Effects` pool                                              | `7`                              |
+| `RGB_MAX_TIMERS`       | Maximum number of concurrently active timers in the `Timer` pool                                                 | `7`                              |
+| `RGB_IIC_SDA`          | GPIO pin used for the I2C SDA line                                                                               | `SDA`                            |
+| `RGB_IIC_SCL`          | GPIO pin used for the I2C SCL line                                                                               | `SCL`                            |
+| `RGB_SPI_CS`           | GPIO pin used for the SPI chip-select line                                                                       | `A0`                             |
+| `RGB_SPI_MOSI`         | GPIO pin used for the SPI MOSI line                                                                              | `A1`                             |
+| `RGB_SPI_SCK`          | GPIO pin used for the SPI clock line                                                                             | `A2`                             |
+| `RGB_SPI_MISO`         | GPIO pin used for the SPI MISO line                                                                              | `A3`                             |
 
 ## Features
 
 ### Animations
-Animations let you define a sequence of steps to run where each step is composed of a callback to execute and a duration for how long to keep calling it for.
+Animations let you define a sequence of frames to run. Frames are created with the `Frames` helpers and come in three kinds:
+
+- **Timed** (`Frames::Of`, `Frames::Wait`, `Frames::Once`): calls the callback on every update for a fixed duration.
+  - `ctx.percentComplete`: 0.0 - 1.0f representing how far in the animation frame we are
+- **For** (`Frames::For(interval, iterations, fn)`): calls the callback once per iteration, waiting `interval` after each one.
+  - `ctx.index()` is the current iteration
+  - `ctx.percentComplete()` 0.0 - 1.0f representing how far in the animation frame we are
+- **While** (`Frames::While(condition, fn)`): calls the callback on every update until `condition` returns false.
+  - `ctx.elapsed()` is how long the frame has been running.
 
 ```c++
 auto animation = ArrayAnimation{ std::array {
-  AnimationFrame{Duration::Seconds(1), [](auto& ctx) { strip.fill(Color::RED() * (1.0f - ctx.percentComplete)); }},
-  AnimationFrame::Wait(Duration::Seconds(1)), // Does Nothing
-  AnimationFrame{Duration::Seconds(1), [](auto& ctx) { strip.fill(Color::GREEN() * (1.0f - ctx.percentComplete)); }},
-  AnimationFrame::Wait(Duration::Seconds(1)), // Does Nothing
-  AnimationFrame{Duration::Seconds(1), [](auto& ctx) { strip.fill(Color::BLUE() * (1.0f - ctx.percentComplete)); }},
-  AnimationFrame::Wait(Duration::Seconds(1)), // Does Nothing
-  AnimationFrame::Once([](auto&) { INFO("Done!"); }) // only called once
+  Frames::Of(Duration::Seconds(1), [](auto& ctx) { strip.fill(Color::RED() * (1.0f - ctx.percentComplete)); }),
+  Frames::Wait(Duration::Seconds(1)), // Does Nothing
+  Frames::For(Duration::Milliseconds(125), 8, [](auto& ctx) {
+    strip.fill(ctx.index() % 2 == 0 ? Color::GREEN() : Color::BLUE());
+  }),
+  Frames::While([] { return rainbowMode; }, [](auto& ctx) {
+    strip.fill(Color::WHITE());
+    if (ctx.elapsed() > Duration::Seconds(5)) { INFO("Still in rainbow mode"); }
+  }),
+  Frames::Once([](auto&) { INFO("Done!"); }) // only called once
 }};
 
-auto handle = Animations::start(animation, true /* loop */ ));
+auto handle = Animations::Start(animation, true /* loop */);
 ```
 
 ### Effects

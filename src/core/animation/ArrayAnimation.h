@@ -9,63 +9,74 @@
 #include <cstddef>
 
 #include "Animation.h"
-#include "AnimationFrame.h"
+#include "Frames.h"
 
 namespace rgb {
 
 template <size_t N>
 class ArrayAnimation : public Animation {
 public:
-  explicit ArrayAnimation(std::array<AnimationFrame, N> frames);
+  explicit ArrayAnimation(std::array<Frame, N> frames);
   auto reset() -> void override;
   auto update(Duration delta) -> UpdateResult override;
   auto frameCount() const -> size_t override { return N; }
   auto isFinished() const -> bool { return mCurrentFrame >= N; }
   auto fastForward() -> void;
 
+  auto tryAdvance(const Frame& frame) -> FrameStatus;
+  auto tick(const Frame& frame) -> void;
+  auto finish(const Frame& frame) -> void;
+
 private:
-  std::array<AnimationFrame, N> mFrames{};
-  Timestamp mCurrentFrameElapsed{};
+  std::array<Frame, N> mFrames{};
+  FrameState mState{};
   u32 mCurrentFrame{};
 };
 
 template<size_t N>
-ArrayAnimation<N>::ArrayAnimation(std::array<AnimationFrame, N> frames): mFrames(std::move(frames)) {
+ArrayAnimation<N>::ArrayAnimation(std::array<Frame, N> frames): mFrames(std::move(frames)) {
 }
 
 template<size_t N>
 auto ArrayAnimation<N>::reset() -> void {
-  mCurrentFrameElapsed = Timestamp::Zero();
+  mState = FrameState{};
   mCurrentFrame = 0;
 }
 
 template<size_t N>
 auto ArrayAnimation<N>::update(Duration delta) -> UpdateResult {
-  mCurrentFrameElapsed += delta;
+  mState.elapsed += delta;
   fastForward();
 
   if (isFinished()) {
     return UpdateResult::FINISHED;
   }
 
-  mFrames[mCurrentFrame](mCurrentFrameElapsed.percentOf(mFrames[mCurrentFrame].duration()));
+  tick(mFrames[mCurrentFrame]);
   return UpdateResult::RUNNING;
 }
 
 template<size_t N>
 auto ArrayAnimation<N>::fastForward() -> void {
-  while (!isFinished()) {
-    auto currentFrame = &mFrames[mCurrentFrame];
-    auto duration = currentFrame->duration();
-    if (mCurrentFrameElapsed >= duration) {
-      (*currentFrame)(1.0f);
-      mCurrentFrameElapsed -= duration;
-      ++mCurrentFrame;
-    }
-    else {
-      break;
-    }
+  while (!isFinished() && tryAdvance(mFrames[mCurrentFrame]) == FrameStatus::FINISHED) {
+    finish(mFrames[mCurrentFrame]);
+    ++mCurrentFrame;
   }
+}
+
+template<size_t N>
+auto ArrayAnimation<N>::tryAdvance(const Frame& frame) -> FrameStatus {
+  return std::visit([this](const auto& f) { return f.tryAdvance(mState); }, frame);
+}
+
+template<size_t N>
+auto ArrayAnimation<N>::tick(const Frame& frame) -> void {
+  std::visit([this](const auto& f) { f.tick(mState); }, frame);
+}
+
+template<size_t N>
+auto ArrayAnimation<N>::finish(const Frame& frame) -> void {
+  std::visit([this](const auto& f) { f.finished(mState); }, frame);
 }
 }
 
