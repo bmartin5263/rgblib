@@ -45,7 +45,7 @@ auto Wifi::isConnected() const -> bool {
 }
 
 auto Wifi::update() -> void {
-  switch (WiFi.status()) {
+  switch (WiFiClass::status()) {
     case WL_CONNECTED:
       if (!mConnected) {
 #if RGB_DEBUG
@@ -76,14 +76,11 @@ auto Wifi::update() -> void {
     case WL_SCAN_COMPLETED:
       restartWifi(WL_SCAN_COMPLETED);
       break;
-    case WL_STOPPED:
-      restartWifi(WL_STOPPED);
-      break;
   }
 }
 
 auto Wifi::getStatus() const -> int {
-  return WiFi.status();
+  return WiFiClass::status();
 }
 
 auto Wifi::getAddress() const -> IPAddress {
@@ -108,8 +105,6 @@ auto Wifi::mapToString(WifiStatus reason) -> const char* {
       return "NO_SSID_AVAIL";
     case WL_SCAN_COMPLETED:
       return "SCAN_COMPLETED";
-    case WL_STOPPED:
-      return "STOPPED";
     default:
       return "UNKNOWN";
   }
