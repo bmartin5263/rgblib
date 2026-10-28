@@ -87,7 +87,6 @@ auto UserApplication<EventVariantT>::setup() -> void {
   INFO("Setup Application");
   configureApplication();
   startSubsystems();
-  initialize();
 
 #if RGB_DEBUG
   static Monitor monitor;
@@ -99,8 +98,9 @@ auto UserApplication<EventVariantT>::setup() -> void {
   }).detach();
 #endif
 
-  PublishEvent(AppReady{{Clock::Now()}});
   Clock::Start();
+  PublishEvent(AppReady{{Clock::Now()}});
+  initialize();
 }
 
 template<typename EventVariantT>
