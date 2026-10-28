@@ -2,10 +2,8 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: alpine
+    repository: ghcr.io/bmartin5263/rgblib-ci
 inputs:
   - name: rgblib
-caches:
-  - path: .platformio
 run:
   path: rgblib/cicd/tasks/build.sh
