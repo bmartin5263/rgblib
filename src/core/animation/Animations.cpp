@@ -56,6 +56,7 @@ auto Animations::update() -> void {
         recycle(animation);
       }
       else {
+        animation->stopped = true;
         release(animation);
       }
     }
