@@ -1,4 +1,4 @@
-# RGBLib
+# rgblib
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/bdon/library/rgblib.svg)](https://registry.platformio.org/libraries/bdon/rgblib)
 
 C++ framework for LED-based Applications running on Arduino Nano ESP32
@@ -63,7 +63,7 @@ The following compile-time flags can be used to change application behavior, con
 | `RGB_WIFI_SSID`        | WiFi network SSID used for OTA connectivity                                                                      | `""` (empty)                     |
 | `RGB_WIFI_PASSWORD`    | WiFi network password used for OTA connectivity                                                                  | `""` (empty)                     |
 | `RGB_INPLACE_FUNCTION` | Uses a fixed-size, non-allocating function wrapper instead of `std::function` for callbacks                      | `1` (enabled)                    |
-| `RGB_FUNCTION_SIZE`    | Storage in bytes for each callback when `RGB_INPLACE_FUNCTION` is set; captures larger than this fail to compile | `32`                             |
+| `RGB_FUNCTION_SIZE`    | Storage in bytes for each callback when `RGB_INPLACE_FUNCTION` is set; captures larger than this fail to compile | `32` bytes                       |
 | `RGB_MAX_ANIMATIONS`   | Maximum number of concurrently active animations in the `Animations` pool                                        | `7`                              |
 | `RGB_MAX_EFFECTS`      | Maximum number of concurrently active effects in the `Effects` pool                                              | `7`                              |
 | `RGB_MAX_TIMERS`       | Maximum number of concurrently active timers in the `Timer` pool                                                 | `7`                              |
@@ -198,6 +198,15 @@ use of these macros for reporting issues at runtime
 - **Pixel** is an abstract representation to usually 1 LED
 - **RGB/W** represent the 3/4 possible color channels for an LED. Not all LEDs have W.
   - App represents them as `float` value between `[0-1]`, but device expects `unsigned char` value (`[0-255]`)
+
+## Architecture Decision History
+
+### Using Espressif 7.0.1 over 8.*
+
+An upgrade was attempted late October to Espressif `8.0.0` since it would enable more C++20 features that were absent, like `<span>`.
+However, the upgrade cause the current version of FastLED to not support more than a couple strips, causing existing apps to fail at runtime.
+Attempting to upgrade FastLED caused a significant slowdown in the dependency scan when building.
+Since I couldn't justify the headache I was already going through trying to upgrade it, I reverted back to `7.0.1` and just went back to using workarounds for span.
 
 ## TODO 
 
