@@ -11,6 +11,7 @@
 #include "LEDMatrix.h"
 #include "LEDFiber.h"
 #include "ArrayGradient.h"
+#include "Every.h"
 #include "IRReceiver.h"
 
 using namespace rgb;
@@ -86,6 +87,12 @@ protected:
     app.addPixels(dashFiber2);
     app.addPixels(dashFiber3);
     app.addSensor(irReceiver);
+
+    app.addBackgroundTask([] {
+      if (static auto lastUpdate = Timestamp{}; Every(Duration::Seconds(1), lastUpdate)) {
+        INFO("Background Task");
+      }
+    });
 
     app.on<IRButtonPressed>([](const IRButtonPressed& event) {
       switch (event.button) {

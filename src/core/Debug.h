@@ -28,7 +28,7 @@ public:
   static constexpr auto BLINKER_COUNT = static_cast<u8>(BlinkerColor::COUNT);
   static constexpr auto DEFAULT_FAULT_COLOR = Color::MAGENTA() * .3f;
 
-  using BlinkerCallback = Function<bool()>;
+  using BlinkerCallback = Predicate;
 
   static auto TriggerFault() -> void { Instance().triggerFault(); }
   static auto RecoverFault() -> void { Instance().recoverFault(); }

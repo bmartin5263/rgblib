@@ -66,8 +66,12 @@ private:
   auto baseUpdate() -> void;
   auto baseDraw() -> void;
 
+  static auto BackgroundTaskRunnerStatic(void* params) -> void;
+  [[noreturn]] auto backgroundTaskRunner() -> void;
+
   std::vector<LEDDevice*> mPixels{};
   std::vector<Sensor*> mSensors{};
+  std::vector<Runnable> mBackgroundTasks{};
 
 protected:
   EventMap<AnyEvent> mEventMap{};
@@ -169,10 +173,15 @@ auto UserApplication<EventVariantT>::configureApplication() -> void {
 
   mPixels = std::move(appConfig.mPixels);
   mSensors = std::move(appConfig.mSensors);
+  mBackgroundTasks = std::move(appConfig.mBackgroundTasks);
   mEventMap = std::move(appConfig.mEventMap);
 
   if (appConfig.mHeartbeat) {
     Debug::SetBlinker(BlinkerColor::PURPLE, []() { return true; });
+  }
+
+  if (!mBackgroundTasks.empty()) {
+    xTaskCreatePinnedToCore(BackgroundTaskRunnerStatic, "backgroundTaskRunner", 8192, this, 1, nullptr, 1);
   }
 }
 
@@ -197,6 +206,22 @@ auto UserApplication<EventVariantT>::PublishEvent(const AnyEvent& event) -> void
     for (auto& handler : it->second) {
       handler(event);
     }
+  }
+}
+
+template<typename EventVariantT>
+auto UserApplication<EventVariantT>::BackgroundTaskRunnerStatic(void* params) -> void {
+  static_cast<UserApplication*>(params)->backgroundTaskRunner();
+}
+
+template<typename EventVariantT>
+auto UserApplication<EventVariantT>::backgroundTaskRunner() -> void {
+  INFO("Background Task Runner Started with %i tasks", mBackgroundTasks.size());
+  while (true) {
+    for (auto& task : mBackgroundTasks) {
+      task();
+    }
+    vTaskDelay(1);
   }
 }
 

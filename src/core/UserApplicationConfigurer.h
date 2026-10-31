@@ -6,9 +6,9 @@
 #define RGBLIB_USER_APPLICATION_CONFIGURER_H
 
 #include <vector>
-#include <unordered_map>
 #include "EventType.h"
 #include "Sensor.h"
+#include "Func.h"
 
 namespace rgb {
 
@@ -18,12 +18,14 @@ template<typename EventVariantT = SystemEvent>
 struct UserApplicationConfigurer {
   constexpr auto addPixels(LEDDevice& circuit) -> UserApplicationConfigurer&;
   constexpr auto addSensor(Sensor& sensor) -> UserApplicationConfigurer&;
+  auto addBackgroundTask(Runnable runnable) -> UserApplicationConfigurer&;
 
   template<typename T>
   constexpr auto on(EventHandler<T> action) -> UserApplicationConfigurer&;
 
   std::vector<LEDDevice*> mPixels{};
   std::vector<Sensor*> mSensors{};
+  std::vector<Runnable> mBackgroundTasks{};
   EventMap<EventVariantT> mEventMap{};
   bool mHeartbeat{};
 };
@@ -41,6 +43,12 @@ constexpr auto UserApplicationConfigurer<EventVariantT>::addSensor(Sensor& senso
 }
 
 template<typename EventVariantT>
+auto UserApplicationConfigurer<EventVariantT>::addBackgroundTask(Runnable runnable) -> UserApplicationConfigurer& {
+  mBackgroundTasks.push_back(std::move(runnable));
+  return *this;
+}
+
+template<typename EventVariantT>
 template<typename T>
 constexpr auto UserApplicationConfigurer<EventVariantT>::on(EventHandler<T> action) -> UserApplicationConfigurer& {
   auto index = EventIndex_v<T, EventVariantT>;
@@ -49,6 +57,8 @@ constexpr auto UserApplicationConfigurer<EventVariantT>::on(EventHandler<T> acti
   });
   return *this;
 }
+
+
 
 }
 
